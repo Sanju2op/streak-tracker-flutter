@@ -121,6 +121,21 @@ class WebAdapter implements DbAdapter {
   }
 
   @override
+  Future<void> updateReset(Reset reset) async {
+    final rows = await _readList(_resetsKey);
+    final updatedRows = rows
+        .map((row) => row['id'] == reset.id ? reset.toMap() : row)
+        .toList();
+    await _writeList(_resetsKey, updatedRows);
+  }
+
+  @override
+  Future<void> deleteReset(String id) async {
+    final rows = await _readList(_resetsKey);
+    await _writeList(_resetsKey, rows.where((row) => row['id'] != id).toList());
+  }
+
+  @override
   Future<List<Goal>> getGoals(String counterId) async {
     final rows = await _readList(_goalsKey);
     final filtered =

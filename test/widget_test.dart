@@ -54,6 +54,17 @@ class FakeDbAdapter implements DbAdapter {
   Future<void> insertReset(Reset reset) async => _resets.add(reset);
 
   @override
+  Future<void> updateReset(Reset reset) async {
+    _resets.removeWhere((r) => r.id == reset.id);
+    _resets.add(reset);
+  }
+
+  @override
+  Future<void> deleteReset(String id) async {
+    _resets.removeWhere((r) => r.id == id);
+  }
+
+  @override
   Future<List<Goal>> getGoals(String counterId) async =>
       _goals.where((g) => g.counterId == counterId).toList();
 

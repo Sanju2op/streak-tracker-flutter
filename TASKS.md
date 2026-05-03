@@ -434,14 +434,14 @@
     - Subtle `Divider` between rows
   - Empty state: "No resets yet" centered
 
-- ⬜ `3.12` **`lib/sheets/reset_drawer_sheet.dart`** — see `UI Images/clicked on single reset from all resets screen drawer view.jpeg`
+- ✅ `3.12` **`lib/sheets/reset_drawer_sheet.dart`** — see `UI Images/clicked on single reset from all resets screen drawer view.jpeg`
   - `showModalBottomSheet` half-height
   - Header: "Cancel" left | "Edit" right
   - Card 1: Counter title, Date range (e.g., "7 Dec 2025 - 7 Dec 2025"), "Share" button
   - Below Card 1: 4 columns for elapsed streak time for that reset (Days, Hours, Minutes, Seconds)
   - Card 2: "Reset on" and the date + time of the reset
 
-- ⬜ `3.13` **`lib/sheets/edit_reset_sheet.dart`** — see `UI Images/clicked on single reset from all resets then clicked edit from drawer screen drawer view.jpeg`
+- ✅ `3.13` **`lib/sheets/edit_reset_sheet.dart`** — see `UI Images/clicked on single reset from all resets then clicked edit from drawer screen drawer view.jpeg`
   - Opens when "Edit" is clicked from Reset Drawer
   - Header: "Cancel" left | "Done" right
   - Card 1: "Reset on" row with date and time chips, "Note" text field
@@ -1043,6 +1043,13 @@
   Actual: The detail screen always defaults to "Years", and the list screen doesn't reflect the change.
   Fix approach: Remove local ephemeral state for the selected period in `CounterDetailScreen`. Use `counter.period` directly, and trigger `updateCounter` when a tab is tapped.
 
+- ✅ `BUG-7` **Stats sync with time period**
+  Platform: Both
+  Steps to reproduce: Open a counter details screen and select a time period like "Hours" or "Years".
+  Expected: The stats card at the bottom should display the data scaled to the selected time period (e.g., in Hours or Years).
+  Actual: The stats card was independently deciding whether to show Days, Months, or Years based on magnitude.
+  Fix approach: Pass the `period` from the counter down to `StatsSummaryCard` and format the days dynamically.
+
 Template for new issues:
 ```
 - ⬜ `BUG-X` **Short title**
@@ -1059,9 +1066,9 @@ Template for new issues:
 
 ```
 Last updated: 2026-05-03
-Current focus: Phase 3 — counters feature
-Last completed task: 3.7 (wire create/edit sheet)
-Next task: 3.8 (lib/widgets/time_tab_selector.dart)
+Current focus: Phase 4 — goals feature
+Last completed task: 4.1 (lib/sheets/set_goal_sheet.dart)
+Next task: 4.2 (lib/screens/counters/goals_screen.dart)
 
 Git remote: https://github.com/Sanju2op/streak-tracker-flutter.git
 Branch: main

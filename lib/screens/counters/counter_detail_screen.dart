@@ -180,10 +180,12 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
 
                 const SizedBox(height: 16),
 
-                // 5. Stats summary card
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: StatsSummaryCard(stats: _stats),
+                  child: StatsSummaryCard(
+                    stats: _stats,
+                    period: counter.period,
+                  ),
                 ),
 
                 const SizedBox(height: 32),

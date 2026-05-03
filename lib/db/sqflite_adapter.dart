@@ -96,6 +96,23 @@ class SqfliteAdapter implements DbAdapter {
   }
 
   @override
+  Future<void> updateReset(Reset reset) async {
+    final db = await _database;
+    await db.update(
+      'resets',
+      reset.toMap(),
+      where: 'id = ?',
+      whereArgs: [reset.id],
+    );
+  }
+
+  @override
+  Future<void> deleteReset(String id) async {
+    final db = await _database;
+    await db.delete('resets', where: 'id = ?', whereArgs: [id]);
+  }
+
+  @override
   Future<List<Goal>> getGoals(String counterId) async {
     final db = await _database;
     final rows = await db.query(

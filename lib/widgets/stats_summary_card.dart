@@ -14,8 +14,13 @@ import '../models/stats.dart';
 /// See `UI Images/counter_view_clicked_on_counter_detials_of_single_counter_2_scrolled.PNG`.
 class StatsSummaryCard extends StatelessWidget {
   final Stats stats;
+  final String period;
 
-  const StatsSummaryCard({super.key, required this.stats});
+  const StatsSummaryCard({
+    super.key,
+    required this.stats,
+    required this.period,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +51,7 @@ class StatsSummaryCard extends StatelessWidget {
               ),
               Expanded(
                 child: _StatCell(
-                  value: _formatDaysAsLargestUnit(stats.daysSinceStart),
+                  value: _formatDays(stats.daysSinceStart, period),
                   label: 'Since started',
                 ),
               ),
@@ -58,13 +63,13 @@ class StatsSummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatCell(
-                  value: _formatDaysAsLargestUnit(stats.longestStreakDays),
+                  value: _formatDays(stats.longestStreakDays, period),
                   label: 'Longest Streak',
                 ),
               ),
               Expanded(
                 child: _StatCell(
-                  value: _formatDaysAsLargestUnit(stats.averageStreakDays),
+                  value: _formatDays(stats.averageStreakDays, period),
                   label: 'Average Streak',
                 ),
               ),
@@ -75,18 +80,29 @@ class StatsSummaryCard extends StatelessWidget {
     );
   }
 
-  /// Displays days in the largest human-friendly unit.
-  /// E.g. 400 days → "1 year", 45 days → "1 month", 10 days → "10 days".
-  /// Uses full unit labels as specified in ARCHITECTURE.md.
-  String _formatDaysAsLargestUnit(int days) {
-    if (days >= 365) {
-      final years = days ~/ 365;
-      return '$years ${years == 1 ? 'year' : 'years'}';
-    } else if (days >= 30) {
-      final months = days ~/ 30;
-      return '$months ${months == 1 ? 'month' : 'months'}';
-    } else {
-      return '$days ${days == 1 ? 'day' : 'days'}';
+  /// Formats the days into the requested period.
+  String _formatDays(int days, String period) {
+    if (days == 0) {
+      final unit = period == 'days' ? 'days' : period;
+      return '0 $unit';
+    }
+
+    switch (period) {
+      case 'hours':
+        final h = days * 24;
+        return '$h ${h == 1 ? 'hour' : 'hours'}';
+      case 'weeks':
+        final w = (days / 7).round();
+        return '$w ${w == 1 ? 'week' : 'weeks'}';
+      case 'months':
+        final m = (days / 30.44).round();
+        return '$m ${m == 1 ? 'month' : 'months'}';
+      case 'years':
+        final y = (days / 365.25).round();
+        return '$y ${y == 1 ? 'year' : 'years'}';
+      case 'days':
+      default:
+        return '$days ${days == 1 ? 'day' : 'days'}';
     }
   }
 }

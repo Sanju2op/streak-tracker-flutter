@@ -9,6 +9,7 @@ import '../../models/elapsed_time.dart';
 import '../../models/reset.dart';
 import '../../providers/counter_provider.dart';
 import '../../providers/db_provider.dart';
+import '../../sheets/reset_drawer_sheet.dart';
 import '../../utils/time_utils.dart';
 
 /// All Resets screen — shows the history of resets for a single counter,
@@ -151,6 +152,7 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
           final key = groupKeys[index];
           final resetsInGroup = groups[key]!; // safe — key from groups map
           return _ResetGroupCard(
+            counter: counter!,
             monthLabel: key,
             resets: resetsInGroup,
             resetCount: resetsInGroup.length,
@@ -171,11 +173,13 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
 // ---------------------------------------------------------------------------
 
 class _ResetGroupCard extends StatelessWidget {
+  final Counter counter;
   final String monthLabel;
   final List<Reset> resets;
   final int resetCount;
 
   const _ResetGroupCard({
+    required this.counter,
     required this.monthLabel,
     required this.resets,
     required this.resetCount,
@@ -226,7 +230,7 @@ class _ResetGroupCard extends StatelessWidget {
                   indent: 16,
                   endIndent: 16,
                 ),
-              _ResetEntry(reset: resets[i]),
+              _ResetEntry(counter: counter, reset: resets[i]),
             ],
 
             const SizedBox(height: 8),
@@ -238,9 +242,10 @@ class _ResetGroupCard extends StatelessWidget {
 }
 
 class _ResetEntry extends StatelessWidget {
+  final Counter counter;
   final Reset reset;
 
-  const _ResetEntry({required this.reset});
+  const _ResetEntry({required this.counter, required this.reset});
 
   @override
   Widget build(BuildContext context) {
@@ -251,59 +256,67 @@ class _ResetEntry extends StatelessWidget {
     final dateTimeText =
         '${DateFormat('d MMM yyyy').format(resetDt)} ${DateFormat('h:mm a').format(resetDt)}';
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Streak duration with clock icon
-                Row(
-                  children: [
-                    const Icon(Icons.access_time, color: kAccentBlue, size: 16),
-                    const SizedBox(width: 4),
-                    Flexible(
+    return InkWell(
+      onTap: () =>
+          showResetDrawerSheet(context, counter: counter, reset: reset),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Streak duration with clock icon
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.access_time,
+                        color: kAccentBlue,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          durationText,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: kAccentBlue,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Reset date + time
+                  Text(
+                    dateTimeText,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: kTextPrimary,
+                    ),
+                  ),
+                  // Note if present
+                  if (reset.note != null &&
+                      reset.note!.isNotEmpty) // safe — guarded by null check
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        durationText,
+                        reset.note!, // safe — guarded by null check above
                         style: const TextStyle(
-                          fontSize: 14,
-                          color: kAccentBlue,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          color: kTextSecondary,
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                // Reset date + time
-                Text(
-                  dateTimeText,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: kTextPrimary,
-                  ),
-                ),
-                // Note if present
-                if (reset.note != null &&
-                    reset.note!.isNotEmpty) // safe — guarded by null check
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      reset.note!, // safe — guarded by null check above
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: kTextSecondary,
-                      ),
-                    ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const Icon(Icons.chevron_right, color: kTextSecondary, size: 22),
-        ],
+            const Icon(Icons.chevron_right, color: kTextSecondary, size: 22),
+          ],
+        ),
       ),
     );
   }

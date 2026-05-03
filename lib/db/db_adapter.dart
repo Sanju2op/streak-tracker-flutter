@@ -15,6 +15,8 @@ abstract class DbAdapter {
   // Resets
   Future<List<Reset>> getResets(String counterId);
   Future<void> insertReset(Reset reset);
+  Future<void> updateReset(Reset reset);
+  Future<void> deleteReset(String id);
 
   // Goals
   Future<List<Goal>> getGoals(String counterId);
