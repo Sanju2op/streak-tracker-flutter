@@ -298,7 +298,7 @@
 
 ### 3A — Counter List Screen
 
-- ⬜ `3.1` **`lib/widgets/empty_state.dart`**
+- ✅ `3.1` **`lib/widgets/empty_state.dart`**
   - Center column: an icon (e.g. `Icons.timer_outlined`, large, accent colored), "No counters yet" bold, "Tap + to add your first counter" grey, "Add Counter" outlined button
   - Tapping button fires the create sheet callback
 
@@ -704,9 +704,9 @@ Template for new issues:
 
 ```
 Last updated: 2026-05-03
-Current focus: Phase 2 — app shell complete
-Last completed task: 2.7 (verify tabs, detail back navigation, theme)
-Next task: 3.1 (lib/widgets/empty_state.dart)
+Current focus: Phase 3 — counters feature
+Last completed task: 3.1 (lib/widgets/empty_state.dart)
+Next task: 3.2 (lib/widgets/live_time_display.dart)
 
 Git remote: https://github.com/Sanju2op/streak-tracker-flutter.git
 Branch: main
@@ -728,4 +728,5 @@ Key decisions made this session:
   - Phase 1 completed with `flutter analyze`, `flutter test`, Chrome data-layer smoke test, web build, and Android debug APK build passing.
   - `scratch/**` is excluded from analyzer input so local scratch files do not affect project analysis.
   - Phase 2 completed with GoRouter shell navigation, tab scaffold, stub screens, ProviderScope app entrypoint, and passing web/Android builds.
+  - Phase 3 references opened before widget work: `Counters_Tab.PNG`, `counter_view_clicked_on_counter_detials_of_single_counter_1.PNG`, and `counter_view_clicked_on_counter_detials_of_single_counter_2_scrolled.PNG`.
 ```
