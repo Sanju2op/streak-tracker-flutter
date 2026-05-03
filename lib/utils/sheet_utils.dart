@@ -12,6 +12,7 @@ Future<T?> showAppBottomSheet<T>({
     context: context,
     isScrollControlled: fullHeight,
     useRootNavigator: true,
+    useSafeArea: true,
     backgroundColor: Colors.transparent,
     barrierColor: Colors.black.withValues(alpha: 0.35),
     builder: (_) => _BlurSheetWrapper(fullHeight: fullHeight, child: child),

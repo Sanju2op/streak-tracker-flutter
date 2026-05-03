@@ -41,21 +41,21 @@ class CalendarStreakListItem extends StatelessWidget {
                 children: [
                   Text(
                     counter.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: kTextPrimary,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Day $totalDays of $totalDays Days, $hours Hours, $minutes Minutes',
-                    style: const TextStyle(color: kTextSecondary, fontSize: 13),
+                    style: TextStyle(color: context.textSecondary, fontSize: 13),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: kTextSecondary, size: 20),
+            Icon(Icons.chevron_right, color: context.textSecondary, size: 20),
           ],
         ),
       ),

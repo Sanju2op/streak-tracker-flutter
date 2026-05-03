@@ -76,8 +76,8 @@ class _AddReminderSheetState extends ConsumerState<AddReminderSheet> {
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: const BoxDecoration(
-          color: kBgColor,
+        decoration: BoxDecoration(
+          color: context.bgColor,
           borderRadius: kSheetRadius,
         ),
         child: Column(
@@ -88,7 +88,7 @@ class _AddReminderSheetState extends ConsumerState<AddReminderSheet> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: kTextSecondary.withValues(alpha: 0.3),
+                color: context.textSecondary.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -103,12 +103,12 @@ class _AddReminderSheetState extends ConsumerState<AddReminderSheet> {
                     style: TextStyle(color: kAccentBlue, fontSize: 16),
                   ),
                 ),
-                const Text(
+                Text(
                   'Add Reminder',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: kTextPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 TextButton(
@@ -126,8 +126,8 @@ class _AddReminderSheetState extends ConsumerState<AddReminderSheet> {
             ),
             const SizedBox(height: 12),
             Container(
-              decoration: const BoxDecoration(
-                color: kCardColor,
+              decoration: BoxDecoration(
+                color: context.cardColor,
                 borderRadius: kCardRadius,
               ),
               child: Column(
@@ -137,18 +137,18 @@ class _AddReminderSheetState extends ConsumerState<AddReminderSheet> {
                     trailing: ActionChip(
                       label: Text(_time.format(context)),
                       onPressed: _pickTime,
-                      backgroundColor: kBgColor,
+                      backgroundColor: context.bgColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       side: BorderSide.none,
                     ),
                   ),
-                  const Divider(
+                  Divider(
                     height: 1,
                     indent: 16,
                     endIndent: 16,
-                    color: kDividerColor,
+                    color: context.dividerColor,
                   ),
                   ListTile(
                     title: const Text('Repeat'),

@@ -108,7 +108,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
       space: 8,
       child: Text(
         text,
-        style: const TextStyle(fontSize: 10, color: kTextSecondary),
+        style: TextStyle(fontSize: 10, color: context.textSecondary),
       ),
     );
   }
@@ -188,10 +188,10 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             // Header
             Text(
               'TOTAL · ${_resets.length} resets · $startDateStr – Now',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: kTextSecondary,
+                color: context.textSecondary,
                 letterSpacing: 0.5,
               ),
             ),
@@ -200,7 +200,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             // Tab selector
             Container(
               decoration: BoxDecoration(
-                color: kCardColor,
+                color: context.cardColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -217,7 +217,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? kTextSecondary.withValues(alpha: 0.2)
+                              ? context.textSecondary.withValues(alpha: 0.2)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -228,7 +228,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                             fontWeight: isSelected
                                 ? FontWeight.bold
                                 : FontWeight.normal,
-                            color: isSelected ? kTextPrimary : kTextSecondary,
+                            color: isSelected ? context.textPrimary : context.textSecondary,
                           ),
                         ),
                       ),
@@ -244,15 +244,15 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             Container(
               height: 300,
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: kCardColor,
+              decoration: BoxDecoration(
+                color: context.cardColor,
                 borderRadius: kCardRadius,
               ),
               child: _resets.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
                         'No resets yet',
-                        style: TextStyle(color: kTextSecondary, fontSize: 16),
+                        style: TextStyle(color: context.textSecondary, fontSize: 16),
                       ),
                     )
                   : BarChart(

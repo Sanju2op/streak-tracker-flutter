@@ -27,19 +27,19 @@ class StatsSummaryCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: kCardColor,
+      decoration: BoxDecoration(
+        color: context.cardColor,
         borderRadius: kCardRadius,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Stats',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: kTextPrimary,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -123,17 +123,17 @@ class _StatCell extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: kTextPrimary,
+              color: context.textPrimary,
             ),
           ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(fontSize: 13, color: kTextSecondary),
+          style: TextStyle(fontSize: 13, color: context.textSecondary),
         ),
       ],
     );

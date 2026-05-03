@@ -34,7 +34,7 @@ class TimeTabSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: kBgColor, // light grey wrapper
+        color: context.bgColor, // Use context extension for theme-aware background
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.all(3),
@@ -74,7 +74,7 @@ class _TabItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: isSelected
             ? BoxDecoration(
-                color: kCardColor,
+                color: context.cardColor,
                 borderRadius: BorderRadius.circular(6),
                 boxShadow: [
                   BoxShadow(
@@ -91,7 +91,7 @@ class _TabItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? kTextPrimary : kTextSecondary,
+            color: isSelected ? context.textPrimary : context.textSecondary,
           ),
           maxLines: 1,
           overflow: TextOverflow.fade,

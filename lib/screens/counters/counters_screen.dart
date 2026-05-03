@@ -137,21 +137,84 @@ class CountersScreen extends ConsumerWidget {
 
   void _showSortDialog(BuildContext context, WidgetRef ref) {
     final current = ref.read(counterSortProvider);
-    showDialog<CounterSortOption>(
+    showGeneralDialog<CounterSortOption>(
       context: context,
-      builder: (ctx) => SimpleDialog(
-        title: const Text('Sort Counters'),
-        children: [
-          _sortOption(ctx, 'Date added', CounterSortOption.dateAdded, current),
-          _sortOption(ctx, 'Name A→Z', CounterSortOption.nameAZ, current),
-          _sortOption(
-            ctx,
-            'Streak length',
-            CounterSortOption.streakLength,
-            current,
+      barrierDismissible: true,
+      barrierLabel: 'Dismiss',
+      barrierColor: Colors.black.withValues(alpha: 0.4),
+      transitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (ctx, anim1, anim2) {
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              width: MediaQuery.of(ctx).size.width * 0.8,
+              decoration: BoxDecoration(
+                color: context.cardColor.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  width: 0.5,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Sort Counters',
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.bold,
+                      color: context.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _sortOption(
+                    ctx,
+                    'Date added',
+                    CounterSortOption.dateAdded,
+                    current,
+                  ),
+                  _sortOption(
+                    ctx,
+                    'Name A→Z',
+                    CounterSortOption.nameAZ,
+                    current,
+                  ),
+                  _sortOption(
+                    ctx,
+                    'Streak length',
+                    CounterSortOption.streakLength,
+                    current,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
+        );
+      },
+      transitionBuilder: (ctx, anim1, anim2, child) {
+        final curve = CurvedAnimation(parent: anim1, curve: Curves.easeOutBack);
+        return BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 12 * anim1.value,
+            sigmaY: 12 * anim1.value,
+          ),
+          child: FadeTransition(
+            opacity: anim1,
+            child: ScaleTransition(scale: curve, child: child),
+          ),
+        );
+      },
     ).then((selected) {
       if (selected != null) {
         ref.read(counterSortProvider.notifier).setSort(selected);
@@ -165,17 +228,47 @@ class CountersScreen extends ConsumerWidget {
     CounterSortOption option,
     CounterSortOption current,
   ) {
-    return SimpleDialogOption(
-      onPressed: () => Navigator.pop(ctx, option),
-      child: Row(
-        children: [
-          if (option == current)
-            const Icon(Icons.check, color: kAccentBlue, size: 20)
-          else
-            const SizedBox(width: 20),
-          const SizedBox(width: 12),
-          Text(label),
-        ],
+    final isSelected = option == current;
+    return InkWell(
+      onTap: () => Navigator.pop(ctx, option),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color:
+                    isSelected
+                        ? kAccentBlue.withValues(alpha: 0.15)
+                        : Colors.transparent,
+                border: Border.all(
+                  color:
+                      isSelected
+                          ? kAccentBlue
+                          : ctx.textSecondary.withValues(alpha: 0.2),
+                  width: 2,
+                ),
+              ),
+              child:
+                  isSelected
+                      ? const Icon(Icons.check, color: kAccentBlue, size: 14)
+                      : null,
+            ),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? ctx.textPrimary : ctx.textSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

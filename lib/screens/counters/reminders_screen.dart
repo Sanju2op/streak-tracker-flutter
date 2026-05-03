@@ -130,13 +130,15 @@ class RemindersScreen extends ConsumerWidget {
                   child: ListTile(
                     title: Text(
                       reminder.time.format(context),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
+                        color: context.textPrimary,
                       ),
                     ),
                     subtitle: Text(
                       'Repeat: ${reminder.repeatMode[0].toUpperCase()}${reminder.repeatMode.substring(1)}',
+                      style: TextStyle(color: context.textSecondary),
                     ),
                     trailing: Switch(
                       value: reminder.isEnabled,

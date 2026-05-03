@@ -465,8 +465,9 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                 OutlinedButton.icon(
                   onPressed: () {
                     HapticFeedback.lightImpact();
-                    showAppBottomSheet(
+                      showAppBottomSheet(
                       context: context,
+                      fullHeight: true,
                       child: ShareSheet(
                         counter: widget.counter,
                         period: widget.selectedPeriod,

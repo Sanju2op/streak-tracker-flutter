@@ -7,10 +7,11 @@ Future<void> updateHomeWidgets(List<Counter> counters) async {
   if (kIsWeb) return;
 
   try {
-    final data = counters.take(3).map((c) => c.toMap()).toList();
+    final data = counters.take(4).map((c) => c.toMap()).toList();
     await HomeWidget.saveWidgetData<String>('counters_json', jsonEncode(data));
     await HomeWidget.updateWidget(name: 'CounterWidgetProvider');
     await HomeWidget.updateWidget(name: 'CounterWidgetProviderMedium');
+    await HomeWidget.updateWidget(name: 'CounterWidgetProviderRounded');
     await HomeWidget.updateWidget(name: 'CounterWidgetProviderLock');
   } catch (e) {
     debugPrint('Error updating home widgets: $e');

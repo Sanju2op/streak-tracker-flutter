@@ -147,6 +147,7 @@ class _ResetDrawerSheet extends StatelessWidget {
                               onTap: () {
                                 showAppBottomSheet(
                                   context: context,
+                                  fullHeight: true,
                                   child: ShareSheet(
                                     counter: counter,
                                     period: 'days',
