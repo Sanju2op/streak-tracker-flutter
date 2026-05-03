@@ -434,6 +434,18 @@
     - Subtle `Divider` between rows
   - Empty state: "No resets yet" centered
 
+- ⬜ `3.12` **`lib/sheets/reset_drawer_sheet.dart`** — see `UI Images/clicked on single reset from all resets screen drawer view.jpeg`
+  - `showModalBottomSheet` half-height
+  - Header: "Cancel" left | "Edit" right
+  - Card 1: Counter title, Date range (e.g., "7 Dec 2025 - 7 Dec 2025"), "Share" button
+  - Below Card 1: 4 columns for elapsed streak time for that reset (Days, Hours, Minutes, Seconds)
+  - Card 2: "Reset on" and the date + time of the reset
+
+- ⬜ `3.13` **`lib/sheets/edit_reset_sheet.dart`** — see `UI Images/clicked on single reset from all resets then clicked edit from drawer screen drawer view.jpeg`
+  - Opens when "Edit" is clicked from Reset Drawer
+  - Header: "Cancel" left | "Done" right
+  - Card 1: "Reset on" row with date and time chips, "Note" text field
+  - Card 2: "Delete Reset" (red text) button
 ---
 
 ## Phase 4 — Goals Feature
@@ -989,7 +1001,47 @@
 
 > Add issues here as discovered during development.
 
-*None currently open.*
+- ✅ `BUG-1` **Current Streak Subtitle incorrect after reset**
+  Platform: Both
+  Steps to reproduce: View a counter with resets in the Counter Detail Screen.
+  Expected: The grey text under "Current Streak" should say "Reset on [Date]" (from the latest reset). The grey text directly under the main title should say "Started on [Original Start Date]".
+  Actual: Both places say "Started on [Original Start Date]".
+  Fix approach: Update `CounterDetailScreen` to conditionally render the correct text based on resets.
+
+- ✅ `BUG-2` **AppBar title visibility**
+  Platform: Both
+  Steps to reproduce: Open a counter.
+  Expected: The AppBar title (square dot + Counter Title) should only be visible when scrolled down.
+  Actual: It is always visible.
+  Fix approach: Add a scroll listener or use `SliverAppBar` to toggle title opacity based on scroll position.
+
+- ✅ `BUG-3` **TimeTabSelector design**
+  Platform: Both
+  Steps to reproduce: View the TimeTabSelector in a counter.
+  Expected: Should look like merged buttons with a grey background wrapper (like an iOS segmented control) and should not overflow horizontally.
+  Actual: Missing background wrapper, and horizontally overflowing.
+  Fix approach: Wrap tabs in a container with `kBgColor` and adjust padding/flex to prevent overflow.
+
+- ✅ `BUG-4` **LiveTimeDisplay text wrapping**
+  Platform: Both
+  Steps to reproduce: Wait a long time (e.g., 8046 days) so the number becomes large.
+  Expected: Text should shrink to fit, no wrapping.
+  Actual: Text wraps below, breaking the UI layout.
+  Fix approach: Wrap the large number `Text` in a `FittedBox(fit: BoxFit.scaleDown)`.
+
+- ✅ `BUG-5` **Empty 4th column in LiveTimeDisplay**
+  Platform: Both
+  Steps to reproduce: Select "Hours" tab.
+  Expected: Only Hours, Minutes, Seconds are displayed. The 4th column is hidden.
+  Actual: Displays a 0 with an empty label for the 4th column.
+  Fix approach: Conditionally render the 4th column in `LiveTimeDisplay` only if it's needed for that time format.
+
+- ✅ `BUG-6` **Period selection persistence**
+  Platform: Both
+  Steps to reproduce: Open a counter, change the time tab (e.g., to "Days"), go back, open it again.
+  Expected: The tab selection should persist per-counter, and the main CounterCard on the list screen should display the elapsed time in the newly selected unit.
+  Actual: The detail screen always defaults to "Years", and the list screen doesn't reflect the change.
+  Fix approach: Remove local ephemeral state for the selected period in `CounterDetailScreen`. Use `counter.period` directly, and trigger `updateCounter` when a tab is tapped.
 
 Template for new issues:
 ```

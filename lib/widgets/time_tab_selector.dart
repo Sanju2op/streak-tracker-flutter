@@ -32,18 +32,24 @@ class TimeTabSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        for (final (value, label) in _tabs) ...[
-          _TabItem(
-            label: label,
-            isSelected: selected == value,
-            onTap: () => onChanged(value),
-          ),
-          if (value != 'years') const SizedBox(width: 4),
+    return Container(
+      decoration: BoxDecoration(
+        color: kBgColor, // light grey wrapper
+        borderRadius: BorderRadius.circular(8),
+      ),
+      padding: const EdgeInsets.all(3),
+      child: Row(
+        children: [
+          for (final (value, label) in _tabs)
+            Expanded(
+              child: _TabItem(
+                label: label,
+                isSelected: selected == value,
+                onTap: () => onChanged(value),
+              ),
+            ),
         ],
-      ],
+      ),
     );
   }
 }
@@ -63,21 +69,33 @@ class _TabItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: isSelected
             ? BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: kTextPrimary, width: 1.2),
+                color: kCardColor,
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 2,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
               )
             : null,
+        alignment: Alignment.center,
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             color: isSelected ? kTextPrimary : kTextSecondary,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.fade,
+          softWrap: false,
         ),
       ),
     );

@@ -34,7 +34,6 @@ class CounterDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
-  String _selectedPeriod = 'years';
   List<Reset> _resets = [];
   Stats _stats = const Stats(
     resetCount: 0,
@@ -43,10 +42,25 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
     daysSinceStart: 0,
   );
 
+  final ScrollController _scrollController = ScrollController();
+  bool _showTitle = false;
+
   @override
   void initState() {
     super.initState();
     _loadResets();
+    _scrollController.addListener(() {
+      final shouldShow = _scrollController.offset > 40;
+      if (shouldShow != _showTitle) {
+        setState(() => _showTitle = shouldShow);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadResets() async {
@@ -97,12 +111,17 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
         // Recompute stats when counter data changes
         _stats = computeStats(counter, _resets);
 
+        final int? lastResetDate = _resets.isNotEmpty
+            ? _resets.map((r) => r.resetAt).reduce((a, b) => a > b ? a : b)
+            : null;
+
         final accentColor = hexToColor(counter.color);
 
         return Scaffold(
           backgroundColor: kBgColor,
           appBar: _buildAppBar(context, counter, accentColor),
           body: SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -116,8 +135,13 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
                 // 2. Current Streak card
                 _CurrentStreakCard(
                   counter: counter,
-                  selectedPeriod: _selectedPeriod,
-                  onPeriodChanged: (p) => setState(() => _selectedPeriod = p),
+                  lastResetDate: lastResetDate,
+                  selectedPeriod: counter.period,
+                  onPeriodChanged: (p) {
+                    ref
+                        .read(countersNotifierProvider.notifier)
+                        .updateCounter(counter.copyWith(period: p));
+                  },
                 ),
 
                 const SizedBox(height: 16),
@@ -200,31 +224,35 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
           ],
         ),
       ),
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              color: accentColor,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              counter.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: kTextPrimary,
+      title: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: _showTitle ? 1.0 : 0.0,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: accentColor,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(2),
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                counter.title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: kTextPrimary,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
       centerTitle: true,
       actions: [
@@ -316,11 +344,13 @@ class _TitleBlock extends StatelessWidget {
 
 class _CurrentStreakCard extends StatefulWidget {
   final Counter counter;
+  final int? lastResetDate;
   final String selectedPeriod;
   final ValueChanged<String> onPeriodChanged;
 
   const _CurrentStreakCard({
     required this.counter,
+    this.lastResetDate,
     required this.selectedPeriod,
     required this.onPeriodChanged,
   });
@@ -397,7 +427,9 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Started on ${formatDate(widget.counter.startedAt)}',
+                        widget.lastResetDate != null
+                            ? 'Reset on ${formatDate(widget.lastResetDate!)}'
+                            : 'Started on ${formatDate(widget.counter.startedAt)}',
                         style: const TextStyle(
                           fontSize: 13,
                           color: kTextSecondary,
@@ -445,28 +477,32 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
             Row(
               children: [
                 for (final col in columns)
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Text(
-                          '${col.$1}',
-                          style: const TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: kTextPrimary,
+                  if (col.$2.isNotEmpty)
+                    Expanded(
+                      child: Column(
+                        children: [
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              '${col.$1}',
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: kTextPrimary,
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          col.$2,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: kTextSecondary,
+                          const SizedBox(height: 4),
+                          Text(
+                            col.$2,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: kTextSecondary,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
               ],
             ),
           ],
