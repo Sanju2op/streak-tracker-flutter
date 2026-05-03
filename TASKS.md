@@ -302,14 +302,14 @@
   - Center column: an icon (e.g. `Icons.timer_outlined`, large, accent colored), "No counters yet" bold, "Tap + to add your first counter" grey, "Add Counter" outlined button
   - Tapping button fires the create sheet callback
 
-- ⬜ `3.2` **`lib/widgets/live_time_display.dart`**
+- ✅ `3.2` **`lib/widgets/live_time_display.dart`**
   - `StatefulWidget` — `Timer.periodic(Duration(seconds: 1), ...)` in `initState`
   - Calls `getElapsed(widget.startedAt, DateTime.now().millisecondsSinceEpoch)`
   - Exposes `elapsed` via builder or displays directly
   - **Always cancel timer in `dispose()`**
   - On card: shows primary unit value only (e.g. "27" with "years" below) based on `counter.period`
 
-- ⬜ `3.3` **`lib/widgets/counter_card.dart`** — see `UI Images/Counters_Tab.PNG`
+- ✅ `3.3` **`lib/widgets/counter_card.dart`** — see `UI Images/Counters_Tab.PNG`
   - `Container` with `color: hexToColor(counter.color)`, `borderRadius: kCardRadius`
   - `Stack`: background circle (white, opacity ~0.15, large, positioned bottom-right, overflows)
   - Foreground: large number (white, bold, ~48sp) top-left, unit label (white, ~14sp) below number
@@ -319,7 +319,7 @@
   - Full card area is tappable → `context.push('/counters/${counter.id}')`
   - `AspectRatio(aspectRatio: 1.0)` for the card — square cards in the grid
 
-- ⬜ `3.4` **`lib/screens/counters/counters_screen.dart`**
+- ✅ `3.4` **`lib/screens/counters/counters_screen.dart`**
   - `AppBar`: sort icon (`Icons.sort`) left, "Counters" centered, `+` icon (`Icons.add`) right
   - Body: `GridView.builder` — `crossAxisCount: 2`, `crossAxisSpacing: 12`, `mainAxisSpacing: 4`, padding 16 all sides
   - Each grid item: `CounterCard` widget
@@ -705,8 +705,8 @@ Template for new issues:
 ```
 Last updated: 2026-05-03
 Current focus: Phase 3 — counters feature
-Last completed task: 3.1 (lib/widgets/empty_state.dart)
-Next task: 3.2 (lib/widgets/live_time_display.dart)
+Last completed task: 3.4 (lib/screens/counters/counters_screen.dart)
+Next task: 3.5 (lib/sheets/color_picker_sheet.dart)
 
 Git remote: https://github.com/Sanju2op/streak-tracker-flutter.git
 Branch: main
@@ -729,4 +729,5 @@ Key decisions made this session:
   - `scratch/**` is excluded from analyzer input so local scratch files do not affect project analysis.
   - Phase 2 completed with GoRouter shell navigation, tab scaffold, stub screens, ProviderScope app entrypoint, and passing web/Android builds.
   - Phase 3 references opened before widget work: `Counters_Tab.PNG`, `counter_view_clicked_on_counter_detials_of_single_counter_1.PNG`, and `counter_view_clicked_on_counter_detials_of_single_counter_2_scrolled.PNG`.
+  - Tasks 3.2–3.4: LiveTimeDisplay (Timer.periodic ticker), CounterCard (accent card + circle decoration), CountersScreen (GridView + sort + empty state). Widget test updated with FakeDbAdapter.
 ```
