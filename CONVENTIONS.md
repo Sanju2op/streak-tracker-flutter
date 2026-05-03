@@ -273,6 +273,10 @@ Tell your AI agent at session start:
 - `HapticFeedback.mediumImpact()` is safe to call on web (no-op), no guard needed
 - `flutter_local_notifications` must be gated — check `!kIsWeb` before scheduling
 
+### Build Validation
+- After completing a phase or fixing one or multiple bugs, always run a build (e.g., `flutter build apk --debug -t lib/main.dart`) to check for build warnings and errors.
+- Ensure all build-time issues are fixed before proceeding to the next task or committing.
+
 ### Code Style
 - `dart format .` before committing
 - `flutter analyze` after every change — fix all warnings, not just errors

@@ -8,6 +8,7 @@ import '../models/counter.dart';
 import '../providers/counter_provider.dart';
 import '../utils/uuid_utils.dart';
 import '../widgets/live_time_display.dart';
+import '../utils/sheet_utils.dart';
 import 'color_picker_sheet.dart';
 
 /// Opens the create / edit counter sheet as a full-height modal bottom sheet.
@@ -18,12 +19,10 @@ import 'color_picker_sheet.dart';
 /// See `UI Images/Create-edit_Counters_view_slide_up.PNG` and
 /// `create_edit_counters_view_2_filled.PNG`.
 void openCreateEditSheet(BuildContext context, {Counter? counter}) {
-  showModalBottomSheet(
+  showAppBottomSheet(
     context: context,
-    isScrollControlled: true,
-    useRootNavigator: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => _CreateEditSheet(counter: counter),
+    fullHeight: true,
+    child: _CreateEditSheet(counter: counter),
   );
 }
 
@@ -169,8 +168,8 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.92,
-      decoration: const BoxDecoration(
-        color: kBgColor,
+      decoration: BoxDecoration(
+        color: context.bgColor,
         borderRadius: kSheetRadius,
       ),
       child: Padding(
@@ -183,7 +182,7 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: kTextSecondary.withValues(alpha: 0.3),
+                color: context.textSecondary.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -207,7 +206,7 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                     child: Text(
                       'Done',
                       style: TextStyle(
-                        color: _canSave ? kTextPrimary : kTextSecondary,
+                        color: _canSave ? context.textPrimary : context.textSecondary,
                         fontSize: 16,
                         fontWeight: _canSave
                             ? FontWeight.w600
@@ -238,8 +237,8 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
 
                     // --- Form card ---
                     Container(
-                      decoration: const BoxDecoration(
-                        color: kCardColor,
+                      decoration: BoxDecoration(
+                        color: context.cardColor,
                         borderRadius: kCardRadius,
                       ),
                       child: Column(
@@ -254,19 +253,23 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                               controller: _titleController,
                               maxLength: 50,
                               onChanged: (_) => setState(() {}),
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 hintText: 'e.g. No junk food',
-                                hintStyle: TextStyle(color: kTextSecondary),
+                                hintStyle: TextStyle(color: context.textSecondary),
                                 border: InputBorder.none,
-                                counterText: '', // hide max-length counter
+                                counterText: '',
                               ),
-                              style: const TextStyle(fontSize: 16),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: context.textPrimary,
+                              ),
                             ),
                           ),
 
-                          const Divider(
+                          Divider(
                             height: 1,
-                            color: kDividerColor,
+                            color: context.dividerColor,
                             indent: 16,
                             endIndent: 16,
                           ),
@@ -279,9 +282,9 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                             ),
                             child: Row(
                               children: [
-                                const Text(
+                                Text(
                                   'Started on',
-                                  style: TextStyle(fontSize: 16),
+                                  style: TextStyle(fontSize: 16, color: context.textPrimary),
                                 ),
                                 const Spacer(),
                                 _ChipButton(
@@ -299,9 +302,9 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                             ),
                           ),
 
-                          const Divider(
+                          Divider(
                             height: 1,
-                            color: kDividerColor,
+                            color: context.dividerColor,
                             indent: 16,
                             endIndent: 16,
                           ),
@@ -314,9 +317,9 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                             ),
                             child: Row(
                               children: [
-                                const Text(
+                                Text(
                                   'Pick a color',
-                                  style: TextStyle(fontSize: 16),
+                                  style: TextStyle(fontSize: 16, color: context.textPrimary),
                                 ),
                                 const Spacer(),
                                 GestureDetector(
@@ -342,8 +345,8 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                       const SizedBox(height: 16),
                       Container(
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          color: kCardColor,
+                        decoration: BoxDecoration(
+                          color: context.cardColor,
                           borderRadius: kCardRadius,
                         ),
                         child: TextButton(
@@ -524,12 +527,12 @@ class _ChipButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: kBgColor,
+          color: context.bgColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: context.textPrimary),
         ),
       ),
     );

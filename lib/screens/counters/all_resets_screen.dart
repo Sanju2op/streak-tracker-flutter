@@ -80,9 +80,9 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
         _counter;
 
     return Scaffold(
-      backgroundColor: kBgColor,
+      backgroundColor: context.bgColor,
       appBar: AppBar(
-        backgroundColor: kBgColor,
+        backgroundColor: context.bgColor,
         elevation: 0,
         leadingWidth: 100,
         leading: GestureDetector(
@@ -94,7 +94,7 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
               Flexible(
                 child: Text(
                   counter?.title ?? '',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: kAccentBlue,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -105,12 +105,12 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
             ],
           ),
         ),
-        title: const Text(
+        title: Text(
           'All Resets',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 17,
-            color: kTextPrimary,
+            color: context.textPrimary,
           ),
         ),
         centerTitle: true,
@@ -201,8 +201,8 @@ class _ResetGroupCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
-          color: kCardColor,
+        decoration: BoxDecoration(
+          color: context.cardColor,
           borderRadius: kCardRadius,
         ),
         child: Column(
@@ -216,16 +216,16 @@ class _ResetGroupCard extends StatelessWidget {
                 children: [
                   Text(
                     monthLabel,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: kTextSecondary,
+                      color: context.textSecondary,
                       letterSpacing: 0.5,
                     ),
                   ),
                   Text(
                     '$resetCount',
-                    style: const TextStyle(fontSize: 13, color: kTextSecondary),
+                    style: TextStyle(fontSize: 13, color: context.textSecondary),
                   ),
                 ],
               ),
@@ -234,9 +234,9 @@ class _ResetGroupCard extends StatelessWidget {
             // Reset entries
             for (var i = 0; i < resets.length; i++) ...[
               if (i > 0)
-                const Divider(
+                Divider(
                   height: 1,
-                  color: kDividerColor,
+                  color: context.dividerColor,
                   indent: 16,
                   endIndent: 16,
                 ),
@@ -302,10 +302,10 @@ class _ResetEntry extends StatelessWidget {
                   // Reset date + time
                   Text(
                     dateTimeText,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
-                      color: kTextPrimary,
+                      color: context.textPrimary,
                     ),
                   ),
                   // Note if present
@@ -315,16 +315,16 @@ class _ResetEntry extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
                         reset.note!, // safe — guarded by null check above
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: kTextSecondary,
+                          color: context.textSecondary,
                         ),
                       ),
                     ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: kTextSecondary, size: 22),
+            Icon(Icons.chevron_right, color: context.textSecondary, size: 22),
           ],
         ),
       ),
@@ -377,8 +377,8 @@ class _StartedOnCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
-          color: kCardColor,
+        decoration: BoxDecoration(
+          color: context.cardColor,
           borderRadius: kCardRadius,
         ),
         child: Column(
@@ -389,10 +389,10 @@ class _StartedOnCard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: Text(
                 monthLabel,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: kTextSecondary,
+                  color: context.textSecondary,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -418,20 +418,20 @@ class _StartedOnCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           dateTimeText,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
-                            color: kTextPrimary,
+                            color: context.textPrimary,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Icon(
-                    Icons.chevron_right,
-                    color: kTextSecondary,
-                    size: 22,
-                  ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: context.textSecondary,
+                      size: 22,
+                    ),
                 ],
               ),
             ),

@@ -4,7 +4,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-import '../constants/app_theme.dart';
 import '../constants/colors.dart';
 import '../models/counter.dart';
 import '../models/elapsed_time.dart';
@@ -12,6 +11,37 @@ import '../utils/time_utils.dart';
 import '../utils/format_utils.dart';
 
 enum ShareImageFormat { portrait, square, story }
+
+class ChevronPainter extends CustomPainter {
+  final Color color;
+  ChevronPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+
+    const int count = 6;
+    const double spacing = 25.0;
+    const double width = 250.0;
+    const double height = 100.0;
+
+    for (int i = 0; i < count; i++) {
+      final path = Path();
+      final double yOffset = i * spacing;
+      path.moveTo(0, yOffset + height);
+      path.lineTo(width / 2, yOffset);
+      path.lineTo(width, yOffset + height);
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 class ShareImageGenerator extends StatelessWidget {
   final Counter counter;
@@ -32,18 +62,21 @@ class ShareImageGenerator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accentColor = hexToColor(counter.color);
+    const backgroundColor = Color(0xFF1C1C1E);
 
-    // Common styling
-    const textStyleTitle = TextStyle(
-      fontSize: 32,
-      fontWeight: FontWeight.bold,
-      color: Colors.white,
-    );
-
-    const textStyleSubtitle = TextStyle(
-      fontSize: 18,
-      color: Colors.white70,
-    );
+    Widget buildChevronPattern() {
+      return Positioned(
+        left: -50,
+        top: 40,
+        child: Transform.rotate(
+          angle: -0.1,
+          child: CustomPaint(
+            size: const Size(300, 300),
+            painter: ChevronPainter(color: accentColor.withValues(alpha: 0.8)),
+          ),
+        ),
+      );
+    }
 
     Widget buildMainContent() {
       final valueAndLabel = _primaryValueAndLabel(elapsed, period);
@@ -51,116 +84,144 @@ class ShareImageGenerator extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const SizedBox(height: 100),
           Text(
             counter.title,
-            style: textStyleTitle,
+            style: const TextStyle(
+              fontSize: 56,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -1,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
+          Text(
+            'Started on ${formatDate(counter.startedAt)}',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white.withValues(alpha: 0.5),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 80),
           if (resetMessage != null) ...[
             Text(
               resetMessage!,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 32,
                 color: Colors.white,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 60),
           ],
-          const SizedBox(height: 16),
-          Text(
-            '${valueAndLabel.$1}',
-            style: const TextStyle(
-              fontSize: 80,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.0,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              '${valueAndLabel.$1}',
+              style: const TextStyle(
+                fontSize: 280,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                height: 1.0,
+                letterSpacing: -10,
+              ),
             ),
           ),
+          const SizedBox(height: 16),
           Text(
             valueAndLabel.$2.toUpperCase(),
             style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: Colors.white70,
-              letterSpacing: 2,
+              fontSize: 42,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: 12,
             ),
-          ),
-          const SizedBox(height: 32),
-          Text(
-            resetMessage != null 
-                ? 'Streak Tracker App'
-                : 'Started ${formatDate(counter.startedAt)}',
-            style: textStyleSubtitle,
           ),
         ],
       );
     }
 
+    Widget buildBranding() {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              Icons.timer_outlined,
+              color: backgroundColor,
+              size: 32,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Tracked with',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withValues(alpha: 0.5),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Text(
+                'Days Since',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+
+    double width;
+    double height;
+
     switch (format) {
       case ShareImageFormat.square:
-        return Container(
-          width: 1080,
-          height: 1080,
-          padding: const EdgeInsets.all(60),
-          decoration: BoxDecoration(
-            color: kBgColor,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: accentColor,
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Center(child: buildMainContent()),
-          ),
-        );
+        width = 1080;
+        height = 1080;
       case ShareImageFormat.portrait:
-        return Container(
-          width: 1080,
-          height: 1350, // 4:5 aspect ratio often used for posts
-          padding: const EdgeInsets.all(60),
-          decoration: BoxDecoration(
-            color: kBgColor,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: accentColor,
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Center(child: buildMainContent()),
-          ),
-        );
+        width = 1080;
+        height = 1350;
       case ShareImageFormat.story:
-        return Container(
-          width: 1080,
-          height: 1920, // 9:16 aspect ratio
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                accentColor.withValues(alpha: 0.8),
-                accentColor.withValues(alpha: 0.4),
-                kBgColor,
-              ],
-            ),
-          ),
-          child: Center(
-            child: Container(
-              margin: const EdgeInsets.all(40),
-              padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 40),
-              decoration: BoxDecoration(
-                color: kCardColor.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(40),
-                border: Border.all(color: accentColor, width: 4),
-              ),
+        width = 1080;
+        height = 1920;
+    }
+
+    return Container(
+      width: width,
+      height: height,
+      color: backgroundColor,
+      child: Stack(
+        children: [
+          buildChevronPattern(),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 80),
               child: buildMainContent(),
             ),
           ),
-        );
-    }
+          Positioned(
+            bottom: format == ShareImageFormat.story ? 120 : 80,
+            left: 80,
+            child: buildBranding(),
+          ),
+        ],
+      ),
+    );
   }
 
   (int, String) _primaryValueAndLabel(ElapsedTime e, String period) {
@@ -226,6 +287,7 @@ Future<void> shareCounterImage(
 
     await Share.shareXFiles(
       [XFile(imagePath)],
+      subject: 'My ${counter.title} Streak',
       text: 'Check out my streak on ${counter.title}!',
     );
   } catch (e) {

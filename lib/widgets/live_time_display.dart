@@ -35,13 +35,23 @@ class LiveTimeDisplay extends StatefulWidget {
   State<LiveTimeDisplay> createState() => _LiveTimeDisplayState();
 }
 
-class _LiveTimeDisplayState extends State<LiveTimeDisplay> {
+class _LiveTimeDisplayState extends State<LiveTimeDisplay> with SingleTickerProviderStateMixin {
   late Timer _timer;
   late ElapsedTime _elapsed;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeOut),
+    );
+
     _tick();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
   }
@@ -49,7 +59,6 @@ class _LiveTimeDisplayState extends State<LiveTimeDisplay> {
   @override
   void didUpdateWidget(covariant LiveTimeDisplay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // If startedAt changed (e.g. after a reset), recompute immediately.
     if (oldWidget.startedAt != widget.startedAt) {
       _tick();
     }
@@ -63,22 +72,22 @@ class _LiveTimeDisplayState extends State<LiveTimeDisplay> {
         DateTime.now().millisecondsSinceEpoch,
       );
     });
+    _pulseController.forward().then((_) => _pulseController.reverse());
   }
 
   @override
   void dispose() {
-    _timer.cancel(); // REQUIRED — memory leak if missing
+    _timer.cancel();
+    _pulseController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // If a custom builder is provided, delegate entirely to it.
     if (widget.builder != null) {
       return widget.builder!(context, _elapsed);
     }
 
-    // Default card display: large number + unit label (white text).
     final (value, label) = _primaryValueAndLabel(_elapsed, widget.period);
 
     return Column(
@@ -86,16 +95,20 @@ class _LiveTimeDisplayState extends State<LiveTimeDisplay> {
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        FittedBox(
-          fit: BoxFit.scaleDown,
+        ScaleTransition(
+          scale: _pulseAnimation,
           alignment: Alignment.centerLeft,
-          child: Text(
-            '$value',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              height: 1.1,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '$value',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                height: 1.1,
+              ),
             ),
           ),
         ),

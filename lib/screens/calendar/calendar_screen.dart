@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -9,6 +10,7 @@ import '../../providers/calendar_provider.dart';
 import '../../providers/counter_provider.dart';
 import '../../sheets/filter_sheet.dart';
 import '../../utils/calendar_utils.dart';
+import '../../utils/sheet_utils.dart';
 import '../../widgets/calendar_day_cell.dart';
 import '../../widgets/calendar_streak_list_item.dart';
 
@@ -16,12 +18,10 @@ class CalendarScreen extends ConsumerWidget {
   const CalendarScreen({super.key});
 
   void _openFilterSheet(BuildContext context) {
-    showModalBottomSheet(
+    showAppBottomSheet(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const FilterSheet(),
+      fullHeight: true,
+      child: const FilterSheet(),
     );
   }
 
@@ -52,29 +52,40 @@ class CalendarScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      backgroundColor: kBgColor,
-      appBar: AppBar(
-        backgroundColor: kBgColor,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Calendar',
-          style: TextStyle(fontWeight: FontWeight.w600, color: kTextPrimary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => _openFilterSheet(context),
-            child: const Text(
-              'Filter',
-              style: TextStyle(color: kAccentBlue, fontSize: 16),
+      backgroundColor: context.bgColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            floating: true,
+            backgroundColor: context.bgColor.withValues(alpha: 0.8),
+            elevation: 0,
+            centerTitle: true,
+            title: Text(
+              'Calendar',
+              style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => _openFilterSheet(context),
+                child: const Text(
+                  'Filter',
+                  style: TextStyle(color: kAccentBlue, fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            flexibleSpace: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(color: Colors.transparent),
+              ),
             ),
           ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Column(
-        children: [
-          TableCalendar(
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                TableCalendar(
             firstDay: firstDay,
             lastDay: DateTime.now(),
             focusedDay: calendarState.selectedDate,
@@ -87,7 +98,7 @@ class CalendarScreen extends ConsumerWidget {
                   .setSelectedDate(selectedDay);
             },
             calendarFormat: CalendarFormat.month,
-            headerStyle: const HeaderStyle(
+            headerStyle: HeaderStyle(
               formatButtonVisible: false,
               titleCentered: false,
               leftChevronVisible: false,
@@ -95,17 +106,17 @@ class CalendarScreen extends ConsumerWidget {
               titleTextStyle: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: kTextPrimary,
+                color: context.textPrimary,
               ),
             ),
-            daysOfWeekStyle: const DaysOfWeekStyle(
+            daysOfWeekStyle: DaysOfWeekStyle(
               weekdayStyle: TextStyle(
-                color: kTextSecondary,
+                color: context.textSecondary,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),
               weekendStyle: TextStyle(
-                color: kTextSecondary,
+                color: context.textSecondary,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),
@@ -133,9 +144,9 @@ class CalendarScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
-                color: kCardColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              decoration: BoxDecoration(
+                color: context.cardColor,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,15 +159,16 @@ class CalendarScreen extends ConsumerWidget {
                     ),
                     child: Text(
                       '${calendarState.selectedDate.day} ${_monthName(calendarState.selectedDate.month)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: kTextPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                   ),
                   Expanded(
                     child: _buildDayList(
+                      context,
                       counters,
                       dayColors,
                       calendarState.selectedDate,
@@ -167,12 +179,16 @@ class CalendarScreen extends ConsumerWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildDayList(
+    BuildContext context,
     List<Counter> counters,
     Map<DateTime, List<Color>> dayColors,
     DateTime selectedDate,
@@ -186,10 +202,10 @@ class CalendarScreen extends ConsumerWidget {
 
     // If day is in the future, show nothing
     if (selectedDate.isAfter(DateTime.now())) {
-      return const Center(
+      return Center(
         child: Text(
           'No counters on this day',
-          style: TextStyle(color: kTextSecondary),
+          style: TextStyle(color: context.textSecondary),
         ),
       );
     }
@@ -216,7 +232,7 @@ class CalendarScreen extends ConsumerWidget {
     return ListView.separated(
       itemCount: activeCounters.length,
       separatorBuilder: (_, __) =>
-          const Divider(height: 1, indent: 40, color: kDividerColor),
+          Divider(height: 1, indent: 40, color: context.dividerColor),
       itemBuilder: (context, index) {
         return CalendarStreakListItem(counter: activeCounters[index]);
       },

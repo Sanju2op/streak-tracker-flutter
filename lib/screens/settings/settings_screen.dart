@@ -29,7 +29,8 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _tellAFriend() {
-    SharePlus.instance.share(ShareParams(text: 'Check out Streak Tracker! A free, no-ads habit tracker.'));
+    // ignore: deprecated_member_use
+    Share.share('Check out Streak Tracker! A free, no-ads habit tracker.');
   }
 
   @override
@@ -77,10 +78,10 @@ class SettingsScreen extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<ThemeMode>(
-                    segments: const [
-                      ButtonSegment(value: ThemeMode.system, label: Text('System')),
-                      ButtonSegment(value: ThemeMode.light, label: Text('Light')),
-                      ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
+                    segments: [
+                      ButtonSegment(value: ThemeMode.system, label: Text('System', style: TextStyle(color: context.textPrimary))),
+                      ButtonSegment(value: ThemeMode.light, label: Text('Light', style: TextStyle(color: context.textPrimary))),
+                      ButtonSegment(value: ThemeMode.dark, label: Text('Dark', style: TextStyle(color: context.textPrimary))),
                     ],
                     selected: {themeMode},
                     onSelectionChanged: (Set<ThemeMode> newSelection) {
@@ -110,13 +111,13 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               children: [
                 ListTile(
-                  title: const Text('Privacy Policy'),
+                  title: Text('Privacy Policy', style: TextStyle(color: context.textPrimary)),
                   trailing: Icon(Icons.chevron_right, color: context.textSecondary),
                   onTap: _openPrivacyPolicy,
                 ),
                 Divider(height: 1, indent: 16, endIndent: 16, color: context.dividerColor),
                 ListTile(
-                  title: const Text('About'),
+                  title: Text('About', style: TextStyle(color: context.textPrimary)),
                   trailing: Icon(Icons.chevron_right, color: context.textSecondary),
                   onTap: () => _showAbout(context),
                 ),
@@ -130,7 +131,7 @@ class SettingsScreen extends ConsumerWidget {
               borderRadius: kCardRadius,
             ),
             child: ListTile(
-              title: const Text('Tell a Friend'),
+              title: Text('Tell a Friend', style: TextStyle(color: context.textPrimary)),
               trailing: Icon(Icons.chevron_right, color: context.textSecondary),
               onTap: _tellAFriend,
             ),

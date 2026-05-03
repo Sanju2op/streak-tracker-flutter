@@ -20,21 +20,21 @@ class ShareSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: kCardColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Share Streak',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: kTextPrimary,
+                color: context.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -92,7 +92,7 @@ class _ShareOptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: kBgColor,
+      color: context.bgColor,
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -109,23 +109,23 @@ class _ShareOptionTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: kTextPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: kTextSecondary,
+                        color: context.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: kTextSecondary),
+              Icon(Icons.chevron_right, color: context.textSecondary),
             ],
           ),
         ),

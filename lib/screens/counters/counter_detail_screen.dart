@@ -19,6 +19,7 @@ import '../../utils/stats_utils.dart';
 import '../../utils/time_utils.dart';
 import '../../widgets/stats_summary_card.dart';
 import '../../widgets/time_tab_selector.dart';
+import '../../utils/sheet_utils.dart';
 import '../../sheets/share_sheet.dart';
 
 /// Full counter detail screen.
@@ -119,7 +120,7 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
         final accentColor = hexToColor(counter.color);
 
         return Scaffold(
-          backgroundColor: kBgColor,
+          backgroundColor: context.bgColor,
           appBar: _buildAppBar(context, counter, accentColor),
           body: SingleChildScrollView(
             controller: _scrollController,
@@ -204,7 +205,7 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
     Color accentColor,
   ) {
     return AppBar(
-      backgroundColor: kBgColor,
+      backgroundColor: context.bgColor,
       elevation: 0,
       leadingWidth: 120,
       leading: GestureDetector(
@@ -246,10 +247,10 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
             Flexible(
               child: Text(
                 counter.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: kTextPrimary,
+                  color: context.textPrimary,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -275,11 +276,9 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
   }
 
   void _openResetSheet(BuildContext context, Counter counter) {
-    showModalBottomSheet(
+    showAppBottomSheet(
       context: context,
-      isScrollControlled: false,
-      shape: const RoundedRectangleBorder(borderRadius: kSheetRadius),
-      builder: (_) => ResetSheet(counter: counter),
+      child: ResetSheet(counter: counter),
     ).then((_) {
       // Reload resets after the sheet closes
       _loadResets();
@@ -321,16 +320,16 @@ class _TitleBlock extends StatelessWidget {
               children: [
                 Text(
                   counter.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: kTextPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Started on ${formatDate(counter.startedAt)}',
-                  style: const TextStyle(fontSize: 14, color: kTextSecondary),
+                  style: TextStyle(fontSize: 14, color: context.textSecondary),
                 ),
               ],
             ),
@@ -410,8 +409,8 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: kCardColor,
+        decoration: BoxDecoration(
+          color: context.cardColor,
           borderRadius: kCardRadius,
         ),
         child: Column(
@@ -424,12 +423,12 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Current Streak',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: kTextPrimary,
+                          color: context.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -437,9 +436,9 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                         widget.lastResetDate != null
                             ? 'Reset on ${formatDate(widget.lastResetDate!)}'
                             : 'Started on ${formatDate(widget.counter.startedAt)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: kTextSecondary,
+                          color: context.textSecondary,
                         ),
                       ),
                     ],
@@ -447,11 +446,9 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                 ),
                 OutlinedButton.icon(
                   onPressed: () {
-                    showModalBottomSheet(
+                    showAppBottomSheet(
                       context: context,
-                      isScrollControlled: false,
-                      shape: const RoundedRectangleBorder(borderRadius: kSheetRadius),
-                      builder: (_) => ShareSheet(
+                      child: ShareSheet(
                         counter: widget.counter,
                         period: widget.selectedPeriod,
                       ),
@@ -500,19 +497,19 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                             fit: BoxFit.scaleDown,
                             child: Text(
                               '${col.$1}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold,
-                                color: kTextPrimary,
+                                color: context.textPrimary,
                               ),
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             col.$2,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: kTextSecondary,
+                              color: context.textSecondary,
                             ),
                           ),
                         ],
@@ -601,8 +598,8 @@ class _MenuListCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        decoration: const BoxDecoration(
-          color: kCardColor,
+        decoration: BoxDecoration(
+          color: context.cardColor,
           borderRadius: kCardRadius,
         ),
         child: Column(
@@ -613,21 +610,21 @@ class _MenuListCard extends StatelessWidget {
               accentColor: accentColor,
               onTap: () => context.push('/counters/$counterId/resets'),
             ),
-            const Divider(height: 1, color: kDividerColor, indent: 56),
+            Divider(height: 1, color: context.dividerColor, indent: 56),
             _MenuRow(
               icon: Icons.adjust,
               label: 'Goals',
               accentColor: accentColor,
               onTap: () => context.push('/counters/$counterId/goals'),
             ),
-            const Divider(height: 1, color: kDividerColor, indent: 56),
+            Divider(height: 1, color: context.dividerColor, indent: 56),
             _MenuRow(
               icon: Icons.bar_chart,
               label: 'Stats',
               accentColor: accentColor,
               onTap: () => context.push('/counters/$counterId/stats'),
             ),
-            const Divider(height: 1, color: kDividerColor, indent: 56),
+            Divider(height: 1, color: context.dividerColor, indent: 56),
             _MenuRow(
               icon: Icons.notifications,
               label: 'Reminders',
@@ -676,14 +673,14 @@ class _MenuRow extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: kTextPrimary,
+                  color: context.textPrimary,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right, color: kTextSecondary, size: 22),
+            Icon(Icons.chevron_right, color: context.textSecondary, size: 22),
           ],
         ),
       ),

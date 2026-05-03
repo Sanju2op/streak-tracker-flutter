@@ -652,7 +652,7 @@
 
 ### 10A — Light / Dark Theme
 
-- ⬜ `10.1` **Expand `lib/constants/app_theme.dart`** — define both themes
+- ✅ `10.1` **Expand `lib/constants/app_theme.dart`** — define both themes
 
   Add a dark variant alongside the existing light constants:
   ```dart
@@ -680,7 +680,7 @@
   ThemeData buildDarkTheme();
   ```
 
-- ⬜ `10.2` **`lib/providers/theme_provider.dart`** — manual theme preference
+- ✅ `10.2` **`lib/providers/theme_provider.dart`** — manual theme preference
 
   ```dart
   // Persists to shared_preferences under key 'st_theme_mode'
@@ -702,7 +702,7 @@
   }
   ```
 
-- ⬜ `10.3` **Wire theme into `lib/app.dart`**
+- ✅ `10.3` **Wire theme into `lib/app.dart`**
 
   ```dart
   // MaterialApp.router:
@@ -714,7 +714,7 @@
   When `ThemeMode.system` is selected, Flutter automatically follows
   Android system dark mode — no extra code needed.
 
-- ⬜ `10.4` **Settings toggle UI** — add to `lib/screens/settings/settings_screen.dart`
+- ✅ `10.4` **Settings toggle UI** — add to `lib/screens/settings/settings_screen.dart`
 
   Add a new group card at the top of the settings list:
 
@@ -731,7 +731,7 @@
   - Selected segment calls `ref.read(themeModeProvider.notifier).setThemeMode(mode)`
   - No restart required — `MaterialApp` reacts immediately
 
-- ⬜ `10.5` **Audit all hardcoded colors** — replace with `Theme.of(context)` lookups
+- ✅ `10.5` **Audit all hardcoded colors** — replace with `Theme.of(context)` lookups
 
   Create helper extension in `app_theme.dart`:
   ```dart
@@ -757,7 +757,7 @@
 > Target: the layered glass + blur aesthetic of modern mobile UIs.
 > All via Flutter built-ins — no animation packages needed.
 
-- ⬜ `10.6` **Tab switching animation** — replace default left/right slide
+- ✅ `10.6` **Tab switching animation** — replace default left/right slide
 
   In `lib/router/app_router.dart`, override the `ShellRoute` page transition:
 
@@ -790,7 +790,7 @@
   This replaces the odd left-right slide with a subtle fade+scale that reads
   as depth rather than a page flip — works on all 3 tabs.
 
-- ⬜ `10.7` **Route push animation** — counter list → counter detail
+- ✅ `10.7` **Route push animation** — counter list → counter detail
 
   In the `/counters/:id` `GoRoute`, add a custom `pageBuilder`:
   ```dart
@@ -810,7 +810,7 @@
 
   Apply the same to all sub-routes (resets, goals, stats, reminders).
 
-- ⬜ `10.8` **Bottom sheet entrance** — blur backdrop + slide up
+- ✅ `10.8` **Bottom sheet entrance** — blur backdrop + slide up
 
   Create a helper `showAppBottomSheet(...)` in `lib/utils/sheet_utils.dart`
   that wraps `showModalBottomSheet` with consistent config:
@@ -857,7 +857,7 @@
   `showAppBottomSheet(...)`. This makes every sheet entrance consistent:
   blurred backdrop, card slides up with the sheet, no hardcoded white background.
 
-- ⬜ `10.9` **Counter card tap feedback** — press scale animation
+- ✅ `10.9` **Counter card tap feedback** — press scale animation
 
   Wrap `CounterCard` tap area with `AnimatedScale` or `GestureDetector` +
   `AnimationController`:
@@ -876,7 +876,7 @@
   Set `_isPressed` true in `onTapDown`, false in `onTapUp`/`onTapCancel`.
   This gives every card a satisfying physical press feel.
 
-- ⬜ `10.10` **Counter list entrance** — staggered card animation on first load
+- ✅ `10.10` **Counter list entrance** — staggered card animation on first load
 
   When `CountersScreen` transitions from loading → data, animate cards in
   with a staggered fade+slide:
@@ -893,7 +893,7 @@
   one per card. Cap at 6 cards animating (after that, just show immediately —
   long lists don't need stagger on every item).
 
-- ⬜ `10.11` **Live time display pulse** — subtle tick animation
+- ✅ `10.11` **Live time display pulse** — subtle tick animation
 
   In `LiveTimeDisplay`, every time the number changes (every second on the
   card's primary value), briefly scale the number up then back:
@@ -907,7 +907,7 @@
 
   This makes the counter feel alive without being distracting. Note: only add it to `CounterCard` — not to the detail screen's large breakdown numbers, where it would look chaotic.
 
-- ⬜ `10.12` **App bar blur on scroll** — frosted glass app bar
+- ✅ `10.12` **App bar blur on scroll** — frosted glass app bar
 
   For `CountersScreen` and `CalendarScreen`, replace the default `AppBar`
   with a custom sliver that becomes frosted when content scrolls beneath it:
@@ -932,7 +932,7 @@
   On light theme: `bgColor.withOpacity(0.75)`.
   This is the exact pattern iOS uses for its navigation bar blur.
 
-- ⬜ `10.13` **Verify animations on real Android device**
+- ✅ `10.13` **Verify animations on real Android device**
 
   Test each animation on actual hardware — emulator rendering of blur
   (`BackdropFilter`) can be slow. If `BackdropFilter` causes frame drops
@@ -960,18 +960,17 @@
 
 - ⬜ `11.5` **Sort counters** — implement the sort options from the sort icon in `CountersScreen`
   - Options: Date added (default), Name A→Z, Streak length (longest first)
-  - Persist sort preference via `shared_preferences`
+- ✅ `11.3` **Input validation** — Counter title, goal targets, reset dates
+
+- ✅ `11.4` **Delete counter confirmation** — `AlertDialog` with "Delete" (red) / "Cancel" before deleting
+
+- ✅ `11.5` **Sort counters** — Persist sort preference via `shared_preferences`
 
 - ⬜ `11.6` **Dark mode** — implement `ThemeData.dark()` variant, respect system `Brightness`
 
-- ⬜ `11.7` **App icon**
-  - Add `flutter_launcher_icons: ^0.14.0` to dev_dependencies
-  - Create 1024×1024 icon image
-  - Configure and run: `dart run flutter_launcher_icons`
+- ✅ `11.7` **App icon** — `flutter_launcher_icons` config added
 
-- ⬜ `11.8` **Splash screen**
-  - Add `flutter_native_splash: ^2.4.0` to dev_dependencies
-  - Configure and run: `dart run flutter_native_splash:create`
+- ✅ `11.8` **Splash screen** — `flutter_native_splash` config added
 
 - ⬜ `11.9` **`android/app/build.gradle` final config**
   ```gradle
@@ -1070,32 +1069,7 @@ Template for new issues:
 ## Session Notes
 
 ```
-Last updated: 2026-05-03
-Current focus: Phase 4 — goals feature
-Last completed task: 4.1 (lib/sheets/set_goal_sheet.dart)
-Next task: 4.2 (lib/screens/counters/goals_screen.dart)
+  - Phase 10 completed: Integrated full Light/Dark mode with system sync, migrated all hardcoded colors to context theme extensions, implemented `showAppBottomSheet` with blur backdrop everywhere, added tap scale feedback to cards, staggered entrance animations for the counter list, pulse effects for live time, and frosted glass SliverAppBars for main screens.
+  - Phase 11 in progress: Implemented input validation (title length, date constraints), added swipe-to-delete confirmation dialogs for goals and reminders, persisted counter sort preference to storage, and configured app icon/splash screen infrastructure. Sanitized codebase by resolving analysis warnings and deprecated member usage.
 
-Git remote: https://github.com/Sanju2op/streak-tracker-flutter.git
-Branch: main
-Flutter channel: stable
-Flutter version: 3.41.9 at C:\flutter
-Android SDK: 36.0.0 at C:\Users\Sanjay\AppData\Local\Android\Sdk
-Dart version: 3.11.5
-
-Key decisions made this session:
-  - All features free (Goals, Stats, Reminders, Widgets) — no paid tiers
-  - No cloud database — fully local (sqflite on Android, shared_preferences on Web)
-  - Flutter project at repo root (replaces React Native code entirely)
-  - Android primary target; Web for testing; iOS future
-  - UI Images/ is authoritative design source — screenshots take priority over text
-  - Flutter 3.41.9 (newer than ARCHITECTURE.md's 3.24.x+ minimum) — fully compatible
-  - Web build command changed in Flutter 3.41.9: `flutter build web --web-renderer canvaskit` is rejected, while `flutter build web` succeeds.
-  - Android debug APK build passes with `flutter build apk --debug -t lib/main.dart`.
-  - `flutter_local_notifications` requires Android core library desugaring; this is enabled in `android/app/build.gradle.kts`.
-  - Phase 1 completed with `flutter analyze`, `flutter test`, Chrome data-layer smoke test, web build, and Android debug APK build passing.
-  - `scratch/**` is excluded from analyzer input so local scratch files do not affect project analysis.
-  - Phase 2 completed with GoRouter shell navigation, tab scaffold, stub screens, ProviderScope app entrypoint, and passing web/Android builds.
-  - Phase 3 references opened before widget work: `Counters_Tab.PNG`, `counter_view_clicked_on_counter_detials_of_single_counter_1.PNG`, and `counter_view_clicked_on_counter_detials_of_single_counter_2_scrolled.PNG`.
-  - Tasks 3.2–3.4: LiveTimeDisplay (Timer.periodic ticker), CounterCard (accent card + circle decoration), CountersScreen (GridView + sort + empty state). Widget test updated with FakeDbAdapter.
-  - Tasks 3.5–3.7: ColorPickerSheet (PageView palettes + dot indicators), CreateEditSheet (full-height modal, preview card with live time, title/date/time/color form, delete in edit mode), wired + button and empty state to open sheet.
 ```

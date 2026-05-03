@@ -68,11 +68,21 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
     if (picked != null) setState(() => _resetTime = picked);
   }
 
+  bool get _isValid {
+    final ms = _resetAtMs;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    return ms <= now && ms > widget.counter.startedAt;
+  }
+
   Future<void> _doReset() async {
+    if (!_isValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Reset date must be between start date and now')),
+      );
+      return;
+    }
     final note = _noteController.text.trim();
-    await ref
-        .read(countersNotifierProvider.notifier)
-        .resetCounter(
+    await ref.read(countersNotifierProvider.notifier).resetCounter(
           widget.counter.id,
           note: note.isEmpty ? null : note,
           resetAt: _resetAtMs,
@@ -124,11 +134,11 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
                   ),
                 ),
                 TextButton(
-                  onPressed: _doReset,
-                  child: const Text(
+                  onPressed: _isValid ? _doReset : null,
+                  child: Text(
                     'Done',
                     style: TextStyle(
-                      color: kAccentBlue,
+                      color: _isValid ? kAccentBlue : context.textSecondary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),

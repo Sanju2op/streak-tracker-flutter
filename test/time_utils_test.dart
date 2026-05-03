@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:streak_tracker/models/elapsed_time.dart';
 import 'package:streak_tracker/utils/time_utils.dart';
 
 void main() {

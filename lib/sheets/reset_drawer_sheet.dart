@@ -7,6 +7,7 @@ import '../constants/app_theme.dart';
 import '../models/counter.dart';
 import '../models/reset.dart';
 import '../utils/time_utils.dart';
+import '../utils/sheet_utils.dart';
 import '../sheets/share_sheet.dart';
 import 'edit_reset_sheet.dart';
 
@@ -15,11 +16,9 @@ void showResetDrawerSheet(
   required Counter counter,
   required Reset reset,
 }) {
-  showModalBottomSheet(
+  showAppBottomSheet(
     context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => _ResetDrawerSheet(counter: counter, reset: reset),
+    child: _ResetDrawerSheet(counter: counter, reset: reset),
   );
 }
 
@@ -45,8 +44,8 @@ class _ResetDrawerSheet extends StatelessWidget {
             .round();
 
     return Container(
-      decoration: const BoxDecoration(
-        color: kBgColor,
+      decoration: BoxDecoration(
+        color: context.bgColor,
         borderRadius: kSheetRadius,
       ),
       child: SafeArea(
@@ -64,7 +63,7 @@ class _ResetDrawerSheet extends StatelessWidget {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: kTextSecondary.withValues(alpha: 0.3),
+                    color: context.textSecondary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -102,8 +101,8 @@ class _ResetDrawerSheet extends StatelessWidget {
 
               // Card 1
               Container(
-                decoration: const BoxDecoration(
-                  color: kCardColor,
+                decoration: BoxDecoration(
+                  color: context.cardColor,
                   borderRadius: kCardRadius,
                 ),
                 padding: const EdgeInsets.all(20),
@@ -119,18 +118,18 @@ class _ResetDrawerSheet extends StatelessWidget {
                             children: [
                               Text(
                                 counter.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color: kTextPrimary,
+                                  color: context.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 dateRange,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: kTextSecondary,
+                                  color: context.textSecondary,
                                 ),
                               ),
                             ],
@@ -145,18 +144,16 @@ class _ResetDrawerSheet extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(20),
-                              onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: false,
-                                  shape: const RoundedRectangleBorder(borderRadius: kSheetRadius),
-                                  builder: (_) => ShareSheet(
-                                    counter: counter,
-                                    period: 'days', // Defaults to days for resets
-                                    resetMessage: 'Reset on ${DateFormat('d MMM yyyy').format(DateTime.fromMillisecondsSinceEpoch(reset.resetAt))}',
-                                  ),
-                                );
-                              },
+                                onTap: () {
+                                  showAppBottomSheet(
+                                    context: context,
+                                    child: ShareSheet(
+                                      counter: counter,
+                                      period: 'days',
+                                      resetMessage: 'Reset on ${DateFormat('d MMM yyyy').format(DateTime.fromMillisecondsSinceEpoch(reset.resetAt))}',
+                                    ),
+                                  );
+                                },
                               child: const Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -201,8 +198,8 @@ class _ResetDrawerSheet extends StatelessWidget {
 
               // Card 2
               Container(
-                decoration: const BoxDecoration(
-                  color: kCardColor,
+                decoration: BoxDecoration(
+                  color: context.cardColor,
                   borderRadius: kCardRadius,
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -211,18 +208,18 @@ class _ResetDrawerSheet extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Text(
+                    Text(
                       'Reset on',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: kTextPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     const Spacer(),
                     Text(
                       DateFormat('d MMM yyyy h:mm a').format(endDt),
-                      style: const TextStyle(fontSize: 16, color: kTextPrimary),
+                      style: TextStyle(fontSize: 16, color: context.textPrimary),
                     ),
                   ],
                 ),
@@ -252,17 +249,17 @@ class _StatCol extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: Text(
               '$value',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: kTextPrimary,
+                color: context.textPrimary,
               ),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: kTextSecondary),
+            style: TextStyle(fontSize: 12, color: context.textSecondary),
           ),
         ],
       ),

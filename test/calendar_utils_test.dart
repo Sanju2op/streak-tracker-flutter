@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:streak_tracker/models/counter.dart';
 import 'package:streak_tracker/models/reset.dart';

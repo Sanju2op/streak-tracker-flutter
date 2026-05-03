@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../constants/app_theme.dart';
 import '../../providers/goal_provider.dart';
 import '../../sheets/set_goal_sheet.dart';
+import '../../utils/sheet_utils.dart';
 
 class GoalsScreen extends ConsumerWidget {
   final String counterId;
@@ -12,11 +13,10 @@ class GoalsScreen extends ConsumerWidget {
   const GoalsScreen({super.key, required this.counterId});
 
   void _openSetGoalSheet(BuildContext context) {
-    showModalBottomSheet(
+    showAppBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => SetGoalSheet(counterId: counterId),
+      fullHeight: true,
+      child: SetGoalSheet(counterId: counterId),
     );
   }
 
@@ -25,20 +25,20 @@ class GoalsScreen extends ConsumerWidget {
     final goalsAsync = ref.watch(goalsNotifierProvider(counterId));
 
     return Scaffold(
-      backgroundColor: kBgColor,
+      backgroundColor: context.bgColor,
       appBar: AppBar(
-        backgroundColor: kBgColor,
+        backgroundColor: context.bgColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: kAccentBlue, size: 28),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
+        title: Text(
           'Goals',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 17,
-            color: kTextPrimary,
+            color: context.textPrimary,
           ),
         ),
         centerTitle: true,
@@ -52,18 +52,18 @@ class GoalsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'No goals set',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: kTextPrimary,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Challenge yourself',
-                    style: TextStyle(fontSize: 14, color: kTextSecondary),
+                    style: TextStyle(fontSize: 14, color: context.textSecondary),
                   ),
                   const SizedBox(height: 24),
                   OutlinedButton(
@@ -90,12 +90,25 @@ class GoalsScreen extends ConsumerWidget {
               return Dismissible(
                 key: Key(goal.id),
                 direction: DismissDirection.endToStart,
-                background: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20),
-                  color: Colors.red,
-                  child: const Icon(Icons.delete, color: Colors.white),
-                ),
+                confirmDismiss: (direction) async {
+                  return await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Delete Goal'),
+                      content: const Text('Are you sure you want to delete this goal?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
                 onDismissed: (_) {
                   ref
                       .read(goalsNotifierProvider(counterId).notifier)
@@ -103,8 +116,8 @@ class GoalsScreen extends ConsumerWidget {
                 },
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 8),
-                  decoration: const BoxDecoration(
-                    color: kCardColor,
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
                     borderRadius: kCardRadius,
                   ),
                   child: ListTile(
@@ -112,7 +125,7 @@ class GoalsScreen extends ConsumerWidget {
                       '${goal.targetValue} ${goal.targetUnit[0].toUpperCase()}${goal.targetUnit.substring(1)}',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: goal.isCompleted ? kTextSecondary : kTextPrimary,
+                        color: goal.isCompleted ? context.textSecondary : context.textPrimary,
                         decoration: goal.isCompleted
                             ? TextDecoration.lineThrough
                             : null,
@@ -122,7 +135,7 @@ class GoalsScreen extends ConsumerWidget {
                         ? Text(
                             goal.note!,
                             style: TextStyle(
-                              color: kTextSecondary,
+                              color: context.textSecondary,
                               decoration: goal.isCompleted
                                   ? TextDecoration.lineThrough
                                   : null,

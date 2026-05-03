@@ -17,12 +17,9 @@ import 'live_time_display.dart';
 ///
 /// `lastResetDate` is the most recent reset timestamp (ms). When non-null
 /// the subtitle reads "Reset on [date]" instead of "Started on [date]".
-class CounterCard extends StatelessWidget {
+class CounterCard extends StatefulWidget {
   final Counter counter;
-
-  /// Unix ms of the most recent reset (null if never reset).
   final int? lastResetDate;
-
   final bool isFullWidth;
 
   const CounterCard({
@@ -33,75 +30,102 @@ class CounterCard extends StatelessWidget {
   });
 
   @override
+  State<CounterCard> createState() => _CounterCardState();
+}
+
+class _CounterCardState extends State<CounterCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.96).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final color = hexToColor(counter.color);
+    final color = hexToColor(widget.counter.color);
 
     return GestureDetector(
-      onTap: () => context.push('/counters/${counter.id}'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // --- Card shape ---
-          AspectRatio(
-            aspectRatio: isFullWidth ? 2.2 : 1.0,
-            child: ClipRRect(
-              borderRadius: kCardRadius,
-              child: Stack(
-                children: [
-                  // Solid accent background
-                  Container(color: color),
-
-                  // Translucent white circle — bottom-right, overflows
-                  Positioned(
-                    right: -30,
-                    bottom: -20,
-                    child: Container(
-                      width: 160,
-                      height: 160,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.15),
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
+      onTap: () => context.push('/counters/${widget.counter.id}'),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: widget.isFullWidth ? 2.2 : 1.0,
+              child: ClipRRect(
+                borderRadius: kCardRadius,
+                child: Stack(
+                  children: [
+                    Container(color: color),
+                    Positioned(
+                      right: -30,
+                      bottom: -20,
+                      child: Container(
+                        width: 160,
+                        height: 160,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.15),
+                        ),
                       ),
                     ),
-                  ),
-
-                  // Number + unit label
-                  Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: LiveTimeDisplay(
-                      startedAt: counter.startedAt,
-                      period: counter.period,
+                    Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: LiveTimeDisplay(
+                        startedAt: widget.counter.startedAt,
+                        period: widget.counter.period,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-
-          // --- Title + subtitle below the card ---
-          const SizedBox(height: 6),
-          Text(
-            counter.title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            _subtitle(),
-            style: const TextStyle(color: kTextSecondary, fontSize: 12),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+            const SizedBox(height: 6),
+            Text(
+              widget.counter.title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: context.textPrimary,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              _subtitle(),
+              style: TextStyle(color: context.textSecondary, fontSize: 12),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  /// "Started on 10 Jan" or "Reset on 22 Feb"
   String _subtitle() {
-    if (lastResetDate != null) {
-      return 'Reset on ${formatShortDate(lastResetDate!)}'; // safe — guarded by null check
+    if (widget.lastResetDate != null) {
+      return 'Reset on ${formatShortDate(widget.lastResetDate!)}';
     }
-    return 'Started on ${formatShortDate(counter.startedAt)}';
+    return 'Started on ${formatShortDate(widget.counter.startedAt)}';
   }
 }

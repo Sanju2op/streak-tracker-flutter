@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:streak_tracker/models/counter.dart';
 import 'package:streak_tracker/models/reset.dart';
-import 'package:streak_tracker/models/stats.dart';
 import 'package:streak_tracker/utils/stats_utils.dart';
 
 void main() {
@@ -29,8 +28,8 @@ void main() {
     });
 
     test('counter with resets computes correct stats', () {
-      final now = DateTime.now().millisecondsSinceEpoch;
-      final day = 86400000;
+      const now = 1714730400000; // 2024-05-03 10:00:00
+      const day = 86400000;
       final start = now - day * 20; // 20 days ago
 
       final counter = Counter(
@@ -74,7 +73,7 @@ void main() {
 
     test('daysSinceStart reflects original start, not last reset', () {
       final now = DateTime.now().millisecondsSinceEpoch;
-      final day = 86400000;
+      const day = 86400000;
       final originalStart = now - day * 100; // 100 days ago
 
       final counter = Counter(
@@ -110,7 +109,7 @@ void main() {
   group('buildBarChartData', () {
     test('daily groups resets by day of week', () {
       final now = DateTime.now().millisecondsSinceEpoch;
-      final day = 86400000;
+      const day = 86400000;
 
       final resets = [
         Reset(

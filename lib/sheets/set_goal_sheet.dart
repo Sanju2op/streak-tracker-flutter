@@ -5,6 +5,7 @@ import '../constants/app_theme.dart';
 import '../models/goal.dart';
 import '../providers/goal_provider.dart';
 import '../utils/uuid_utils.dart';
+import '../utils/sheet_utils.dart';
 
 /// Half-height bottom sheet for creating a goal.
 ///
@@ -65,41 +66,38 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
   }
 
   void _showUnitPicker() {
-    showModalBottomSheet(
+    showAppBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: kCardColor,
-            borderRadius: kSheetRadius,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 16),
-              const Text(
-                'Select Unit',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              ..._units.map((unit) {
-                return ListTile(
-                  title: Text(unit),
-                  trailing: unit == _selectedUnit
-                      ? const Icon(Icons.check, color: kAccentBlue)
-                      : null,
-                  onTap: () {
-                    setState(() => _selectedUnit = unit);
-                    Navigator.pop(context);
-                  },
-                );
-              }),
-              const SizedBox(height: 24),
-            ],
-          ),
-        );
-      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: kSheetRadius,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 16),
+            Text(
+              'Select Unit',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: context.textPrimary),
+            ),
+            const SizedBox(height: 16),
+            ..._units.map((unit) {
+              return ListTile(
+                title: Text(unit, style: TextStyle(color: context.textPrimary)),
+                trailing: unit == _selectedUnit
+                    ? const Icon(Icons.check, color: kAccentBlue)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedUnit = unit);
+                  Navigator.pop(context);
+                },
+              );
+            }),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
     );
   }
 
@@ -111,8 +109,8 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: const BoxDecoration(
-          color: kBgColor,
+        decoration: BoxDecoration(
+          color: context.bgColor,
           borderRadius: kSheetRadius,
         ),
         child: Column(
@@ -125,7 +123,7 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: kTextSecondary.withValues(alpha: 0.3),
+                color: context.textSecondary.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -142,12 +140,12 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                     style: TextStyle(color: kAccentBlue, fontSize: 16),
                   ),
                 ),
-                const Text(
+                Text(
                   'Set a goal',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: kTextPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 TextButton(
@@ -155,7 +153,7 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                   child: Text(
                     'Done',
                     style: TextStyle(
-                      color: _canSave ? kAccentBlue : kTextSecondary,
+                      color: _canSave ? kAccentBlue : context.textSecondary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -169,8 +167,8 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
             // Form card
             Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: kCardColor,
+              decoration: BoxDecoration(
+                color: context.cardColor,
                 borderRadius: kCardRadius,
               ),
               child: Column(
@@ -183,7 +181,7 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                     ),
                     child: Row(
                       children: [
-                        const Text('Target', style: TextStyle(fontSize: 16)),
+                        Text('Target', style: TextStyle(fontSize: 16, color: context.textPrimary)),
                         const Spacer(),
                         SizedBox(
                           width: 80,
@@ -192,11 +190,12 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.end,
                             onChanged: (_) => setState(() {}),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Value',
-                              hintStyle: TextStyle(color: kTextSecondary),
+                              hintStyle: TextStyle(color: context.textSecondary),
                               border: InputBorder.none,
                             ),
+                            style: TextStyle(color: context.textPrimary),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -208,14 +207,14 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: kBgColor,
+                              color: context.bgColor,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               _selectedUnit,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: kTextPrimary,
+                                color: context.textPrimary,
                               ),
                             ),
                           ),
@@ -224,9 +223,9 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                     ),
                   ),
 
-                  const Divider(
+                  Divider(
                     height: 1,
-                    color: kDividerColor,
+                    color: context.dividerColor,
                     indent: 16,
                     endIndent: 16,
                   ),
@@ -239,12 +238,12 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                     ),
                     child: TextField(
                       controller: _noteController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Note',
-                        hintStyle: TextStyle(color: kTextSecondary),
+                        hintStyle: TextStyle(color: context.textSecondary),
                         border: InputBorder.none,
                       ),
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, color: context.textPrimary),
                     ),
                   ),
                 ],

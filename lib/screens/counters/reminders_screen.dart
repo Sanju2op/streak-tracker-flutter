@@ -8,6 +8,7 @@ import '../../providers/counter_provider.dart';
 import '../../providers/reminder_provider.dart';
 import '../../sheets/add_reminder_sheet.dart';
 import '../../utils/notification_utils.dart';
+import '../../utils/sheet_utils.dart';
 
 class RemindersScreen extends ConsumerWidget {
   final String counterId;
@@ -15,11 +16,10 @@ class RemindersScreen extends ConsumerWidget {
   const RemindersScreen({super.key, required this.counterId});
 
   void _openAddReminderSheet(BuildContext context) {
-    showModalBottomSheet(
+    showAppBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => AddReminderSheet(counterId: counterId),
+      fullHeight: true,
+      child: AddReminderSheet(counterId: counterId),
     );
   }
 
@@ -28,20 +28,20 @@ class RemindersScreen extends ConsumerWidget {
     final remindersAsync = ref.watch(remindersNotifierProvider(counterId));
 
     return Scaffold(
-      backgroundColor: kBgColor,
+      backgroundColor: context.bgColor,
       appBar: AppBar(
-        backgroundColor: kBgColor,
+        backgroundColor: context.bgColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: kAccentBlue, size: 28),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
+        title: Text(
           'Reminders',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 17,
-            color: kTextPrimary,
+            color: context.textPrimary,
           ),
         ),
         centerTitle: true,
@@ -55,12 +55,12 @@ class RemindersScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'No reminders set',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: kTextPrimary,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -88,12 +88,25 @@ class RemindersScreen extends ConsumerWidget {
               return Dismissible(
                 key: Key(reminder.id),
                 direction: DismissDirection.endToStart,
-                background: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20),
-                  color: Colors.red,
-                  child: const Icon(Icons.delete, color: Colors.white),
-                ),
+                confirmDismiss: (direction) async {
+                  return await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Delete Reminder'),
+                      content: const Text('Are you sure you want to delete this reminder?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
                 onDismissed: (_) async {
                   await cancelReminder(reminder.id);
                   ref
@@ -102,8 +115,8 @@ class RemindersScreen extends ConsumerWidget {
                 },
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 8),
-                  decoration: const BoxDecoration(
-                    color: kCardColor,
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
                     borderRadius: kCardRadius,
                   ),
                   child: ListTile(

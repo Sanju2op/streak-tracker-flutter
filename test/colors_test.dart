@@ -23,17 +23,17 @@ void main() {
   group('hexToColor', () {
     test('converts hex string to Color', () {
       final color = hexToColor('#FF0000');
-      expect(color.value, 0xFFFF0000);
+      expect(color, const Color(0xFFFF0000));
     });
 
     test('handles lowercase hex', () {
       final color = hexToColor('#ff0000');
-      expect(color.value, 0xFFFF0000);
+      expect(color, const Color(0xFFFF0000));
     });
 
     test('handles hex without hash', () {
       final color = hexToColor('FF0000');
-      expect(color.value, 0xFFFF0000);
+      expect(color, const Color(0xFFFF0000));
     });
   });
 
@@ -41,7 +41,7 @@ void main() {
     test('returns a valid Color from palettes', () {
       final color = randomColor();
       // Just check it's a valid Color with full alpha
-      expect(color.alpha, 255);
+      expect(color.a, 1.0);
     });
   });
 
@@ -79,7 +79,7 @@ void main() {
       for (final color in allColors) {
         final hex = colorToHex(color);
         final restored = hexToColor(hex);
-        expect(restored.value, color.value,
+        expect(restored, color,
             reason: 'Color roundtrip failed for $hex');
       }
     });

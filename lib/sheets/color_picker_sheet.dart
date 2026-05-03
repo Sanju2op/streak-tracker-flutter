@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/app_theme.dart';
 import '../constants/colors.dart';
+import '../utils/sheet_utils.dart';
 
 /// Opens a half-height bottom sheet with a paged color palette picker.
 ///
@@ -11,12 +12,9 @@ Future<Color?> showColorPickerSheet(
   BuildContext context, {
   Color? currentColor,
 }) {
-  return showModalBottomSheet<Color>(
+  return showAppBottomSheet<Color>(
     context: context,
-    isScrollControlled: false,
-    shape: const RoundedRectangleBorder(borderRadius: kSheetRadius),
-    backgroundColor: Colors.white,
-    builder: (_) => _ColorPickerBody(currentColor: currentColor),
+    child: _ColorPickerBody(currentColor: currentColor),
   );
 }
 
@@ -73,14 +71,14 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                const Text(
+                Text(
                   'Pick a color',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: context.textPrimary),
                 ),
                 Align(
                   alignment: Alignment.centerRight,
                   child: IconButton(
-                    icon: const Icon(Icons.close, color: kTextSecondary),
+                    icon: Icon(Icons.close, color: context.textSecondary),
                     onPressed: () => Navigator.pop(context, _selected),
                   ),
                 ),
@@ -93,10 +91,10 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
           // --- Palette name ---
           Text(
             _paletteEntries[_currentPage].key.toUpperCase(),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: kTextSecondary,
+              color: context.textSecondary,
               letterSpacing: 1.2,
             ),
           ),
@@ -138,8 +136,8 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isActive
-                      ? kTextPrimary
-                      : kTextSecondary.withValues(alpha: 0.4),
+                      ? context.textPrimary
+                      : context.textSecondary.withValues(alpha: 0.4),
                 ),
               );
             }),

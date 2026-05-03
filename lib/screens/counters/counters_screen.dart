@@ -1,5 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants/app_theme.dart';
 import '../../models/counter.dart';
@@ -11,14 +13,39 @@ import '../../widgets/empty_state.dart';
 import '../../utils/widget_utils.dart';
 
 // ---------------------------------------------------------------------------
-// Sort preference — simple StateProvider, no persistence yet (Phase 10.5)
+// Sort preference — persistent Notifier
 // ---------------------------------------------------------------------------
 
 enum CounterSortOption { dateAdded, nameAZ, streakLength }
 
-final counterSortProvider = StateProvider<CounterSortOption>(
-  (ref) => CounterSortOption.dateAdded,
+final counterSortProvider = NotifierProvider<CounterSortNotifier, CounterSortOption>(
+  CounterSortNotifier.new,
 );
+
+class CounterSortNotifier extends Notifier<CounterSortOption> {
+  static const _key = 'st_counter_sort';
+
+  @override
+  CounterSortOption build() {
+    // Initial state is dateAdded, will be updated by load()
+    _load();
+    return CounterSortOption.dateAdded;
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final index = prefs.getInt(_key);
+    if (index != null && index < CounterSortOption.values.length) {
+      state = CounterSortOption.values[index];
+    }
+  }
+
+  Future<void> setSort(CounterSortOption option) async {
+    state = option;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_key, option.index);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Counters Screen
@@ -33,34 +60,59 @@ class CountersScreen extends ConsumerWidget {
     final sortOption = ref.watch(counterSortProvider);
 
     return Scaffold(
-      backgroundColor: kBgColor,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.sort, color: kAccentBlue),
-          onPressed: () => _showSortDialog(context, ref),
-        ),
-        title: const Text('Counters'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: kAccentBlue),
-            onPressed: () => _openCreateSheet(context),
-          ),
-        ],
-      ),
+      backgroundColor: context.bgColor,
       body: countersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (counters) {
-          if (counters.isEmpty) {
-            return EmptyState(onAddCounter: () => _openCreateSheet(context));
-          }
-
           final sorted = _sortCounters(counters, sortOption);
-          
           updateHomeWidgets(sorted);
 
-          return _CounterGrid(counters: sorted, ref: ref);
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                floating: true,
+                backgroundColor: context.bgColor.withValues(alpha: 0.8),
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(Icons.sort, color: kAccentBlue),
+                  onPressed: () => _showSortDialog(context, ref),
+                ),
+                title: Text(
+                  'Counters',
+                  style: TextStyle(
+                    color: context.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                  ),
+                ),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.add, color: kAccentBlue),
+                    onPressed: () => _openCreateSheet(context),
+                  ),
+                ],
+                flexibleSpace: ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(color: Colors.transparent),
+                  ),
+                ),
+              ),
+              if (counters.isEmpty)
+                SliverFillRemaining(
+                  child: EmptyState(onAddCounter: () => _openCreateSheet(context)),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 32),
+                  sliver: _CounterGrid(counters: sorted, ref: ref),
+                ),
+            ],
+          );
         },
       ),
     );
@@ -89,7 +141,7 @@ class CountersScreen extends ConsumerWidget {
       ),
     ).then((selected) {
       if (selected != null) {
-        ref.read(counterSortProvider.notifier).state = selected;
+        ref.read(counterSortProvider.notifier).setSort(selected);
       }
     });
   }
@@ -150,15 +202,26 @@ class _CounterGrid extends ConsumerStatefulWidget {
   ConsumerState<_CounterGrid> createState() => _CounterGridState();
 }
 
-class _CounterGridState extends ConsumerState<_CounterGrid> {
+class _CounterGridState extends ConsumerState<_CounterGrid> with SingleTickerProviderStateMixin {
   /// Cache of last reset date per counter id.
   final Map<String, int?> _lastResetDates = {};
   bool _loaded = false;
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
     _loadLastResetDates();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -189,6 +252,7 @@ class _CounterGridState extends ConsumerState<_CounterGrid> {
           ..clear()
           ..addAll(dates);
         _loaded = true;
+        _animationController.forward(from: 0);
       });
     }
   }
@@ -197,8 +261,7 @@ class _CounterGridState extends ConsumerState<_CounterGrid> {
   Widget build(BuildContext context) {
     final rowCount = (widget.counters.length / 2).ceil();
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
+    return SliverList.builder(
       itemCount: rowCount,
       itemBuilder: (_, rowIndex) {
         final index1 = rowIndex * 2;
@@ -213,31 +276,53 @@ class _CounterGridState extends ConsumerState<_CounterGrid> {
           isFullWidth: !hasSecond,
         );
 
+        Widget row;
         if (!hasSecond) {
-          // Single item in this row spans full width
-          return Padding(
+          row = Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: card1,
           );
+        } else {
+          final counter2 = widget.counters[index2];
+          final card2 = CounterCard(
+            counter: counter2,
+            lastResetDate: _loaded ? _lastResetDates[counter2.id] : null,
+            isFullWidth: false,
+          );
+
+          row = Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: card1),
+                const SizedBox(width: 12),
+                Expanded(child: card2),
+              ],
+            ),
+          );
         }
 
-        final counter2 = widget.counters[index2];
-        final card2 = CounterCard(
-          counter: counter2,
-          lastResetDate: _loaded ? _lastResetDates[counter2.id] : null,
-          isFullWidth: false,
-        );
+        final start = rowIndex * 0.1;
+        final end = (start + 0.5).clamp(0.0, 1.0);
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: card1),
-              const SizedBox(width: 12),
-              Expanded(child: card2),
-            ],
-          ),
+        return AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) {
+            final curve = CurvedAnimation(
+              parent: _animationController,
+              curve: Interval(start, end, curve: Curves.easeOutCubic),
+            );
+
+            return Opacity(
+              opacity: curve.value,
+              child: Transform.translate(
+                offset: Offset(0, 30 * (1 - curve.value)),
+                child: child,
+              ),
+            );
+          },
+          child: row,
         );
       },
     );

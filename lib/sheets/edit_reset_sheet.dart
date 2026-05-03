@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../constants/app_theme.dart';
+import '../utils/sheet_utils.dart';
 
 import '../models/counter.dart';
 import '../models/reset.dart';
@@ -14,11 +15,9 @@ void showEditResetSheet(
   required Counter counter,
   required Reset reset,
 }) {
-  showModalBottomSheet(
+  showAppBottomSheet(
     context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => _EditResetSheet(counter: counter, reset: reset),
+    child: _EditResetSheet(counter: counter, reset: reset),
   );
 }
 
@@ -140,8 +139,8 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: kBgColor,
+      decoration: BoxDecoration(
+        color: context.bgColor,
         borderRadius: kSheetRadius,
       ),
       child: SafeArea(
@@ -159,7 +158,7 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: kTextSecondary.withValues(alpha: 0.3),
+                    color: context.textSecondary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -199,8 +198,8 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  decoration: const BoxDecoration(
-                    color: kCardColor,
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
                     borderRadius: kCardRadius,
                   ),
                   child: Column(
@@ -213,11 +212,12 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
                         ),
                         child: Row(
                           children: [
-                            const Text(
+                            Text(
                               'Reset on',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                color: context.textPrimary,
                               ),
                             ),
                             const Spacer(),
@@ -236,9 +236,9 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
                         ),
                       ),
 
-                      const Divider(
+                      Divider(
                         height: 1,
-                        color: kDividerColor,
+                        color: context.dividerColor,
                         indent: 16,
                         endIndent: 16,
                       ),
@@ -251,12 +251,12 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
                         ),
                         child: TextField(
                           controller: _noteController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             hintText: 'Note',
-                            hintStyle: TextStyle(color: kTextSecondary),
+                            hintStyle: TextStyle(color: context.textSecondary),
                             border: InputBorder.none,
                           ),
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: context.textPrimary),
                         ),
                       ),
                     ],
@@ -271,8 +271,8 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: kCardColor,
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
                     borderRadius: kCardRadius,
                   ),
                   child: TextButton(
@@ -314,12 +314,12 @@ class _ChipButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: kBgColor,
+          color: context.bgColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: context.textPrimary),
         ),
       ),
     );
