@@ -7,10 +7,10 @@ const kTextSecondary = Color(0xFF8E8E93);
 const kDividerColor = Color(0xFFE5E5EA);
 
 // Dark theme base colors
-const kBgColorDark = Color(0xFF1C1C1E);
-const kCardColorDark = Color(0xFF2C2C2E);
+const kBgColorDark = Color(0xFF000000); // Pure black for OLED
+const kCardColorDark = Color(0xFF1C1C1E); // Standard iOS dark card
 const kTextPrimaryDark = Colors.white;
-const kTextSecondaryDark = Color(0xFF98989D);
+const kTextSecondaryDark = Color(0xFF8E8E93);
 const kDividerColorDark = Color(0xFF38383A);
 
 // Shared
@@ -36,27 +36,56 @@ ThemeData buildLightTheme() {
       onSurface: kTextPrimary,
       onSurfaceVariant: kTextSecondary,
     ),
+    textTheme: const TextTheme(
+      headlineMedium: TextStyle(
+        color: kTextPrimary,
+        fontSize: 28,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.5,
+      ),
+      titleLarge: TextStyle(
+        color: kTextPrimary,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.5,
+      ),
+      bodyLarge: TextStyle(
+        color: kTextPrimary,
+        fontSize: 17,
+        letterSpacing: -0.4,
+      ),
+    ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: kBgColor,
+      backgroundColor: Colors.transparent,
       elevation: 0,
+      scrolledUnderElevation: 0,
       iconTheme: IconThemeData(color: kTextPrimary),
       titleTextStyle: TextStyle(
         color: kTextPrimary,
         fontSize: 17,
         fontWeight: FontWeight.w600,
+        letterSpacing: -0.4,
       ),
       centerTitle: true,
     ),
     cardTheme: const CardThemeData(
       color: kCardColor,
       elevation: 0,
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: kCardRadius),
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
       selectedItemColor: kAccentBlue,
       unselectedItemColor: kTextSecondary,
-      elevation: 0,
+      elevation: 8,
+      type: BottomNavigationBarType.fixed,
     ),
   );
 }
@@ -75,27 +104,56 @@ ThemeData buildDarkTheme() {
       onSurface: kTextPrimaryDark,
       onSurfaceVariant: kTextSecondaryDark,
     ),
+    textTheme: const TextTheme(
+      headlineMedium: TextStyle(
+        color: kTextPrimaryDark,
+        fontSize: 28,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.5,
+      ),
+      titleLarge: TextStyle(
+        color: kTextPrimaryDark,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.5,
+      ),
+      bodyLarge: TextStyle(
+        color: kTextPrimaryDark,
+        fontSize: 17,
+        letterSpacing: -0.4,
+      ),
+    ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: kBgColorDark,
+      backgroundColor: Colors.transparent,
       elevation: 0,
+      scrolledUnderElevation: 0,
       iconTheme: IconThemeData(color: kTextPrimaryDark),
       titleTextStyle: TextStyle(
         color: kTextPrimaryDark,
         fontSize: 17,
         fontWeight: FontWeight.w600,
+        letterSpacing: -0.4,
       ),
       centerTitle: true,
     ),
     cardTheme: const CardThemeData(
       color: kCardColorDark,
       elevation: 0,
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: kCardRadius),
     ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Color(0xFF151515), // Slightly darker than bg
+      backgroundColor: Color(0xFF121212),
       selectedItemColor: kAccentBlue,
       unselectedItemColor: kTextSecondaryDark,
-      elevation: 0,
+      elevation: 8,
+      type: BottomNavigationBarType.fixed,
     ),
   );
 }

@@ -42,21 +42,21 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="CounterWidgetProvider" android:exported="true">
+        <receiver android:name=".CounterWidgetProvider" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_small_info" />
         </receiver>
 
-        <receiver android:name="CounterWidgetProviderMedium" android:exported="true">
+        <receiver android:name=".CounterWidgetProviderMedium" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_medium_info" />
         </receiver>
 
-        <receiver android:name="CounterWidgetProviderLock" android:exported="true">
+        <receiver android:name=".CounterWidgetProviderLock" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

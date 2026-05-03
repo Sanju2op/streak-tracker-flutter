@@ -5,6 +5,7 @@ import '../constants/app_theme.dart';
 import '../constants/colors.dart';
 import '../providers/calendar_provider.dart';
 import '../providers/counter_provider.dart';
+import '../widgets/error_state.dart';
 
 class FilterSheet extends ConsumerStatefulWidget {
   const FilterSheet({super.key});
@@ -48,9 +49,9 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
     final countersAsync = ref.watch(countersNotifierProvider);
 
     return Container(
-      decoration: const BoxDecoration(
-        color: kBgColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: BoxDecoration(
+        color: context.cardColor.withValues(alpha: 0.94),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: Column(
         children: [
@@ -59,7 +60,7 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
             width: 36,
             height: 4,
             decoration: BoxDecoration(
-              color: kTextSecondary.withValues(alpha: 0.3),
+              color: context.textSecondary.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -70,12 +71,12 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(width: 60), // balance the Done button
-                const Text(
+                Text(
                   'Filter',
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: kTextPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 TextButton(
@@ -96,7 +97,9 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
           Expanded(
             child: countersAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Error: $e')),
+              error: (e, _) => ErrorState(
+                onRetry: () => ref.invalidate(countersNotifierProvider),
+              ),
               data: (counters) {
                 final isAll = _selectedIds.isEmpty;
 
@@ -104,15 +107,18 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
                   children: [
                     ListTile(
                       onTap: _toggleAll,
-                      title: const Text(
+                      title: Text(
                         'All Counters',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: context.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       trailing: isAll
                           ? const Icon(Icons.check, color: kAccentBlue)
                           : null,
                     ),
-                    const Divider(height: 1, color: kDividerColor),
+                    Divider(height: 1, color: context.dividerColor),
                     ...counters.map((c) {
                       final isSelected = _selectedIds.contains(c.id);
                       return ListTile(
@@ -125,7 +131,10 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        title: Text(c.title),
+                        title: Text(
+                          c.title,
+                          style: TextStyle(color: context.textPrimary),
+                        ),
                         trailing: Checkbox(
                           value: isSelected,
                           onChanged: (_) => _toggleCounter(c.id),

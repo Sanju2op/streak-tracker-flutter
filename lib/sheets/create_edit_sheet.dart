@@ -206,7 +206,9 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                     child: Text(
                       'Done',
                       style: TextStyle(
-                        color: _canSave ? context.textPrimary : context.textSecondary,
+                        color: _canSave
+                            ? context.textPrimary
+                            : context.textSecondary,
                         fontSize: 16,
                         fontWeight: _canSave
                             ? FontWeight.w600
@@ -255,7 +257,9 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                               onChanged: (_) => setState(() {}),
                               decoration: InputDecoration(
                                 hintText: 'e.g. No junk food',
-                                hintStyle: TextStyle(color: context.textSecondary),
+                                hintStyle: TextStyle(
+                                  color: context.textSecondary,
+                                ),
                                 border: InputBorder.none,
                                 counterText: '',
                               ),
@@ -284,7 +288,10 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                               children: [
                                 Text(
                                   'Started on',
-                                  style: TextStyle(fontSize: 16, color: context.textPrimary),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: context.textPrimary,
+                                  ),
                                 ),
                                 const Spacer(),
                                 _ChipButton(
@@ -319,7 +326,10 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                               children: [
                                 Text(
                                   'Pick a color',
-                                  style: TextStyle(fontSize: 16, color: context.textPrimary),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: context.textPrimary,
+                                  ),
                                 ),
                                 const Spacer(),
                                 GestureDetector(
@@ -532,7 +542,11 @@ class _ChipButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: context.textPrimary),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: context.textPrimary,
+          ),
         ),
       ),
     );

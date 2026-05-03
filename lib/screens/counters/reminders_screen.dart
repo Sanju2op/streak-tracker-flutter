@@ -9,6 +9,7 @@ import '../../providers/reminder_provider.dart';
 import '../../sheets/add_reminder_sheet.dart';
 import '../../utils/notification_utils.dart';
 import '../../utils/sheet_utils.dart';
+import '../../widgets/error_state.dart';
 
 class RemindersScreen extends ConsumerWidget {
   final String counterId;
@@ -48,7 +49,9 @@ class RemindersScreen extends ConsumerWidget {
       ),
       body: remindersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => ErrorState(
+          onRetry: () => ref.invalidate(remindersNotifierProvider(counterId)),
+        ),
         data: (reminders) {
           if (reminders.isEmpty) {
             return Center(
@@ -93,7 +96,9 @@ class RemindersScreen extends ConsumerWidget {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       title: const Text('Delete Reminder'),
-                      content: const Text('Are you sure you want to delete this reminder?'),
+                      content: const Text(
+                        'Are you sure you want to delete this reminder?',
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
@@ -101,7 +106,10 @@ class RemindersScreen extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
-                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),

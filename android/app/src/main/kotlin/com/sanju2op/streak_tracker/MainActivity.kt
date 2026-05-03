@@ -1,4 +1,4 @@
-package com.sanju2op.streak_tracker
+package com.sanju2op.streaktracker
 
 import io.flutter.embedding.android.FlutterActivity
 

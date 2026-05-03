@@ -11,6 +11,7 @@ import '../../providers/counter_provider.dart';
 import '../../providers/db_provider.dart';
 import '../../sheets/reset_drawer_sheet.dart';
 import '../../utils/time_utils.dart';
+import '../../widgets/error_state.dart';
 
 /// All Resets screen — shows the history of resets for a single counter,
 /// grouped by month, with the original start date at the bottom.
@@ -28,6 +29,7 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
   List<Reset> _resets = [];
   Counter? _counter;
   bool _loading = true;
+  Object? _error;
 
   @override
   void initState() {
@@ -36,28 +38,40 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
   }
 
   Future<void> _load() async {
-    final db = ref.read(dbAdapterProvider);
-    final resets = await db.getResets(widget.counterId);
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
 
-    // Sort most recent first
-    resets.sort((a, b) => b.resetAt.compareTo(a.resetAt));
+    try {
+      final db = ref.read(dbAdapterProvider);
+      final resets = await db.getResets(widget.counterId);
 
-    // Get the counter from the provider
-    final countersAsync = ref.read(countersNotifierProvider);
-    final counter = countersAsync.whenOrNull(
-      data: (list) {
-        try {
-          return list.firstWhere((c) => c.id == widget.counterId);
-        } catch (_) {
-          return null;
-        }
-      },
-    );
+      // Sort most recent first
+      resets.sort((a, b) => b.resetAt.compareTo(a.resetAt));
 
-    if (mounted) {
+      // Get the counter from the provider
+      final countersAsync = ref.read(countersNotifierProvider);
+      final counter = countersAsync.whenOrNull(
+        data: (list) {
+          try {
+            return list.firstWhere((c) => c.id == widget.counterId);
+          } catch (_) {
+            return null;
+          }
+        },
+      );
+
+      if (!mounted) return;
       setState(() {
         _resets = resets;
         _counter = counter;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e;
         _loading = false;
       });
     }
@@ -94,7 +108,7 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
               Flexible(
                 child: Text(
                   counter?.title ?? '',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: kAccentBlue,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -117,6 +131,8 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
+          : _error != null
+          ? ErrorState(onRetry: _load)
           : _resets.isEmpty && counter != null
           ? _buildStartedOnlyView(counter)
           : _buildListView(counter),
@@ -225,7 +241,10 @@ class _ResetGroupCard extends StatelessWidget {
                   ),
                   Text(
                     '$resetCount',
-                    style: TextStyle(fontSize: 13, color: context.textSecondary),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -427,11 +446,11 @@ class _StartedOnCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                    Icon(
-                      Icons.chevron_right,
-                      color: context.textSecondary,
-                      size: 22,
-                    ),
+                  Icon(
+                    Icons.chevron_right,
+                    color: context.textSecondary,
+                    size: 22,
+                  ),
                 ],
               ),
             ),

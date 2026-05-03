@@ -93,35 +93,33 @@ final appRouter = GoRouter(
 
 Widget _tabTransitionBuilder(context, animation, secondaryAnimation, child) {
   return FadeTransition(
-    opacity: CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-    ),
+    opacity: CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
     child: ScaleTransition(
-      scale: Tween<double>(begin: 0.97, end: 1.0).animate(
-        CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-      ),
+      scale: Tween<double>(
+        begin: 0.97,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
       child: child,
     ),
   );
 }
 
-Widget _slideUpTransitionBuilder(context, animation, secondaryAnimation, child) {
+Widget _slideUpTransitionBuilder(
+  context,
+  animation,
+  secondaryAnimation,
+  child,
+) {
   final slide = Tween<Offset>(
     begin: const Offset(0, 0.06),
     end: Offset.zero,
-  ).animate(
-    CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-  );
-  
+  ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
+
   final fade = CurvedAnimation(parent: animation, curve: Curves.easeOut);
 
   return FadeTransition(
     opacity: fade,
-    child: SlideTransition(
-      position: slide,
-      child: child,
-    ),
+    child: SlideTransition(position: slide, child: child),
   );
 }
 
@@ -138,9 +136,11 @@ class ScaffoldWithNavBar extends StatelessWidget {
     return Scaffold(
       body: child,
       bottomNavigationBar: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: kCardColor,
-          border: Border(top: BorderSide(color: kDividerColor, width: 0.5)),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          border: Border(
+            top: BorderSide(color: context.dividerColor, width: 0.5),
+          ),
         ),
         child: BottomNavigationBar(
           currentIndex: currentIndex,

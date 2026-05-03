@@ -1,4 +1,4 @@
-package com.sanju2op.streak_tracker
+package com.sanju2op.streaktracker
 
 import android.appwidget.AppWidgetManager
 import android.content.Context

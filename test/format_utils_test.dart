@@ -68,8 +68,10 @@ void main() {
         minutes: 1,
         seconds: 1,
       );
-      expect(formatDuration(e),
-          '1 Year, 1 Month, 1 Day, 1 Hour, 1 Minute, 1 Second');
+      expect(
+        formatDuration(e),
+        '1 Year, 1 Month, 1 Day, 1 Hour, 1 Minute, 1 Second',
+      );
     });
   });
 

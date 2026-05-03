@@ -22,10 +22,7 @@ class _BlurSheetWrapper extends StatelessWidget {
   final Widget child;
   final bool fullHeight;
 
-  const _BlurSheetWrapper({
-    required this.child,
-    this.fullHeight = false,
-  });
+  const _BlurSheetWrapper({required this.child, this.fullHeight = false});
 
   @override
   Widget build(BuildContext context) {

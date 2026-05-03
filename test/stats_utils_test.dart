@@ -28,7 +28,7 @@ void main() {
     });
 
     test('counter with resets computes correct stats', () {
-      const now = 1714730400000; // 2024-05-03 10:00:00
+      final now = DateTime.now().millisecondsSinceEpoch;
       const day = 86400000;
       final start = now - day * 20; // 20 days ago
 
@@ -102,7 +102,10 @@ void main() {
       // daysSinceStart should be ~100 (from original start), not 2
       expect(stats.daysSinceStart, 100);
       // Current streak is 2 days
-      expect(stats.longestStreakDays, greaterThanOrEqualTo(98)); // 98 or more from original range
+      expect(
+        stats.longestStreakDays,
+        greaterThanOrEqualTo(98),
+      ); // 98 or more from original range
     });
   });
 

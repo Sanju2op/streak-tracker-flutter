@@ -144,16 +144,17 @@ class _ResetDrawerSheet extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(20),
-                                onTap: () {
-                                  showAppBottomSheet(
-                                    context: context,
-                                    child: ShareSheet(
-                                      counter: counter,
-                                      period: 'days',
-                                      resetMessage: 'Reset on ${DateFormat('d MMM yyyy').format(DateTime.fromMillisecondsSinceEpoch(reset.resetAt))}',
-                                    ),
-                                  );
-                                },
+                              onTap: () {
+                                showAppBottomSheet(
+                                  context: context,
+                                  child: ShareSheet(
+                                    counter: counter,
+                                    period: 'days',
+                                    resetMessage:
+                                        'Reset on ${DateFormat('d MMM yyyy').format(DateTime.fromMillisecondsSinceEpoch(reset.resetAt))}',
+                                  ),
+                                );
+                              },
                               child: const Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -219,7 +220,10 @@ class _ResetDrawerSheet extends StatelessWidget {
                     const Spacer(),
                     Text(
                       DateFormat('d MMM yyyy h:mm a').format(endDt),
-                      style: TextStyle(fontSize: 16, color: context.textPrimary),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: context.textPrimary,
+                      ),
                     ),
                   ],
                 ),

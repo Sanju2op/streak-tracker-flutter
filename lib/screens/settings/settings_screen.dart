@@ -22,15 +22,16 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       applicationName: 'Streak Tracker',
       applicationVersion: '1.0.0',
-      children: [
-        const Text('A free Days Since tracker for Android.'),
-      ],
+      children: [const Text('A free Days Since tracker for Android.')],
     );
   }
 
   void _tellAFriend() {
-    // ignore: deprecated_member_use
-    Share.share('Check out Streak Tracker! A free, no-ads habit tracker.');
+    SharePlus.instance.share(
+      ShareParams(
+        text: 'Check out Streak Tracker! A free, no-ads habit tracker.',
+      ),
+    );
   }
 
   @override
@@ -45,7 +46,11 @@ class SettingsScreen extends ConsumerWidget {
         centerTitle: true,
         title: Text(
           'Settings',
-          style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimary, fontSize: 17),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: context.textPrimary,
+            fontSize: 17,
+          ),
         ),
       ),
       body: ListView(
@@ -62,7 +67,11 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.brightness_medium, color: kAccentBlue, size: 20),
+                    const Icon(
+                      Icons.brightness_medium,
+                      color: kAccentBlue,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Appearance',
@@ -78,24 +87,45 @@ class SettingsScreen extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<ThemeMode>(
+                    showSelectedIcon: false,
                     segments: [
-                      ButtonSegment(value: ThemeMode.system, label: Text('System', style: TextStyle(color: context.textPrimary))),
-                      ButtonSegment(value: ThemeMode.light, label: Text('Light', style: TextStyle(color: context.textPrimary))),
-                      ButtonSegment(value: ThemeMode.dark, label: Text('Dark', style: TextStyle(color: context.textPrimary))),
+                      ButtonSegment(
+                        value: ThemeMode.system,
+                        label: Text(
+                          'System',
+                          style: TextStyle(color: context.textPrimary),
+                        ),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.light,
+                        label: Text(
+                          'Light',
+                          style: TextStyle(color: context.textPrimary),
+                        ),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.dark,
+                        label: Text(
+                          'Dark',
+                          style: TextStyle(color: context.textPrimary),
+                        ),
+                      ),
                     ],
                     selected: {themeMode},
                     onSelectionChanged: (Set<ThemeMode> newSelection) {
-                      ref.read(themeModeProvider.notifier).setThemeMode(newSelection.first);
+                      ref
+                          .read(themeModeProvider.notifier)
+                          .setThemeMode(newSelection.first);
                     },
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                        (Set<WidgetState> states) {
-                          if (states.contains(WidgetState.selected)) {
-                            return kAccentBlue.withValues(alpha: 0.15);
-                          }
-                          return Colors.transparent;
-                        },
-                      ),
+                      backgroundColor: WidgetStateProperty.resolveWith<Color>((
+                        Set<WidgetState> states,
+                      ) {
+                        if (states.contains(WidgetState.selected)) {
+                          return kAccentBlue.withValues(alpha: 0.15);
+                        }
+                        return Colors.transparent;
+                      }),
                     ),
                   ),
                 ),
@@ -111,14 +141,31 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               children: [
                 ListTile(
-                  title: Text('Privacy Policy', style: TextStyle(color: context.textPrimary)),
-                  trailing: Icon(Icons.chevron_right, color: context.textSecondary),
+                  title: Text(
+                    'Privacy Policy',
+                    style: TextStyle(color: context.textPrimary),
+                  ),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: context.textSecondary,
+                  ),
                   onTap: _openPrivacyPolicy,
                 ),
-                Divider(height: 1, indent: 16, endIndent: 16, color: context.dividerColor),
+                Divider(
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                  color: context.dividerColor,
+                ),
                 ListTile(
-                  title: Text('About', style: TextStyle(color: context.textPrimary)),
-                  trailing: Icon(Icons.chevron_right, color: context.textSecondary),
+                  title: Text(
+                    'About',
+                    style: TextStyle(color: context.textPrimary),
+                  ),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: context.textSecondary,
+                  ),
                   onTap: () => _showAbout(context),
                 ),
               ],
@@ -131,7 +178,10 @@ class SettingsScreen extends ConsumerWidget {
               borderRadius: kCardRadius,
             ),
             child: ListTile(
-              title: Text('Tell a Friend', style: TextStyle(color: context.textPrimary)),
+              title: Text(
+                'Tell a Friend',
+                style: TextStyle(color: context.textPrimary),
+              ),
               trailing: Icon(Icons.chevron_right, color: context.textSecondary),
               onTap: _tellAFriend,
             ),

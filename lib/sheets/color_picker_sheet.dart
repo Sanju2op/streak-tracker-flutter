@@ -73,7 +73,11 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
               children: [
                 Text(
                   'Pick a color',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: context.textPrimary),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: context.textPrimary,
+                  ),
                 ),
                 Align(
                   alignment: Alignment.centerRight,

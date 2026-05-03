@@ -11,6 +11,7 @@ import '../../models/reset.dart';
 import '../../providers/counter_provider.dart';
 import '../../providers/db_provider.dart';
 import '../../utils/stats_utils.dart';
+import '../../widgets/error_state.dart';
 
 class StatsScreen extends ConsumerStatefulWidget {
   final String counterId;
@@ -25,6 +26,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   List<Reset> _resets = [];
   Counter? _counter;
   bool _loading = true;
+  Object? _error;
   String _selectedPeriod = 'daily';
 
   @override
@@ -34,24 +36,36 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   }
 
   Future<void> _load() async {
-    final db = ref.read(dbAdapterProvider);
-    final resets = await db.getResets(widget.counterId);
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
 
-    final countersAsync = ref.read(countersNotifierProvider);
-    final counter = countersAsync.whenOrNull(
-      data: (list) {
-        try {
-          return list.firstWhere((c) => c.id == widget.counterId);
-        } catch (_) {
-          return null;
-        }
-      },
-    );
+    try {
+      final db = ref.read(dbAdapterProvider);
+      final resets = await db.getResets(widget.counterId);
 
-    if (mounted) {
+      final countersAsync = ref.read(countersNotifierProvider);
+      final counter = countersAsync.whenOrNull(
+        data: (list) {
+          try {
+            return list.firstWhere((c) => c.id == widget.counterId);
+          } catch (_) {
+            return null;
+          }
+        },
+      );
+
+      if (!mounted) return;
       setState(() {
         _resets = resets;
         _counter = counter;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e;
         _loading = false;
       });
     }
@@ -116,20 +130,20 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
 
     if (_loading) {
       return Scaffold(
-        backgroundColor: kBgColor,
+        backgroundColor: context.bgColor,
         appBar: AppBar(
-          backgroundColor: kBgColor,
+          backgroundColor: context.bgColor,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.chevron_left, color: kAccentBlue, size: 28),
             onPressed: () => context.pop(),
           ),
-          title: const Text(
+          title: Text(
             'Stats',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 17,
-              color: kTextPrimary,
+              color: context.textPrimary,
             ),
           ),
           centerTitle: true,
@@ -138,27 +152,24 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
       );
     }
 
+    if (_error != null) {
+      return Scaffold(
+        backgroundColor: context.bgColor,
+        appBar: _buildAppBar(context),
+        body: ErrorState(onRetry: _load),
+      );
+    }
+
     if (counter == null) {
       return Scaffold(
-        backgroundColor: kBgColor,
-        appBar: AppBar(
-          backgroundColor: kBgColor,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.chevron_left, color: kAccentBlue, size: 28),
-            onPressed: () => context.pop(),
+        backgroundColor: context.bgColor,
+        appBar: _buildAppBar(context),
+        body: Center(
+          child: Text(
+            'Counter not found',
+            style: TextStyle(color: context.textPrimary),
           ),
-          title: const Text(
-            'Stats',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 17,
-              color: kTextPrimary,
-            ),
-          ),
-          centerTitle: true,
         ),
-        body: const Center(child: Text('Counter not found')),
       );
     }
 
@@ -167,24 +178,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     ).format(DateTime.fromMillisecondsSinceEpoch(counter.createdAt));
 
     return Scaffold(
-      backgroundColor: kBgColor,
-      appBar: AppBar(
-        backgroundColor: kBgColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: kAccentBlue, size: 28),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text(
-          'Stats',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 17,
-            color: kTextPrimary,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      backgroundColor: context.bgColor,
+      appBar: _buildAppBar(context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -295,6 +290,26 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: context.bgColor,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.chevron_left, color: kAccentBlue, size: 28),
+        onPressed: () => context.pop(),
+      ),
+      title: Text(
+        'Stats',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 17,
+          color: context.textPrimary,
+        ),
+      ),
+      centerTitle: true,
     );
   }
 

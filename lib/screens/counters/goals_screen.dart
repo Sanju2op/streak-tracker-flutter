@@ -6,6 +6,7 @@ import '../../constants/app_theme.dart';
 import '../../providers/goal_provider.dart';
 import '../../sheets/set_goal_sheet.dart';
 import '../../utils/sheet_utils.dart';
+import '../../widgets/error_state.dart';
 
 class GoalsScreen extends ConsumerWidget {
   final String counterId;
@@ -45,7 +46,9 @@ class GoalsScreen extends ConsumerWidget {
       ),
       body: goalsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => ErrorState(
+          onRetry: () => ref.invalidate(goalsNotifierProvider(counterId)),
+        ),
         data: (goals) {
           if (goals.isEmpty) {
             return Center(
@@ -63,7 +66,10 @@ class GoalsScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   Text(
                     'Challenge yourself',
-                    style: TextStyle(fontSize: 14, color: context.textSecondary),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   OutlinedButton(
@@ -95,7 +101,9 @@ class GoalsScreen extends ConsumerWidget {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       title: const Text('Delete Goal'),
-                      content: const Text('Are you sure you want to delete this goal?'),
+                      content: const Text(
+                        'Are you sure you want to delete this goal?',
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
@@ -103,7 +111,10 @@ class GoalsScreen extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
-                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
@@ -125,7 +136,9 @@ class GoalsScreen extends ConsumerWidget {
                       '${goal.targetValue} ${goal.targetUnit[0].toUpperCase()}${goal.targetUnit.substring(1)}',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: goal.isCompleted ? context.textSecondary : context.textPrimary,
+                        color: goal.isCompleted
+                            ? context.textSecondary
+                            : context.textPrimary,
                         decoration: goal.isCompleted
                             ? TextDecoration.lineThrough
                             : null,

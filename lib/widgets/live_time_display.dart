@@ -35,23 +35,13 @@ class LiveTimeDisplay extends StatefulWidget {
   State<LiveTimeDisplay> createState() => _LiveTimeDisplayState();
 }
 
-class _LiveTimeDisplayState extends State<LiveTimeDisplay> with SingleTickerProviderStateMixin {
+class _LiveTimeDisplayState extends State<LiveTimeDisplay> {
   late Timer _timer;
   late ElapsedTime _elapsed;
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 150),
-    );
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeOut),
-    );
-
     _tick();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
   }
@@ -72,13 +62,11 @@ class _LiveTimeDisplayState extends State<LiveTimeDisplay> with SingleTickerProv
         DateTime.now().millisecondsSinceEpoch,
       );
     });
-    _pulseController.forward().then((_) => _pulseController.reverse());
   }
 
   @override
   void dispose() {
     _timer.cancel();
-    _pulseController.dispose();
     super.dispose();
   }
 
@@ -95,30 +83,28 @@ class _LiveTimeDisplayState extends State<LiveTimeDisplay> with SingleTickerProv
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        ScaleTransition(
-          scale: _pulseAnimation,
+        FittedBox(
+          fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '$value',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
-                height: 1.1,
-              ),
+          child: Text(
+            '$value',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 52,
+              fontWeight: FontWeight.w900,
+              height: 1.0,
+              letterSpacing: -2.0,
             ),
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 0),
         Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+          label.toUpperCase(),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.8),
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 2.0,
           ),
         ),
       ],

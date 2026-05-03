@@ -92,15 +92,17 @@ void main() {
     testWidgets('Calendar tab shows calendar and day panel', (tester) async {
       final fakeDb = FakeDbAdapter();
       final now = DateTime.now().millisecondsSinceEpoch;
-      await fakeDb.insertCounter(Counter(
-        id: 'cal-counter',
-        title: 'Calendar Test',
-        color: '#FF0000',
-        startedAt: now - 86400000 * 3, // 3 days ago
-        period: 'days',
-        createdAt: now - 86400000 * 3,
-        updatedAt: now,
-      ));
+      await fakeDb.insertCounter(
+        Counter(
+          id: 'cal-counter',
+          title: 'Calendar Test',
+          color: '#FF0000',
+          startedAt: now - 86400000 * 3, // 3 days ago
+          period: 'days',
+          createdAt: now - 86400000 * 3,
+          updatedAt: now,
+        ),
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -122,8 +124,18 @@ void main() {
       final today = DateTime.now();
       // The month names are 3-letter abbreviations
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ];
       final expectedDate = '${today.day} ${months[today.month - 1]}';
       expect(find.text(expectedDate), findsOneWidget);
@@ -132,15 +144,17 @@ void main() {
     testWidgets('Calendar shows counter in day list', (tester) async {
       final fakeDb = FakeDbAdapter();
       final now = DateTime.now().millisecondsSinceEpoch;
-      await fakeDb.insertCounter(Counter(
-        id: 'cal-counter-2',
-        title: 'My Streak',
-        color: '#2ECC71',
-        startedAt: now - 86400000 * 5, // 5 days ago
-        period: 'days',
-        createdAt: now - 86400000 * 5,
-        updatedAt: now,
-      ));
+      await fakeDb.insertCounter(
+        Counter(
+          id: 'cal-counter-2',
+          title: 'My Streak',
+          color: '#2ECC71',
+          startedAt: now - 86400000 * 5, // 5 days ago
+          period: 'days',
+          createdAt: now - 86400000 * 5,
+          updatedAt: now,
+        ),
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -160,18 +174,22 @@ void main() {
   });
 
   group('Counter detail screen integration', () {
-    testWidgets('shows current streak card with correct labels', (tester) async {
+    testWidgets('shows current streak card with correct labels', (
+      tester,
+    ) async {
       final fakeDb = FakeDbAdapter();
       final now = DateTime.now().millisecondsSinceEpoch;
-      await fakeDb.insertCounter(Counter(
-        id: 'detail-counter',
-        title: 'Exercise',
-        color: '#3A78ED',
-        startedAt: now - 86400000 * 10, // 10 days ago
-        period: 'days',
-        createdAt: now - 86400000 * 10,
-        updatedAt: now,
-      ));
+      await fakeDb.insertCounter(
+        Counter(
+          id: 'detail-counter',
+          title: 'Exercise',
+          color: '#3A78ED',
+          startedAt: now - 86400000 * 10, // 10 days ago
+          period: 'days',
+          createdAt: now - 86400000 * 10,
+          updatedAt: now,
+        ),
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -198,15 +216,17 @@ void main() {
     testWidgets('period tab selector changes the display', (tester) async {
       final fakeDb = FakeDbAdapter();
       final now = DateTime.now().millisecondsSinceEpoch;
-      await fakeDb.insertCounter(Counter(
-        id: 'period-counter',
-        title: 'Period Test',
-        color: '#FF0000',
-        startedAt: now - 86400000 * 30, // 30 days ago
-        period: 'years',
-        createdAt: now - 86400000 * 30,
-        updatedAt: now,
-      ));
+      await fakeDb.insertCounter(
+        Counter(
+          id: 'period-counter',
+          title: 'Period Test',
+          color: '#FF0000',
+          startedAt: now - 86400000 * 30, // 30 days ago
+          period: 'years',
+          createdAt: now - 86400000 * 30,
+          updatedAt: now,
+        ),
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -254,24 +274,28 @@ void main() {
       final fakeDb = FakeDbAdapter();
       final now = DateTime.now().millisecondsSinceEpoch;
 
-      await fakeDb.insertCounter(Counter(
-        id: 'c1',
-        title: 'Counter One',
-        color: '#FF0000',
-        startedAt: now,
-        period: 'days',
-        createdAt: now,
-        updatedAt: now,
-      ));
-      await fakeDb.insertCounter(Counter(
-        id: 'c2',
-        title: 'Counter Two',
-        color: '#00FF00',
-        startedAt: now,
-        period: 'weeks',
-        createdAt: now,
-        updatedAt: now,
-      ));
+      await fakeDb.insertCounter(
+        Counter(
+          id: 'c1',
+          title: 'Counter One',
+          color: '#FF0000',
+          startedAt: now,
+          period: 'days',
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+      await fakeDb.insertCounter(
+        Counter(
+          id: 'c2',
+          title: 'Counter Two',
+          color: '#00FF00',
+          startedAt: now,
+          period: 'weeks',
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -292,15 +316,17 @@ void main() {
     testWidgets('goals screen shows empty state', (tester) async {
       final fakeDb = FakeDbAdapter();
       final now = DateTime.now().millisecondsSinceEpoch;
-      await fakeDb.insertCounter(Counter(
-        id: 'goal-counter',
-        title: 'Goal Test',
-        color: '#FF0000',
-        startedAt: now,
-        period: 'days',
-        createdAt: now,
-        updatedAt: now,
-      ));
+      await fakeDb.insertCounter(
+        Counter(
+          id: 'goal-counter',
+          title: 'Goal Test',
+          color: '#FF0000',
+          startedAt: now,
+          period: 'days',
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
 
       await tester.pumpWidget(
         ProviderScope(

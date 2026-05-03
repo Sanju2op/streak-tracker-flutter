@@ -256,7 +256,10 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
                             hintStyle: TextStyle(color: context.textSecondary),
                             border: InputBorder.none,
                           ),
-                          style: TextStyle(fontSize: 16, color: context.textPrimary),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: context.textPrimary,
+                          ),
                         ),
                       ),
                     ],
@@ -319,7 +322,11 @@ class _ChipButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: context.textPrimary),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: context.textPrimary,
+          ),
         ),
       ),
     );

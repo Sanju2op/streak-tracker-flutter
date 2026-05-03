@@ -21,20 +21,27 @@ class ChevronPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..strokeCap = StrokeCap.round;
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.butt;
 
     const int count = 6;
-    const double spacing = 25.0;
-    const double width = 250.0;
-    const double height = 100.0;
+    const double spacing = 22.0;
+    const double baseOffset = 40.0;
+    const double angleWidth = 180.0;
+    const double angleHeight = 100.0;
 
     for (int i = 0; i < count; i++) {
       final path = Path();
-      final double yOffset = i * spacing;
-      path.moveTo(0, yOffset + height);
-      path.lineTo(width / 2, yOffset);
-      path.lineTo(width, yOffset + height);
+      final double offset = i * spacing;
+
+      // Draw a sharp "^" shape pointing top-right
+      path.moveTo(baseOffset + offset, baseOffset + offset + angleHeight);
+      path.lineTo(baseOffset + offset + angleWidth / 2, baseOffset + offset);
+      path.lineTo(
+        baseOffset + offset + angleWidth,
+        baseOffset + offset + angleHeight,
+      );
+
       canvas.drawPath(path, paint);
     }
   }
@@ -84,14 +91,14 @@ class ShareImageGenerator extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 100),
+          const SizedBox(height: 80),
           Text(
             counter.title,
             style: const TextStyle(
-              fontSize: 56,
+              fontSize: 64,
               fontWeight: FontWeight.w900,
               color: Colors.white,
-              letterSpacing: -1,
+              letterSpacing: -1.5,
             ),
             textAlign: TextAlign.center,
           ),
@@ -99,19 +106,21 @@ class ShareImageGenerator extends StatelessWidget {
           Text(
             'Started on ${formatDate(counter.startedAt)}',
             style: TextStyle(
-              fontSize: 22,
-              color: Colors.white.withValues(alpha: 0.5),
+              fontSize: 24,
+              color: Colors.white.withValues(alpha: 0.4),
               fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 80),
+          const SizedBox(height: 100),
           if (resetMessage != null) ...[
             Text(
               resetMessage!,
               style: const TextStyle(
-                fontSize: 32,
+                fontSize: 36,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
+                letterSpacing: -0.5,
               ),
               textAlign: TextAlign.center,
             ),
@@ -122,22 +131,22 @@ class ShareImageGenerator extends StatelessWidget {
             child: Text(
               '${valueAndLabel.$1}',
               style: const TextStyle(
-                fontSize: 280,
+                fontSize: 320,
                 fontWeight: FontWeight.w900,
                 color: Colors.white,
-                height: 1.0,
-                letterSpacing: -10,
+                height: 0.9,
+                letterSpacing: -15,
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             valueAndLabel.$2.toUpperCase(),
             style: const TextStyle(
-              fontSize: 42,
-              fontWeight: FontWeight.w800,
+              fontSize: 48,
+              fontWeight: FontWeight.w900,
               color: Colors.white,
-              letterSpacing: 12,
+              letterSpacing: 14,
             ),
           ),
         ],
@@ -149,33 +158,33 @@ class ShareImageGenerator extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.timer_outlined,
               color: backgroundColor,
-              size: 32,
+              size: 28,
             ),
           ),
-          const SizedBox(width: 16),
-          Column(
+          const SizedBox(width: 14),
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Tracked with',
                 style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  fontSize: 14,
+                  color: Color(0x80FFFFFF),
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const Text(
+              Text(
                 'Days Since',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -227,13 +236,17 @@ class ShareImageGenerator extends StatelessWidget {
   (int, String) _primaryValueAndLabel(ElapsedTime e, String period) {
     switch (period) {
       case 'hours':
-        final totalHours = ((e.years * 365.25 + e.months * 30.44 + e.days) * 24 + e.hours).round();
+        final totalHours =
+            ((e.years * 365.25 + e.months * 30.44 + e.days) * 24 + e.hours)
+                .round();
         return (totalHours, totalHours == 1 ? 'hour' : 'hours');
       case 'days':
-        final totalDays = (e.years * 365.25 + e.months * 30.44 + e.days).round();
+        final totalDays = (e.years * 365.25 + e.months * 30.44 + e.days)
+            .round();
         return (totalDays, totalDays == 1 ? 'day' : 'days');
       case 'weeks':
-        final totalWeeks = ((e.years * 365.25 + e.months * 30.44 + e.days) / 7).round();
+        final totalWeeks = ((e.years * 365.25 + e.months * 30.44 + e.days) / 7)
+            .round();
         return (totalWeeks, totalWeeks == 1 ? 'week' : 'weeks');
       case 'months':
         final totalMonths = e.years * 12 + e.months;
@@ -249,11 +262,15 @@ Future<void> shareCounterImage(
   BuildContext context,
   Counter counter,
   ShareImageFormat format,
-  String period,
-  {String? resetMessage}
-) async {
+  String period, {
+  String? resetMessage,
+}) async {
   final screenshotController = ScreenshotController();
-  final elapsed = getElapsed(counter.startedAt, DateTime.now().millisecondsSinceEpoch);
+  final elapsed = getElapsed(
+    counter.startedAt,
+    DateTime.now().millisecondsSinceEpoch,
+  );
+  var loaderShown = false;
 
   // Show loading indicator
   showDialog(
@@ -261,6 +278,7 @@ Future<void> shareCounterImage(
     barrierDismissible: false,
     builder: (_) => const Center(child: CircularProgressIndicator()),
   );
+  loaderShown = true;
 
   try {
     final imageBytes = await screenshotController.captureFromWidget(
@@ -275,28 +293,34 @@ Future<void> shareCounterImage(
       context: context,
     );
 
-    // Hide loading
-    if (context.mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
-
     final directory = await getTemporaryDirectory();
-    final imagePath = '${directory.path}/share_${counter.id}_${DateTime.now().millisecondsSinceEpoch}.png';
+    final imagePath =
+        '${directory.path}/share_${counter.id}_${DateTime.now().millisecondsSinceEpoch}.png';
     final file = File(imagePath);
     await file.writeAsBytes(imageBytes);
 
-    await Share.shareXFiles(
-      [XFile(imagePath)],
-      subject: 'My ${counter.title} Streak',
-      text: 'Check out my streak on ${counter.title}!',
-    );
-  } catch (e) {
-    // Hide loading on error
+    // Hide loading BEFORE showing share dialog to prevent it hanging if share is canceled
     if (context.mounted) {
       Navigator.of(context, rootNavigator: true).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to share: $e')),
-      );
+      loaderShown = false;
+    }
+
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(imagePath)],
+        subject: 'My ${counter.title} Streak',
+        text: 'Check out my streak on ${counter.title}!',
+      ),
+    );
+  } catch (e) {
+    // Ensure loader is gone on error
+    if (context.mounted) {
+      if (loaderShown) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to share: $e')));
     }
   }
 }

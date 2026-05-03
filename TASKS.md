@@ -8,6 +8,7 @@
 ## How To Use This File
 
 **Starting a session:**
+
 > "Read ARCHITECTURE.md, CONVENTIONS.md, and TASKS.md. Find the first incomplete task and continue. Open the relevant image from UI Images/ before building any screen."
 
 **Ending a session:** Mark completed tasks ✅, add newly discovered bugs/tasks at the bottom, update Session Notes.
@@ -21,22 +22,27 @@
 > Goal: Flutter project at repo root, all deps installed, app boots on Android and Chrome.
 
 - ✅ `0.1` **Verify Flutter environment**
+
   ```powershell
   flutter doctor -v
   flutter doctor --android-licenses   # accept all
   ```
+
   Must show: Flutter (stable 3.24.x+), Android toolchain, Chrome all ✓
 
 - ✅ `0.2` **Initialise Flutter project at repo root**
+
   ```powershell
   # In the cloned repo directory (after git clone https://github.com/Sanju2op/streak-tracker-flutter.git)
   # The old React Native files are already gone — initialise Flutter directly here:
   flutter create . --org com.sanju2op --project-name streak_tracker --platforms android,web
   ```
+
   - Confirm `pubspec.yaml` appears at root
   - Confirm `UI Images/` folder is untouched
 
 - ✅ `0.3` **Replace `pubspec.yaml` dependencies section**
+
   ```yaml
   dependencies:
     flutter:
@@ -58,9 +64,11 @@
       sdk: flutter
     flutter_lints: ^4.0.0
   ```
+
   Then: `flutter pub get`
 
 - ✅ `0.4` **Create folder structure** — make all empty directories as defined in ARCHITECTURE.md
+
   ```
   lib/router/   lib/db/   lib/models/   lib/providers/
   lib/screens/counters/   lib/screens/calendar/   lib/screens/settings/
@@ -70,11 +78,13 @@
   ```
 
 - ✅ `0.5` **Commit initial scaffold**
+
   ```powershell
   git add .
   git commit -m "chore: initialise Flutter project at repo root"
   git push origin main
   ```
+
   - GitHub CLI installed and authenticated via browser as `Sanju2op`
 
 - ✅ `0.6` **Confirm app boots** — default Flutter counter app should run without errors
@@ -82,6 +92,7 @@
   flutter run -d android
   flutter run -d chrome
   ```
+
   - Android run skipped by request; debug APK build verified with `flutter build apk --debug -t lib/main.dart`
   - Web build verified with `flutter build web`
 
@@ -94,6 +105,7 @@
 ### Models
 
 - ✅ `1.1` **`lib/models/elapsed_time.dart`**
+
   ```dart
   class ElapsedTime {
     final int years, months, days, hours, minutes, seconds;
@@ -102,6 +114,7 @@
   ```
 
 - ✅ `1.2` **`lib/models/stats.dart`**
+
   ```dart
   class Stats {
     final int resetCount;
@@ -156,6 +169,7 @@
 ### Utils
 
 - ✅ `1.12` **`lib/utils/uuid_utils.dart`**
+
   ```dart
   import 'package:uuid/uuid.dart';
   String generateId() => const Uuid().v4();
@@ -171,9 +185,11 @@
     - (used by TimeTabSelector to show single-unit views)
 
 - ✅ `1.14` **`lib/utils/stats_utils.dart`**
+
   ```dart
   Stats computeStats(Counter counter, List<Reset> resets);
   ```
+
   - `resetCount` = `resets.length`
   - `daysSinceStart` = days from `counter.startedAt` to now
   - `longestStreakDays` = longest gap between consecutive reset timestamps (or current if no resets)
@@ -197,6 +213,7 @@
     List<String> filterIds,   // empty list = all counters
   );
   ```
+
   - For each counter: the range it was "active" is `counter.startedAt` → now (no resets), or between consecutive resets
   - Each day in an active range gets the counter's color added to its list
   - Normalise `DateTime` to midnight (`DateTime(y, m, d)`) for map keys
@@ -220,11 +237,13 @@
   const kSheetRadius = BorderRadius.vertical(top: Radius.circular(20));
   const kDividerColor = Color(0xFFE5E5EA);
   ```
+
   - `buildAppTheme() → ThemeData` — Material 3, sets scaffold bg to `kBgColor`, card color, etc.
 
 ### Providers (data)
 
 - ✅ `1.19` **`lib/providers/counter_provider.dart`** — `CountersNotifier`
+
   ```dart
   class CountersNotifier extends AsyncNotifier<List<Counter>> {
     Future<List<Counter>> build() async { ... }
@@ -234,6 +253,7 @@
     Future<void> resetCounter(String id, {String? note, int? resetAt}) async { ... }
   }
   ```
+
   - `resetCounter`: create `Reset` with `previousStartedAt = counter.startedAt`, then update `counter.startedAt` to `resetAt ?? DateTime.now().ms`
   - After every mutation: `ref.invalidateSelf()` to refresh the list
 
@@ -280,6 +300,7 @@
 - ✅ `2.4` **`lib/app.dart`** — `MaterialApp.router` with `GoRouter` + `buildAppTheme()`
 
 - ✅ `2.5` **`lib/main.dart`**
+
   ```dart
   void main() => runApp(const ProviderScope(child: StreakTrackerApp()));
   ```
@@ -376,7 +397,6 @@
   - Right: "Edit" text button → open `CreateEditSheet` pre-filled
 
   **Body** — `SingleChildScrollView` with `Column`:
-
   1. **Title block**:
      - `Row`: 4px wide `Container(color: hexToColor(counter.color))` left strip | `Column(title bold, "Started on [fullDate]" grey)` right
      - Padding 16 horizontal
@@ -391,7 +411,7 @@
          - **Days** tab: shows Days / Hours / Minutes / Seconds
          - **Weeks** tab: shows Weeks / Days / Hours / Minutes
          - **Months** tab: shows Months / Days / Hours / Minutes
-         - **Years** tab: shows Years / Months / Days / Hours  ← default
+         - **Years** tab: shows Years / Months / Days / Hours ← default
 
   3. **Reset Counter button**:
      - `ElevatedButton`, full width, `hexToColor(counter.color)` bg, white text bold
@@ -446,6 +466,7 @@
   - Header: "Cancel" left | "Done" right
   - Card 1: "Reset on" row with date and time chips, "Note" text field
   - Card 2: "Delete Reset" (red text) button
+
 ---
 
 ## Phase 4 — Goals Feature
@@ -655,6 +676,7 @@
 - ✅ `10.1` **Expand `lib/constants/app_theme.dart`** — define both themes
 
   Add a dark variant alongside the existing light constants:
+
   ```dart
   // Light (already exists)
   const kBgColorLight       = Color(0xFFF2F2F7);
@@ -675,6 +697,7 @@
   ```
 
   Add two `ThemeData` builders:
+
   ```dart
   ThemeData buildLightTheme();
   ThemeData buildDarkTheme();
@@ -734,6 +757,7 @@
 - ✅ `10.5` **Audit all hardcoded colors** — replace with `Theme.of(context)` lookups
 
   Create helper extension in `app_theme.dart`:
+
   ```dart
   extension AppColors on BuildContext {
     Color get bgColor    => Theme.of(this).scaffoldBackgroundColor;
@@ -793,6 +817,7 @@
 - ✅ `10.7` **Route push animation** — counter list → counter detail
 
   In the `/counters/:id` `GoRoute`, add a custom `pageBuilder`:
+
   ```dart
   // Slide up + fade in (feels like the detail is rising from the card)
   transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -833,6 +858,7 @@
   ```
 
   `_BlurSheetWrapper` widget:
+
   ```dart
   // Applies backdrop blur behind the sheet
   class _BlurSheetWrapper extends StatelessWidget {
@@ -947,32 +973,31 @@
 
 ## Phase 11 — Polish & Pre-Launch
 
-- ⬜ `11.1` **Loading states** — `CircularProgressIndicator` while DB loads on cold start
+- ✅ `11.1` **Loading states** — `CircularProgressIndicator` while DB loads on cold start
+  - Added explicit cold-start loading handling on Calendar and retained loading states across DB-backed screens.
 
-- ⬜ `11.2` **Error states** — show a "Something went wrong" + retry button if DB throws
+- ✅ `11.2` **Error states** — show a "Something went wrong" + retry button if DB throws
+  - Added shared `ErrorState` with retry callbacks for DB-backed screens and sheets.
 
-- ⬜ `11.3` **Input validation**
+- ✅ `11.3` **Input validation**
   - Title max 50 chars — enforce in `CreateEditSheet`
   - Reset date cannot be before `counter.startedAt` — validate in `ResetSheet`
   - Goal target value must be > 0
 
-- ⬜ `11.4` **Delete counter confirmation** — `AlertDialog` with "Delete" (red) / "Cancel" before deleting
-
-- ⬜ `11.5` **Sort counters** — implement the sort options from the sort icon in `CountersScreen`
-  - Options: Date added (default), Name A→Z, Streak length (longest first)
-- ✅ `11.3` **Input validation** — Counter title, goal targets, reset dates
-
 - ✅ `11.4` **Delete counter confirmation** — `AlertDialog` with "Delete" (red) / "Cancel" before deleting
 
-- ✅ `11.5` **Sort counters** — Persist sort preference via `shared_preferences`
+- ✅ `11.5` **Sort counters** — implement the sort options from the sort icon in `CountersScreen`
+  - Options: Date added (default), Name A→Z, Streak length (longest first)
+  - Persisted sort preference via `shared_preferences`.
 
-- ⬜ `11.6` **Dark mode** — implement `ThemeData.dark()` variant, respect system `Brightness`
+- ✅ `11.6` **Dark mode** — implement `ThemeData.dark()` variant, respect system `Brightness`
 
 - ✅ `11.7` **App icon** — `flutter_launcher_icons` config added
 
 - ✅ `11.8` **Splash screen** — `flutter_native_splash` config added
 
-- ⬜ `11.9` **`android/app/build.gradle` final config**
+- ✅ `11.9` **`android/app/build.gradle` final config**
+
   ```gradle
   applicationId "com.sanju2op.streaktracker"
   minSdkVersion 21
@@ -981,23 +1006,28 @@
   versionName "1.0.0"
   ```
 
-- ⬜ `11.10` **Full test run**
+- ✅ `11.10` **Full test run**
   - Android: all screens, create/edit/delete counter, reset, goals, stats chart, reminders, calendar filter, widgets
   - Chrome: all screens except widgets and reminders (notification/widget are Android-only)
+  - Automated Flutter test suite passes. Debug APK and release artifacts build successfully.
 
-- ⬜ `11.11` **`flutter analyze`** — zero warnings, zero errors
+- ✅ `11.11` **`flutter analyze`** — zero warnings, zero errors
 
-- ⬜ `11.12` **Release build**
+- ✅ `11.12` **Release build**
+
   ```powershell
   flutter build appbundle --release
   ```
-  Verify build succeeds before Play Store submission.
 
-- ⬜ `11.13` **Google Play Console** ($25 one-time)
+  Verify build succeeds before Play Store submission.
+  - Verified with `flutter build apk --release -t lib/main.dart` and `flutter build appbundle --release -t lib/main.dart`.
+
+- 🚫 `11.13` **Google Play Console** ($25 one-time so avoid this version add blocked here)
   - Create app listing
   - Upload AAB
   - Add Privacy Policy URL
   - Submit for review
+  - Deferred: external Play Console account/listing work. This session publishes a GitHub Release APK instead.
 
 ---
 
@@ -1054,15 +1084,53 @@
   Actual: The stats card was independently deciding whether to show Days, Months, or Years based on magnitude.
   Fix approach: Pass the `period` from the counter down to `StatsSummaryCard` and format the days dynamically.
 
-Template for new issues:
-```
-- ⬜ `BUG-X` **Short title**
-  Platform: Android / Web / Both
-  Steps to reproduce:
-  Expected:
-  Actual:
-  Fix approach:
-```
+- ✅ `BUG-8` **Counters Screen layout/spacing**
+  Platform: Both
+  Steps to reproduce: View the Counters Screen.
+  Expected: Clear margins from screen sides and proper card spacing.
+  Actual: No spacing or margins from screen sides and cards.
+  Fix approach: Wrap SliverGrid in SliverPadding with appropriate horizontal values.
+
+- ✅ `BUG-9` **Calendar Screen visibility**
+  Platform: Both
+  Steps to reproduce: Switch to the Calendar tab.
+  Expected: Calendar and day list should be visible.
+  Actual: Nothing is showing on the screen.
+  Fix approach: Debug Sliver structure and ensure TableCalendar/Column are not collapsed.
+
+- ✅ `BUG-10` **Appearance toggle wrapping**
+  Platform: Both
+  Steps to reproduce: Go to Settings -> Appearance.
+  Expected: "System" should be visible without wrapping.
+  Actual: The selection icon (checkmark) is pushing the text, causing "System" to wrap.
+  Fix approach: Set `showSelectedIcon: false` in SegmentedButton.
+
+- ✅ `BUG-11` **Share loader persistence**
+  Platform: Both
+  Steps to reproduce: Open Share window and cancel/close it immediately.
+  Expected: Loader should disappear.
+  Actual: Loader stays spinning even after share window is closed.
+  Fix approach: Use try-finally and ensure `pop()` is called before launching the share sheet or immediately after error.
+
+- ✅ `IMPROVE-1` **Remove number animations**
+  Expected: Static numbers on counter cards.
+  Actual: Numbers have a "pulse" or size animation.
+  Fix approach: Remove ScaleTransition/AnimationController from LiveTimeDisplay.
+
+- ✅ `IMPROVE-2` **Counter Details Button theming**
+  Expected: Menu buttons in counter details should look premium in dark mode.
+  Actual: They look the same as light mode (likely missing theme context mapping).
+  Fix approach: Update \_MenuRow to use context.cardColor and correct dark mode tokens.
+
+- ✅ `IMPROVE-3` **Filter sheet blur**
+  Expected: Backdrop blur behind the filter sheet.
+  Actual: Missing blur on the filter pop-up in counters tab.
+  Fix approach: Ensure showAppBottomSheet is used with correct blur configuration or check BackdropFilter implementation.
+
+- ✅ `CLEAN-1` **Resolve Share API deprecations**
+  Expected: Use stable SharePlus APIs.
+  Actual: Using deprecated `shareXFiles` with `ignore: deprecated_member_use`.
+  Fix approach: Research and migrate to the current recommended SharePlus instance methods.
 
 ---
 
@@ -1070,6 +1138,5 @@ Template for new issues:
 
 ```
   - Phase 10 completed: Integrated full Light/Dark mode with system sync, migrated all hardcoded colors to context theme extensions, implemented `showAppBottomSheet` with blur backdrop everywhere, added tap scale feedback to cards, staggered entrance animations for the counter list, pulse effects for live time, and frosted glass SliverAppBars for main screens.
-  - Phase 11 in progress: Implemented input validation (title length, date constraints), added swipe-to-delete confirmation dialogs for goals and reminders, persisted counter sort preference to storage, and configured app icon/splash screen infrastructure. Sanitized codebase by resolving analysis warnings and deprecated member usage.
-
+  - Phase 11 completed locally: loading/error states, dark mode, Gradle final config, UI regressions, SharePlus cleanup, debug/release builds, and automated tests are verified. Google Play Console submission remains external/deferred.
 ```

@@ -52,14 +52,19 @@ void main() {
 
     test('each palette has 15 colors', () {
       for (final entry in kColorPalettes.entries) {
-        expect(entry.value.length, 15,
-            reason: '${entry.key} should have 15 colors');
+        expect(
+          entry.value.length,
+          15,
+          reason: '${entry.key} should have 15 colors',
+        );
       }
     });
 
     test('total of 75 colors', () {
-      final total =
-          kColorPalettes.values.fold<int>(0, (sum, list) => sum + list.length);
+      final total = kColorPalettes.values.fold<int>(
+        0,
+        (sum, list) => sum + list.length,
+      );
       expect(total, 75);
     });
 
@@ -74,13 +79,11 @@ void main() {
 
   group('colorToHex and hexToColor roundtrip', () {
     test('roundtrip preserves color', () {
-      final allColors =
-          kColorPalettes.values.expand((list) => list).toList();
+      final allColors = kColorPalettes.values.expand((list) => list).toList();
       for (final color in allColors) {
         final hex = colorToHex(color);
         final restored = hexToColor(hex);
-        expect(restored, color,
-            reason: 'Color roundtrip failed for $hex');
+        expect(restored, color, reason: 'Color roundtrip failed for $hex');
       }
     });
   });

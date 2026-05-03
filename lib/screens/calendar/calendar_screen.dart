@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -13,6 +14,7 @@ import '../../utils/calendar_utils.dart';
 import '../../utils/sheet_utils.dart';
 import '../../widgets/calendar_day_cell.dart';
 import '../../widgets/calendar_streak_list_item.dart';
+import '../../widgets/error_state.dart';
 
 class CalendarScreen extends ConsumerWidget {
   const CalendarScreen({super.key});
@@ -30,6 +32,42 @@ class CalendarScreen extends ConsumerWidget {
     final countersAsync = ref.watch(countersNotifierProvider);
     final resetsAsync = ref.watch(allResetsProvider);
     final calendarState = ref.watch(calendarNotifierProvider);
+
+    if (countersAsync.isLoading || resetsAsync.isLoading) {
+      return Scaffold(
+        backgroundColor: context.bgColor,
+        body: CustomScrollView(
+          slivers: [
+            _CalendarAppBar(onFilter: () => _openFilterSheet(context)),
+            const SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final error = countersAsync.error ?? resetsAsync.error;
+    if (error != null) {
+      return Scaffold(
+        backgroundColor: context.bgColor,
+        body: CustomScrollView(
+          slivers: [
+            _CalendarAppBar(onFilter: () => _openFilterSheet(context)),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: ErrorState(
+                onRetry: () {
+                  ref.invalidate(countersNotifierProvider);
+                  ref.invalidate(allResetsProvider);
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     final counters = countersAsync.value ?? [];
     final resets = resetsAsync.value ?? [];
@@ -55,114 +93,91 @@ class CalendarScreen extends ConsumerWidget {
       backgroundColor: context.bgColor,
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            pinned: true,
-            floating: true,
-            backgroundColor: context.bgColor.withValues(alpha: 0.8),
-            elevation: 0,
-            centerTitle: true,
-            title: Text(
-              'Calendar',
-              style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimary),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => _openFilterSheet(context),
-                child: const Text(
-                  'Filter',
-                  style: TextStyle(color: kAccentBlue, fontSize: 16),
+          _CalendarAppBar(onFilter: () => _openFilterSheet(context)),
+          SliverToBoxAdapter(
+            child: TableCalendar(
+              firstDay: firstDay,
+              lastDay: DateTime.now(),
+              focusedDay: calendarState.selectedDate,
+              currentDay: DateTime.now(),
+              selectedDayPredicate: (day) =>
+                  isSameDay(day, calendarState.selectedDate),
+              onDaySelected: (selectedDay, focusedDay) {
+                ref
+                    .read(calendarNotifierProvider.notifier)
+                    .setSelectedDate(selectedDay);
+              },
+              calendarFormat: CalendarFormat.month,
+              headerStyle: HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: false,
+                leftChevronVisible: false,
+                rightChevronVisible: false,
+                titleTextStyle: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: context.textPrimary,
                 ),
               ),
-              const SizedBox(width: 8),
-            ],
-            flexibleSpace: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(color: Colors.transparent),
+              daysOfWeekStyle: DaysOfWeekStyle(
+                weekdayStyle: TextStyle(
+                  color: context.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+                weekendStyle: TextStyle(
+                  color: context.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+              calendarBuilders: CalendarBuilders(
+                defaultBuilder: (context, day, focusedDay) {
+                  final colors = dayColors[_dateOnly(day)] ?? [];
+                  return CalendarDayCell(day: day, colors: colors);
+                },
+                selectedBuilder: (context, day, focusedDay) {
+                  final colors = dayColors[_dateOnly(day)] ?? [];
+                  return CalendarDayCell(
+                    day: day,
+                    isSelected: true,
+                    colors: colors,
+                  );
+                },
+                todayBuilder: (context, day, focusedDay) {
+                  final colors = dayColors[_dateOnly(day)] ?? [];
+                  return CalendarDayCell(
+                    day: day,
+                    isToday: true,
+                    colors: colors,
+                  );
+                },
+                outsideBuilder: (context, day, focusedDay) => const SizedBox(),
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                TableCalendar(
-            firstDay: firstDay,
-            lastDay: DateTime.now(),
-            focusedDay: calendarState.selectedDate,
-            currentDay: DateTime.now(),
-            selectedDayPredicate: (day) =>
-                isSameDay(day, calendarState.selectedDate),
-            onDaySelected: (selectedDay, focusedDay) {
-              ref
-                  .read(calendarNotifierProvider.notifier)
-                  .setSelectedDate(selectedDay);
-            },
-            calendarFormat: CalendarFormat.month,
-            headerStyle: HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: false,
-              leftChevronVisible: false,
-              rightChevronVisible: false,
-              titleTextStyle: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: context.textPrimary,
-              ),
-            ),
-            daysOfWeekStyle: DaysOfWeekStyle(
-              weekdayStyle: TextStyle(
-                color: context.textSecondary,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-              weekendStyle: TextStyle(
-                color: context.textSecondary,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-            ),
-            calendarBuilders: CalendarBuilders(
-              defaultBuilder: (context, day, focusedDay) {
-                final colors = dayColors[_dateOnly(day)] ?? [];
-                return CalendarDayCell(day: day, colors: colors);
-              },
-              selectedBuilder: (context, day, focusedDay) {
-                final colors = dayColors[_dateOnly(day)] ?? [];
-                return CalendarDayCell(
-                  day: day,
-                  isSelected: true,
-                  colors: colors,
-                );
-              },
-              todayBuilder: (context, day, focusedDay) {
-                final colors = dayColors[_dateOnly(day)] ?? [];
-                return CalendarDayCell(day: day, isToday: true, colors: colors);
-              },
-              outsideBuilder: (context, day, focusedDay) => const SizedBox(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
+          SliverFillRemaining(
+            hasScrollBody: true,
             child: Container(
               decoration: BoxDecoration(
                 color: context.cardColor,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      top: 20,
-                      bottom: 8,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                     child: Text(
-                      '${calendarState.selectedDate.day} ${_monthName(calendarState.selectedDate.month)}',
+                      '${calendarState.selectedDate.day} '
+                      '${_monthName(calendarState.selectedDate.month)}',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: context.textPrimary,
+                        letterSpacing: -0.5,
                       ),
                     ),
                   ),
@@ -179,13 +194,10 @@ class CalendarScreen extends ConsumerWidget {
               ),
             ),
           ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget _buildDayList(
     BuildContext context,
@@ -194,13 +206,9 @@ class CalendarScreen extends ConsumerWidget {
     DateTime selectedDate,
     List<String> filterIds,
   ) {
-    // Use the dayColors map to determine which counters are active on this day.
-    // The dayColors map was built by buildDayColorMap which correctly handles
-    // all streak ranges including reset history.
     final selectedKey = _dateOnly(selectedDate);
     final colorsForDay = dayColors[selectedKey] ?? [];
 
-    // If day is in the future, show nothing
     if (selectedDate.isAfter(DateTime.now())) {
       return Center(
         child: Text(
@@ -210,8 +218,6 @@ class CalendarScreen extends ConsumerWidget {
       );
     }
 
-    // Filter counters that are active on this day by checking if their color
-    // appears in the dayColors map for the selected date
     final activeCounters = counters.where((c) {
       if (filterIds.isNotEmpty && !filterIds.contains(c.id)) {
         return false;
@@ -221,10 +227,10 @@ class CalendarScreen extends ConsumerWidget {
     }).toList();
 
     if (activeCounters.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No counters on this day',
-          style: TextStyle(color: kTextSecondary),
+          style: TextStyle(color: context.textSecondary),
         ),
       );
     }
@@ -236,6 +242,58 @@ class CalendarScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         return CalendarStreakListItem(counter: activeCounters[index]);
       },
+    );
+  }
+}
+
+class _CalendarAppBar extends StatelessWidget {
+  final VoidCallback onFilter;
+
+  const _CalendarAppBar({required this.onFilter});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAppBar(
+      pinned: true,
+      floating: true,
+      backgroundColor: context.bgColor.withValues(alpha: 0.1),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: true,
+      title: Text(
+        'Calendar',
+        style: Theme.of(context).appBarTheme.titleTextStyle,
+      ),
+      actions: [
+        TextButton(
+          onPressed: onFilter,
+          child: const Text(
+            'Filter',
+            style: TextStyle(
+              color: kAccentBlue,
+              fontSize: 17,
+              fontWeight: FontWeight.w400,
+              letterSpacing: -0.4,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+      ],
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: context.dividerColor.withValues(alpha: 0.5),
+                  width: 0.5,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

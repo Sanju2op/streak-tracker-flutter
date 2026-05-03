@@ -79,7 +79,11 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
             const SizedBox(height: 16),
             Text(
               'Select Unit',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: context.textPrimary),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: context.textPrimary,
+              ),
             ),
             const SizedBox(height: 16),
             ..._units.map((unit) {
@@ -181,7 +185,13 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                     ),
                     child: Row(
                       children: [
-                        Text('Target', style: TextStyle(fontSize: 16, color: context.textPrimary)),
+                        Text(
+                          'Target',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: context.textPrimary,
+                          ),
+                        ),
                         const Spacer(),
                         SizedBox(
                           width: 80,
@@ -192,7 +202,9 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                             onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
                               hintText: 'Value',
-                              hintStyle: TextStyle(color: context.textSecondary),
+                              hintStyle: TextStyle(
+                                color: context.textSecondary,
+                              ),
                               border: InputBorder.none,
                             ),
                             style: TextStyle(color: context.textPrimary),
@@ -243,7 +255,10 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
                         hintStyle: TextStyle(color: context.textSecondary),
                         border: InputBorder.none,
                       ),
-                      style: TextStyle(fontSize: 16, color: context.textPrimary),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: context.textPrimary,
+                      ),
                     ),
                   ),
                 ],

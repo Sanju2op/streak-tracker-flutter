@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../constants/app_theme.dart';
@@ -33,7 +34,8 @@ class CounterCard extends StatefulWidget {
   State<CounterCard> createState() => _CounterCardState();
 }
 
-class _CounterCardState extends State<CounterCard> with SingleTickerProviderStateMixin {
+class _CounterCardState extends State<CounterCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -44,9 +46,10 @@ class _CounterCardState extends State<CounterCard> with SingleTickerProviderStat
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.96).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.96,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -60,7 +63,10 @@ class _CounterCardState extends State<CounterCard> with SingleTickerProviderStat
     final color = hexToColor(widget.counter.color);
 
     return GestureDetector(
-      onTapDown: (_) => _controller.forward(),
+      onTapDown: (_) {
+        HapticFeedback.lightImpact();
+        _controller.forward();
+      },
       onTapUp: (_) => _controller.reverse(),
       onTapCancel: () => _controller.reverse(),
       onTap: () => context.push('/counters/${widget.counter.id}'),
@@ -69,13 +75,27 @@ class _CounterCardState extends State<CounterCard> with SingleTickerProviderStat
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AspectRatio(
-              aspectRatio: widget.isFullWidth ? 2.2 : 1.0,
+            Expanded(
               child: ClipRRect(
                 borderRadius: kCardRadius,
                 child: Stack(
                   children: [
-                    Container(color: color),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [color, color.withValues(alpha: 0.8)],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: color.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                    ),
                     Positioned(
                       right: -30,
                       bottom: -20,
@@ -84,12 +104,12 @@ class _CounterCardState extends State<CounterCard> with SingleTickerProviderStat
                         height: 160,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.15),
+                          color: Colors.white.withValues(alpha: 0.12),
                         ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(16),
                       child: LiveTimeDisplay(
                         startedAt: widget.counter.startedAt,
                         period: widget.counter.period,
@@ -103,9 +123,10 @@ class _CounterCardState extends State<CounterCard> with SingleTickerProviderStat
             Text(
               widget.counter.title,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
                 color: context.textPrimary,
+                letterSpacing: -0.3,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../constants/app_theme.dart';
 import '../models/counter.dart';
 import '../utils/share_utils.dart';
+import '../utils/time_utils.dart';
 
-class ShareSheet extends StatelessWidget {
+class ShareSheet extends StatefulWidget {
   final Counter counter;
   final String period;
   final String? resetMessage;
@@ -17,11 +19,17 @@ class ShareSheet extends StatelessWidget {
   });
 
   @override
+  State<ShareSheet> createState() => _ShareSheetState();
+}
+
+class _ShareSheetState extends State<ShareSheet> {
+  ShareImageFormat _selectedFormat = ShareImageFormat.portrait;
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: context.cardColor,
+        color: context.bgColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
@@ -29,46 +37,151 @@ class ShareSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Share Streak',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: context.textPrimary,
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: kAccentBlue, fontSize: 17),
+                    ),
+                  ),
+                  const Text(
+                    'Share',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: kAccentBlue,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      final rootContext = Navigator.of(
+                        context,
+                        rootNavigator: true,
+                      ).context;
+                      Navigator.pop(context);
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        shareCounterImage(
+                          rootContext,
+                          widget.counter,
+                          _selectedFormat,
+                          widget.period,
+                          resetMessage: widget.resetMessage,
+                        );
+                      });
+                    },
+                    child: const Text(
+                      'Share',
+                      style: TextStyle(
+                        color: kAccentBlue,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.center,
             ),
+
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select size',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -1.0,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Preview different sizes for different kinds of social media',
+                    style: TextStyle(fontSize: 15, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 24),
-            _ShareOptionTile(
-              icon: Icons.square_outlined,
-              title: 'Square',
-              subtitle: 'Best for posts',
-              onTap: () {
-                Navigator.pop(context);
-                shareCounterImage(context, counter, ShareImageFormat.square, period, resetMessage: resetMessage);
-              },
+
+            // Format Selector Icons
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _FormatIcon(
+                    format: ShareImageFormat.square,
+                    isSelected: _selectedFormat == ShareImageFormat.square,
+                    onTap: () => setState(
+                      () => _selectedFormat = ShareImageFormat.square,
+                    ),
+                    label: 'Square',
+                  ),
+                  _FormatIcon(
+                    format: ShareImageFormat.portrait,
+                    isSelected: _selectedFormat == ShareImageFormat.portrait,
+                    onTap: () => setState(
+                      () => _selectedFormat = ShareImageFormat.portrait,
+                    ),
+                    label: 'Portrait',
+                  ),
+                  _FormatIcon(
+                    format: ShareImageFormat.story,
+                    isSelected: _selectedFormat == ShareImageFormat.story,
+                    onTap: () => setState(
+                      () => _selectedFormat = ShareImageFormat.story,
+                    ),
+                    label: 'Story',
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
-            _ShareOptionTile(
-              icon: Icons.crop_portrait,
-              title: 'Portrait',
-              subtitle: '4:5 ratio',
-              onTap: () {
-                Navigator.pop(context);
-                shareCounterImage(context, counter, ShareImageFormat.portrait, period, resetMessage: resetMessage);
-              },
+
+            const SizedBox(height: 32),
+
+            // Preview Area
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Container(
+                height: 360,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: ShareImageGenerator(
+                    counter: widget.counter,
+                    format: _selectedFormat,
+                    elapsed: getElapsed(
+                      widget.counter.startedAt,
+                      DateTime.now().millisecondsSinceEpoch,
+                    ),
+                    period: widget.period,
+                    resetMessage: widget.resetMessage,
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(height: 12),
-            _ShareOptionTile(
-              icon: Icons.smartphone,
-              title: 'Story',
-              subtitle: 'Full screen 9:16',
-              onTap: () {
-                Navigator.pop(context);
-                shareCounterImage(context, counter, ShareImageFormat.story, period, resetMessage: resetMessage);
-              },
-            ),
-            const SizedBox(height: 24),
+
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -76,59 +189,88 @@ class ShareSheet extends StatelessWidget {
   }
 }
 
-class _ShareOptionTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
+class _FormatIcon extends StatelessWidget {
+  final ShareImageFormat format;
+  final bool isSelected;
   final VoidCallback onTap;
+  final String label;
 
-  const _ShareOptionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
+  const _FormatIcon({
+    required this.format,
+    required this.isSelected,
     required this.onTap,
+    required this.label,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: context.bgColor,
-      borderRadius: BorderRadius.circular(16),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(icon, color: kAccentBlue, size: 32),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: context.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: context.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
+    IconData icon;
+
+    switch (format) {
+      case ShareImageFormat.square:
+        icon = Icons.square_outlined;
+      case ShareImageFormat.portrait:
+        icon = Icons.crop_portrait;
+      case ShareImageFormat.story:
+        icon = Icons.smartphone;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 100,
+            decoration: BoxDecoration(
+              color: isSelected ? context.cardColor : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected
+                    ? kAccentBlue.withValues(alpha: 0.1)
+                    : Colors.transparent,
+                width: 1,
               ),
-              Icon(Icons.chevron_right, color: context.textSecondary),
-            ],
+            ),
+            child: Center(
+              child: Icon(
+                icon,
+                size: 32,
+                color: isSelected ? kAccentBlue : context.textSecondary,
+              ),
+            ),
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              color: isSelected ? context.textPrimary : context.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isSelected
+                    ? kAccentBlue
+                    : context.textSecondary.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+              color: isSelected ? kAccentBlue : Colors.transparent,
+            ),
+            child: isSelected
+                ? const Icon(Icons.check, size: 12, color: Colors.white)
+                : null,
+          ),
+        ],
       ),
     );
   }

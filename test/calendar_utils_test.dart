@@ -6,8 +6,11 @@ import 'package:streak_tracker/utils/calendar_utils.dart';
 void main() {
   group('buildDayColorMap', () {
     test('counter with no resets: colors all days from startedAt to now', () {
-      final startMs =
-          DateTime(2026, 5, 1).millisecondsSinceEpoch; // May 1, 2026
+      final startMs = DateTime(
+        2026,
+        5,
+        1,
+      ).millisecondsSinceEpoch; // May 1, 2026
       final counter = Counter(
         id: 'c1',
         title: 'Test',
@@ -85,11 +88,12 @@ void main() {
       );
 
       final map = buildDayColorMap([c1, c2], [], ['c1']);
-      final todayColors = map[DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      )];
+      final todayColors =
+          map[DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+          )];
 
       // Only c1's color should be present
       expect(todayColors, isNotNull);
@@ -118,11 +122,12 @@ void main() {
       );
 
       final map = buildDayColorMap([c1, c2], [], []);
-      final todayColors = map[DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      )];
+      final todayColors =
+          map[DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+          )];
 
       expect(todayColors, isNotNull);
       expect(todayColors!.length, 2);
@@ -154,8 +159,11 @@ void main() {
       for (final entry in map.entries) {
         final colors = entry.value;
         // Each color should appear at most once per day
-        expect(colors.toSet().length, colors.length,
-            reason: 'Duplicate color on ${entry.key}');
+        expect(
+          colors.toSet().length,
+          colors.length,
+          reason: 'Duplicate color on ${entry.key}',
+        );
       }
     });
   });

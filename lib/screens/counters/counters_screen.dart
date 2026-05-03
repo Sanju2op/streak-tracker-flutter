@@ -11,6 +11,7 @@ import '../../widgets/counter_card.dart';
 import '../../sheets/create_edit_sheet.dart';
 import '../../widgets/empty_state.dart';
 import '../../utils/widget_utils.dart';
+import '../../widgets/error_state.dart';
 
 // ---------------------------------------------------------------------------
 // Sort preference — persistent Notifier
@@ -18,9 +19,10 @@ import '../../utils/widget_utils.dart';
 
 enum CounterSortOption { dateAdded, nameAZ, streakLength }
 
-final counterSortProvider = NotifierProvider<CounterSortNotifier, CounterSortOption>(
-  CounterSortNotifier.new,
-);
+final counterSortProvider =
+    NotifierProvider<CounterSortNotifier, CounterSortOption>(
+      CounterSortNotifier.new,
+    );
 
 class CounterSortNotifier extends Notifier<CounterSortOption> {
   static const _key = 'st_counter_sort';
@@ -63,7 +65,8 @@ class CountersScreen extends ConsumerWidget {
       backgroundColor: context.bgColor,
       body: countersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) =>
+            ErrorState(onRetry: () => ref.invalidate(countersNotifierProvider)),
         data: (counters) {
           final sorted = _sortCounters(counters, sortOption);
           updateHomeWidgets(sorted);
@@ -74,41 +77,51 @@ class CountersScreen extends ConsumerWidget {
               SliverAppBar(
                 pinned: true,
                 floating: true,
-                backgroundColor: context.bgColor.withValues(alpha: 0.8),
+                backgroundColor: context.bgColor.withValues(alpha: 0.1),
                 elevation: 0,
+                scrolledUnderElevation: 0,
                 leading: IconButton(
-                  icon: const Icon(Icons.sort, color: kAccentBlue),
+                  icon: const Icon(Icons.sort, color: kAccentBlue, size: 22),
                   onPressed: () => _showSortDialog(context, ref),
                 ),
                 title: Text(
                   'Counters',
-                  style: TextStyle(
-                    color: context.textPrimary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                  ),
+                  style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
                 centerTitle: true,
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.add, color: kAccentBlue),
+                    icon: const Icon(Icons.add, color: kAccentBlue, size: 26),
                     onPressed: () => _openCreateSheet(context),
                   ),
                 ],
                 flexibleSpace: ClipRect(
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(color: Colors.transparent),
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border(
+                          bottom: BorderSide(
+                            color: context.dividerColor.withValues(alpha: 0.5),
+                            width: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
               if (counters.isEmpty)
                 SliverFillRemaining(
-                  child: EmptyState(onAddCounter: () => _openCreateSheet(context)),
+                  hasScrollBody: false,
+                  child: EmptyState(
+                    onAddCounter: () => _openCreateSheet(context),
+                  ),
                 )
               else
                 SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 32),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
                   sliver: _CounterGrid(counters: sorted, ref: ref),
                 ),
             ],
@@ -202,7 +215,8 @@ class _CounterGrid extends ConsumerStatefulWidget {
   ConsumerState<_CounterGrid> createState() => _CounterGridState();
 }
 
-class _CounterGridState extends ConsumerState<_CounterGrid> with SingleTickerProviderStateMixin {
+class _CounterGridState extends ConsumerState<_CounterGrid>
+    with SingleTickerProviderStateMixin {
   /// Cache of last reset date per counter id.
   final Map<String, int?> _lastResetDates = {};
   bool _loaded = false;
@@ -259,52 +273,17 @@ class _CounterGridState extends ConsumerState<_CounterGrid> with SingleTickerPro
 
   @override
   Widget build(BuildContext context) {
-    final rowCount = (widget.counters.length / 2).ceil();
-
-    return SliverList.builder(
-      itemCount: rowCount,
-      itemBuilder: (_, rowIndex) {
-        final index1 = rowIndex * 2;
-        final index2 = index1 + 1;
-
-        final hasSecond = index2 < widget.counters.length;
-
-        final counter1 = widget.counters[index1];
-        final card1 = CounterCard(
-          counter: counter1,
-          lastResetDate: _loaded ? _lastResetDates[counter1.id] : null,
-          isFullWidth: !hasSecond,
-        );
-
-        Widget row;
-        if (!hasSecond) {
-          row = Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: card1,
-          );
-        } else {
-          final counter2 = widget.counters[index2];
-          final card2 = CounterCard(
-            counter: counter2,
-            lastResetDate: _loaded ? _lastResetDates[counter2.id] : null,
-            isFullWidth: false,
-          );
-
-          row = Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: card1),
-                const SizedBox(width: 12),
-                Expanded(child: card2),
-              ],
-            ),
-          );
-        }
-
-        final start = rowIndex * 0.1;
-        final end = (start + 0.5).clamp(0.0, 1.0);
+    return SliverGrid(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.9,
+      ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final counter = widget.counters[index];
+        final start = index * 0.05;
+        final end = (start + 0.4).clamp(0.0, 1.0);
 
         return AnimatedBuilder(
           animation: _animationController,
@@ -317,14 +296,21 @@ class _CounterGridState extends ConsumerState<_CounterGrid> with SingleTickerPro
             return Opacity(
               opacity: curve.value,
               child: Transform.translate(
-                offset: Offset(0, 30 * (1 - curve.value)),
-                child: child,
+                offset: Offset(0, 20 * (1 - curve.value)),
+                child: Transform.scale(
+                  scale: 0.95 + (0.05 * curve.value),
+                  child: child,
+                ),
               ),
             );
           },
-          child: row,
+          child: CounterCard(
+            counter: counter,
+            lastResetDate: _loaded ? _lastResetDates[counter.id] : null,
+            isFullWidth: false,
+          ),
         );
-      },
+      }, childCount: widget.counters.length),
     );
   }
 }

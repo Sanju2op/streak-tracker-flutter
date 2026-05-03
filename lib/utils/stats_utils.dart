@@ -21,9 +21,7 @@ Stats computeStats(Counter counter, List<Reset> resets) {
   // not startedAt which gets updated on every reset
   final originalStartMs = resets.isEmpty
       ? counter.startedAt
-      : resets
-          .map((r) => r.previousStartedAt)
-          .reduce((a, b) => a < b ? a : b);
+      : resets.map((r) => r.previousStartedAt).reduce((a, b) => a < b ? a : b);
 
   return Stats(
     resetCount: resets.length,

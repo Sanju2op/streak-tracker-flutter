@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +23,9 @@ class GoalAchievementService extends WidgetsBindingObserver {
   GoalAchievementService(this.ref) {
     WidgetsBinding.instance.addObserver(this);
     // Don't start timer in tests
-    if (const bool.fromEnvironment('FLUTTER_TEST_ENV') != true) {
+    if (!kDebugMode ||
+        WidgetsBinding.instance.runtimeType.toString() !=
+            'AutomatedTestWidgetsFlutterBinding') {
       _startPeriodicCheck();
       // Do an initial check after a short delay to allow providers to initialize
       Future.delayed(const Duration(seconds: 3), _checkGoals);

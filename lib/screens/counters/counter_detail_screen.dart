@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,6 +21,7 @@ import '../../utils/stats_utils.dart';
 import '../../utils/time_utils.dart';
 import '../../widgets/stats_summary_card.dart';
 import '../../widgets/time_tab_selector.dart';
+import '../../widgets/error_state.dart';
 import '../../utils/sheet_utils.dart';
 import '../../sheets/share_sheet.dart';
 
@@ -97,7 +100,12 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
     return countersAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
+      error: (e, _) => Scaffold(
+        backgroundColor: context.bgColor,
+        body: ErrorState(
+          onRetry: () => ref.invalidate(countersNotifierProvider),
+        ),
+      ),
       data: (counters) {
         final counter = counters.where((c) => c.id == widget.id).firstOrNull;
         if (counter == null) {
@@ -205,22 +213,27 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
     Color accentColor,
   ) {
     return AppBar(
-      backgroundColor: context.bgColor,
+      backgroundColor: context.bgColor.withValues(alpha: 0.1),
       elevation: 0,
+      scrolledUnderElevation: 0,
       leadingWidth: 120,
       leading: GestureDetector(
-        onTap: () => context.pop(),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          context.pop();
+        },
         child: const Row(
           children: [
             SizedBox(width: 8),
-            Icon(Icons.chevron_left, color: kAccentBlue, size: 28),
+            Icon(Icons.chevron_left, color: kAccentBlue, size: 32),
             Flexible(
               child: Text(
                 'Counters',
                 style: TextStyle(
                   color: kAccentBlue,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: -0.4,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -235,23 +248,18 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 10,
-              height: 10,
+              width: 8,
+              height: 8,
               decoration: BoxDecoration(
                 color: accentColor,
-                shape: BoxShape.rectangle,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
             Flexible(
               child: Text(
                 counter.title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: context.textPrimary,
-                ),
+                style: Theme.of(context).appBarTheme.titleTextStyle,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -259,15 +267,25 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
         ),
       ),
       centerTitle: true,
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(color: Colors.transparent),
+        ),
+      ),
       actions: [
         TextButton(
-          onPressed: () => openCreateEditSheet(context, counter: counter),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            openCreateEditSheet(context, counter: counter);
+          },
           child: const Text(
             'Edit',
             style: TextStyle(
               color: kAccentBlue,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontSize: 17,
+              fontWeight: FontWeight.w400,
+              letterSpacing: -0.4,
             ),
           ),
         ),
@@ -446,6 +464,7 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                 ),
                 OutlinedButton.icon(
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     showAppBottomSheet(
                       context: context,
                       child: ShareSheet(
@@ -468,7 +487,8 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                     ),
                     textStyle: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
                     ),
                   ),
                 ),
@@ -653,8 +673,15 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconBackground = isDark
+        ? accentColor.withValues(alpha: 0.18)
+        : accentColor;
+    final iconColor = isDark ? accentColor : Colors.white;
+
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
@@ -664,10 +691,10 @@ class _MenuRow extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: accentColor,
+                color: iconBackground,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: Colors.white, size: 18),
+              child: Icon(icon, color: iconColor, size: 18),
             ),
             const SizedBox(width: 12),
             Expanded(

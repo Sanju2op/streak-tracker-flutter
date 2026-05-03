@@ -77,12 +77,16 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
   Future<void> _doReset() async {
     if (!_isValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Reset date must be between start date and now')),
+        const SnackBar(
+          content: Text('Reset date must be between start date and now'),
+        ),
       );
       return;
     }
     final note = _noteController.text.trim();
-    await ref.read(countersNotifierProvider.notifier).resetCounter(
+    await ref
+        .read(countersNotifierProvider.notifier)
+        .resetCounter(
           widget.counter.id,
           note: note.isEmpty ? null : note,
           resetAt: _resetAtMs,
