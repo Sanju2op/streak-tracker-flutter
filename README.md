@@ -1,17 +1,62 @@
-# streak_tracker
+# Streak Tracker
 
-A new Flutter project.
+A premium, minimalistic Flutter application designed to help you build and maintain habits through powerful streak tracking.
 
-## Getting Started
+## ✨ Features
 
-This project is a starting point for a Flutter application.
+- **Beautiful Counters**: Track multiple streaks with a clean, grid-based UI.
+- **Dynamic Themes**: Full support for Light and Dark modes that adapt to your system settings.
+- **Detailed Stats**: Visualize your progress with charts and streak history.
+- **Reminders**: Stay on track with customizable notifications.
+- **Home Screen Widgets**: Keep your progress visible at a glance with Square (Small/Big) and Rounded widgets.
+- **Share Your Progress**: Export beautiful cards of your streaks to share with friends.
+- **Data Persistence**: Your data is stored locally and securely using SQLite.
 
-A few resources to get you started if this is your first Flutter project:
+## 🚀 Getting Started
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### Prerequisites
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [Flutter SDK](https://docs.flutter.dev/get-started/install)
+- [Android Studio](https://developer.android.com/studio) or [VS Code](https://code.visualstudio.com/)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Sanju2op/streak-tracker-flutter.git
+   ```
+2. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+3. Run the app:
+   ```bash
+   flutter run
+   ```
+
+## 🛠 Tech Stack
+
+- **Framework**: Flutter
+- **State Management**: Riverpod
+- **Local Database**: sqflite
+- **Storage**: shared_preferences
+- **Charts**: fl_chart
+- **Notifications**: flutter_local_notifications
+
+## 📸 UI Design
+
+The app features a modern design with:
+- Frosted glass effects (BackdropFilter)
+- Smooth scale and fade animations
+- Premium typography and curated color palettes
+
+## 📱 Home Screen Widgets
+
+Includes three types of Android widgets:
+- **Square Small**: 2x2 centered display.
+- **Square Big**: 4x4 grid display for multiple streaks.
+- **Rounded**: Circular minimalistic display.
+
+---
+
+Made with ❤️ by [Sanju2op](https://github.com/Sanju2op)
