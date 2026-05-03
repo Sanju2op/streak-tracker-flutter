@@ -6,6 +6,7 @@ import '../../models/counter.dart';
 import '../../providers/counter_provider.dart';
 import '../../providers/db_provider.dart';
 import '../../widgets/counter_card.dart';
+import '../../sheets/create_edit_sheet.dart';
 import '../../widgets/empty_state.dart';
 
 // ---------------------------------------------------------------------------
@@ -62,7 +63,7 @@ class CountersScreen extends ConsumerWidget {
   }
 
   void _openCreateSheet(BuildContext context) {
-    // TODO(3.7): Wire to CreateEditSheet via showModalBottomSheet
+    openCreateEditSheet(context);
   }
 
   void _showSortDialog(BuildContext context, WidgetRef ref) {

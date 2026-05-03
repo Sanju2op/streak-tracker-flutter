@@ -330,7 +330,7 @@
 
 ### 3B — Create / Edit Sheet
 
-- ⬜ `3.5` **`lib/sheets/color_picker_sheet.dart`** — see `UI Images/Pick_a_color_drawer_view_create-edit_counter_view.PNG`
+- ✅ `3.5` **`lib/sheets/color_picker_sheet.dart`** — see `UI Images/Pick_a_color_drawer_view_create-edit_counter_view.PNG`
   - `showModalBottomSheet` half-height, `isScrollControlled: false`
   - Header: "Pick a color" centered, ✕ `IconButton` top-right → `Navigator.pop(context, selectedColor)`
   - Palette name label: grey, caps, centered (e.g. "ORIGINALS")
@@ -341,7 +341,7 @@
   - Dots page indicator below `PageView`
   - Returns the selected `Color` on pop
 
-- ⬜ `3.6` **`lib/sheets/create_edit_sheet.dart`** — see `UI Images/Create-edit_Counters_view_slide_up.PNG` and `create_edit_counters_view_2_filled.PNG`
+- ✅ `3.6` **`lib/sheets/create_edit_sheet.dart`** — see `UI Images/Create-edit_Counters_view_slide_up.PNG` and `create_edit_counters_view_2_filled.PNG`
   - `showModalBottomSheet(isScrollControlled: true, useRootNavigator: true)`
   - `DraggableScrollableSheet` or fixed full-height with `MediaQuery.of(context).size.height`
   - **Header**: "Cancel" `TextButton` (blue) left | "Done" `TextButton` (grey when title empty, dark when non-empty) right
@@ -357,7 +357,7 @@
   - "Done" taps → validate title non-empty → call `ref.read(countersNotifierProvider.notifier).addCounter(...)` or `.updateCounter(...)` → `Navigator.pop(context)`
   - When editing: pre-fill all fields from the existing `Counter` object passed in
 
-- ⬜ `3.7` **Wire** `+` button and Edit button → open `CreateEditSheet` via `showModalBottomSheet`
+- ✅ `3.7` **Wire** `+` button and Edit button → open `CreateEditSheet` via `showModalBottomSheet`
 
 ### 3C — Counter Detail Screen
 
@@ -705,8 +705,8 @@ Template for new issues:
 ```
 Last updated: 2026-05-03
 Current focus: Phase 3 — counters feature
-Last completed task: 3.4 (lib/screens/counters/counters_screen.dart)
-Next task: 3.5 (lib/sheets/color_picker_sheet.dart)
+Last completed task: 3.7 (wire create/edit sheet)
+Next task: 3.8 (lib/widgets/time_tab_selector.dart)
 
 Git remote: https://github.com/Sanju2op/streak-tracker-flutter.git
 Branch: main
@@ -730,4 +730,5 @@ Key decisions made this session:
   - Phase 2 completed with GoRouter shell navigation, tab scaffold, stub screens, ProviderScope app entrypoint, and passing web/Android builds.
   - Phase 3 references opened before widget work: `Counters_Tab.PNG`, `counter_view_clicked_on_counter_detials_of_single_counter_1.PNG`, and `counter_view_clicked_on_counter_detials_of_single_counter_2_scrolled.PNG`.
   - Tasks 3.2–3.4: LiveTimeDisplay (Timer.periodic ticker), CounterCard (accent card + circle decoration), CountersScreen (GridView + sort + empty state). Widget test updated with FakeDbAdapter.
+  - Tasks 3.5–3.7: ColorPickerSheet (PageView palettes + dot indicators), CreateEditSheet (full-height modal, preview card with live time, title/date/time/color form, delete in edit mode), wired + button and empty state to open sheet.
 ```
