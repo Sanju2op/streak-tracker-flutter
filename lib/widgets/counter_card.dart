@@ -23,10 +23,13 @@ class CounterCard extends StatelessWidget {
   /// Unix ms of the most recent reset (null if never reset).
   final int? lastResetDate;
 
+  final bool isFullWidth;
+
   const CounterCard({
     super.key,
     required this.counter,
     this.lastResetDate,
+    this.isFullWidth = false,
   });
 
   @override
@@ -38,9 +41,9 @@ class CounterCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- Square card ---
+          // --- Card shape ---
           AspectRatio(
-            aspectRatio: 1.0,
+            aspectRatio: isFullWidth ? 2.2 : 1.0,
             child: ClipRRect(
               borderRadius: kCardRadius,
               child: Stack(
@@ -79,19 +82,13 @@ class CounterCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             counter.title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           Text(
             _subtitle(),
-            style: const TextStyle(
-              color: kTextSecondary,
-              fontSize: 12,
-            ),
+            style: const TextStyle(color: kTextSecondary, fontSize: 12),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

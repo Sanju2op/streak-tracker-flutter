@@ -43,7 +43,9 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
     // Find which palette page the current color belongs to.
     _currentPage = 0;
     for (int i = 0; i < _paletteEntries.length; i++) {
-      if (_paletteEntries[i].value.any((c) => c.toARGB32() == _selected.toARGB32())) {
+      if (_paletteEntries[i].value.any(
+        (c) => c.toARGB32() == _selected.toARGB32(),
+      )) {
         _currentPage = i;
         break;
       }
@@ -73,10 +75,7 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
               children: [
                 const Text(
                   'Pick a color',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 Align(
                   alignment: Alignment.centerRight,
@@ -105,7 +104,8 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
           const SizedBox(height: 12),
 
           // --- PageView of color grids ---
-          Expanded(
+          SizedBox(
+            height: 220,
             child: PageView.builder(
               controller: _pageController,
               itemCount: _paletteEntries.length,
@@ -137,7 +137,9 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
                 height: isActive ? 8 : 6,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isActive ? kTextPrimary : kTextSecondary.withValues(alpha: 0.4),
+                  color: isActive
+                      ? kTextPrimary
+                      : kTextSecondary.withValues(alpha: 0.4),
                 ),
               );
             }),
@@ -163,6 +165,7 @@ class _ColorGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

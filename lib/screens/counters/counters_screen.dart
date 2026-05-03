@@ -191,20 +191,49 @@ class _CounterGridState extends ConsumerState<_CounterGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    final rowCount = (widget.counters.length / 2).ceil();
+
+    return ListView.builder(
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 4,
-        childAspectRatio: 0.78, // square card + title + subtitle below
-      ),
-      itemCount: widget.counters.length,
-      itemBuilder: (_, index) {
-        final counter = widget.counters[index];
-        return CounterCard(
-          counter: counter,
-          lastResetDate: _loaded ? _lastResetDates[counter.id] : null,
+      itemCount: rowCount,
+      itemBuilder: (_, rowIndex) {
+        final index1 = rowIndex * 2;
+        final index2 = index1 + 1;
+
+        final hasSecond = index2 < widget.counters.length;
+
+        final counter1 = widget.counters[index1];
+        final card1 = CounterCard(
+          counter: counter1,
+          lastResetDate: _loaded ? _lastResetDates[counter1.id] : null,
+          isFullWidth: !hasSecond,
+        );
+
+        if (!hasSecond) {
+          // Single item in this row spans full width
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: card1,
+          );
+        }
+
+        final counter2 = widget.counters[index2];
+        final card2 = CounterCard(
+          counter: counter2,
+          lastResetDate: _loaded ? _lastResetDates[counter2.id] : null,
+          isFullWidth: false,
+        );
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: card1),
+              const SizedBox(width: 12),
+              Expanded(child: card2),
+            ],
+          ),
         );
       },
     );

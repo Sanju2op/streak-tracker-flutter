@@ -87,7 +87,8 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
     final hexColor = colorToHex(_color);
 
     if (_isEditing) {
-      final updated = widget.counter!.copyWith( // safe — guarded by _isEditing
+      final updated = widget.counter!.copyWith(
+        // safe — guarded by _isEditing
         title: title,
         color: hexColor,
         startedAt: _startedAtMs,
@@ -198,10 +199,7 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                     onPressed: () => Navigator.pop(context),
                     child: const Text(
                       'Cancel',
-                      style: TextStyle(
-                        color: kAccentBlue,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: kAccentBlue, fontSize: 16),
                     ),
                   ),
                   TextButton(
@@ -211,8 +209,9 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                       style: TextStyle(
                         color: _canSave ? kTextPrimary : kTextSecondary,
                         fontSize: 16,
-                        fontWeight:
-                            _canSave ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: _canSave
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -286,8 +285,9 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                                 ),
                                 const Spacer(),
                                 _ChipButton(
-                                  label: DateFormat('d MMM yyyy')
-                                      .format(_startDate),
+                                  label: DateFormat(
+                                    'd MMM yyyy',
+                                  ).format(_startDate),
                                   onTap: _pickDate,
                                 ),
                                 const SizedBox(width: 8),
@@ -421,7 +421,8 @@ class _PreviewCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Title (edit mode only)
-                  if (title != null && title!.isNotEmpty) // safe — guarded by null check
+                  if (title != null &&
+                      title!.isNotEmpty) // safe — guarded by null check
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
@@ -446,23 +447,15 @@ class _PreviewCard extends StatelessWidget {
                       return Row(
                         children: [
                           _TimeColumn(
-                            value: elapsed.days +
+                            value:
+                                elapsed.days +
                                 elapsed.months * 30 +
                                 elapsed.years * 365,
                             label: 'Days',
                           ),
-                          _TimeColumn(
-                            value: elapsed.hours,
-                            label: 'Hours',
-                          ),
-                          _TimeColumn(
-                            value: elapsed.minutes,
-                            label: 'Minutes',
-                          ),
-                          _TimeColumn(
-                            value: elapsed.seconds,
-                            label: 'Seconds',
-                          ),
+                          _TimeColumn(value: elapsed.hours, label: 'Hours'),
+                          _TimeColumn(value: elapsed.minutes, label: 'Minutes'),
+                          _TimeColumn(value: elapsed.seconds, label: 'Seconds'),
                         ],
                       );
                     },

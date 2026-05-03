@@ -31,8 +31,7 @@ class FakeDbAdapter implements DbAdapter {
   }
 
   @override
-  Future<void> insertCounter(Counter counter) async =>
-      _counters.add(counter);
+  Future<void> insertCounter(Counter counter) async => _counters.add(counter);
 
   @override
   Future<void> updateCounter(Counter counter) async {
@@ -75,12 +74,22 @@ class FakeDbAdapter implements DbAdapter {
 void main() {
   testWidgets('tab shell switches between primary screens', (tester) async {
     final fakeDb = FakeDbAdapter();
+    final now = DateTime.now().millisecondsSinceEpoch;
+    await fakeDb.insertCounter(
+      Counter(
+        id: 'demo-counter',
+        title: 'Demo Counter',
+        color: '#FF0000',
+        startedAt: now,
+        period: 'years',
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          dbAdapterProvider.overrideWithValue(fakeDb),
-        ],
+        overrides: [dbAdapterProvider.overrideWithValue(fakeDb)],
         child: const StreakTrackerApp(),
       ),
     );
@@ -104,11 +113,13 @@ void main() {
     // Navigate to counter detail
     appRouter.go('/counters');
     await tester.pumpAndSettle();
+
     appRouter.push('/counters/demo-counter');
     await tester.pumpAndSettle();
 
-    expect(find.text('Counter Detail'), findsOneWidget);
-    expect(find.text('Counter Detail: demo-counter'), findsOneWidget);
+    // With the new implementation, it shows the counter title and "Current Streak"
+    expect(find.text('Demo Counter'), findsWidgets);
+    expect(find.text('Current Streak'), findsOneWidget);
 
     // Pop back to counters
     await tester.tap(find.byIcon(Icons.chevron_left));

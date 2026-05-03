@@ -123,12 +123,11 @@ class _LiveTimeDisplayState extends State<LiveTimeDisplay> {
               .round();
       return (totalHours, totalHours == 1 ? 'hour' : 'hours');
     case 'days':
-      final totalDays =
-          (e.years * 365.25 + e.months * 30.44 + e.days).round();
+      final totalDays = (e.years * 365.25 + e.months * 30.44 + e.days).round();
       return (totalDays, totalDays == 1 ? 'day' : 'days');
     case 'weeks':
-      final totalWeeks =
-          ((e.years * 365.25 + e.months * 30.44 + e.days) / 7).round();
+      final totalWeeks = ((e.years * 365.25 + e.months * 30.44 + e.days) / 7)
+          .round();
       return (totalWeeks, totalWeeks == 1 ? 'week' : 'weeks');
     case 'months':
       final totalMonths = e.years * 12 + e.months;

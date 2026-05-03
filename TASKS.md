@@ -361,14 +361,14 @@
 
 ### 3C — Counter Detail Screen
 
-- ⬜ `3.8` **`lib/widgets/time_tab_selector.dart`** — see detail screen image
+- ✅ `3.8` **`lib/widgets/time_tab_selector.dart`** — see detail screen image
   - 5 options: Hours · Days · Weeks · Months · Years
   - Each: `GestureDetector` wrapping a `Text`
   - Active tab: black text, bold, wrapped in a rounded `Container` with thin border
   - Inactive: grey text, no border
   - Horizontal `Row` with even spacing
 
-- ⬜ `3.9` **`lib/screens/counters/counter_detail_screen.dart`** — see `UI Images/counter_view_clicked_on_counter_detials_of_single_counter_1.PNG` and `..._2_scrolled.PNG`
+- ✅ `3.9` **`lib/screens/counters/counter_detail_screen.dart`** — see `UI Images/counter_view_clicked_on_counter_detials_of_single_counter_1.PNG` and `..._2_scrolled.PNG`
 
   **AppBar:**
   - Left: back chevron + "Counters" text (blue), tap → `context.pop()`
@@ -413,7 +413,7 @@
        - Bottom row: "27 years · Longest Streak" | "27 years · Average Streak"
      - Large bold number, grey label below each
 
-- ⬜ `3.10` **`lib/sheets/reset_sheet.dart`** — see `UI Images/counter_view_clicked_on_counter_detials_of_single_counter_clicked_on_reset_counter_button.PNG`
+- ✅ `3.10` **`lib/sheets/reset_sheet.dart`** — see `UI Images/counter_view_clicked_on_counter_detials_of_single_counter_clicked_on_reset_counter_button.PNG`
   - `showModalBottomSheet` half-height
   - Title: "Reset [counter.title]"
   - Optional note `TextField` ("Add a note…")
@@ -423,7 +423,7 @@
 
 ### 3D — All Resets Screen
 
-- ⬜ `3.11` **`lib/screens/counters/all_resets_screen.dart`** — see `UI Images/from_clicked_on_single_counter_all_resets_button_view.PNG`
+- ✅ `3.11` **`lib/screens/counters/all_resets_screen.dart`** — see `UI Images/from_clicked_on_single_counter_all_resets_button_view.PNG`
   - AppBar: back arrow, "All Resets" title, counter title subtitle OR accent color dot
   - `FutureProvider` / load resets from DB for this `counterId`
   - `ListView` of reset entries, most recent first
@@ -440,7 +440,7 @@
 
 > Open `UI Images/concept_Goals_button_from clicked on counter_after_all resets button.PNG` before starting.
 
-- ⬜ `4.1` **`lib/sheets/set_goal_sheet.dart`**
+- ✅ `4.1` **`lib/sheets/set_goal_sheet.dart`**
   - `showModalBottomSheet` half-height
   - Header: "Cancel" left | "Set a goal" centered | "Done" right
   - "Target" row: number `TextField` + unit `DropdownButton` (Days / Weeks / Months / Years)
@@ -625,35 +625,338 @@
 
 ---
 
-## Phase 10 — Polish & Pre-Launch
+## Phase 10 — Theme System & UI Animations
 
-- ⬜ `10.1` **Loading states** — `CircularProgressIndicator` while DB loads on cold start
+> Goal: Light/dark theme with system-sync + manual toggle. Fluid, premium animations
+> throughout the app — tab transitions, sheet entrances, card interactions.
+> No iOS-specific APIs. Everything via Flutter's built-in animation system.
 
-- ⬜ `10.2` **Error states** — show a "Something went wrong" + retry button if DB throws
+---
 
-- ⬜ `10.3` **Input validation**
+### 10A — Light / Dark Theme
+
+- ⬜ `10.1` **Expand `lib/constants/app_theme.dart`** — define both themes
+
+  Add a dark variant alongside the existing light constants:
+  ```dart
+  // Light (already exists)
+  const kBgColorLight       = Color(0xFFF2F2F7);
+  const kCardColorLight     = Colors.white;
+  const kTextPrimaryLight   = Colors.black;
+  const kTextSecondaryLight = Color(0xFF8E8E93);
+  const kDividerColorLight  = Color(0xFFE5E5EA);
+
+  // Dark
+  const kBgColorDark        = Color(0xFF1C1C1E);
+  const kCardColorDark      = Color(0xFF2C2C2E);
+  const kTextPrimaryDark    = Colors.white;
+  const kTextSecondaryDark  = Color(0xFF98989D);
+  const kDividerColorDark   = Color(0xFF38383A);
+
+  // Accent — same in both
+  const kAccentBlue         = Color(0xFF007AFF);
+  ```
+
+  Add two `ThemeData` builders:
+  ```dart
+  ThemeData buildLightTheme();
+  ThemeData buildDarkTheme();
+  ```
+
+- ⬜ `10.2` **`lib/providers/theme_provider.dart`** — manual theme preference
+
+  ```dart
+  // Persists to shared_preferences under key 'st_theme_mode'
+  // Values: 'system' | 'light' | 'dark'
+
+  final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
+    ThemeModeNotifier.new,
+  );
+
+  class ThemeModeNotifier extends Notifier<ThemeMode> {
+    @override
+    ThemeMode build() {
+      // load from shared_preferences on init, default to ThemeMode.system
+    }
+
+    Future<void> setThemeMode(ThemeMode mode) async {
+      // persist to shared_preferences, update state
+    }
+  }
+  ```
+
+- ⬜ `10.3` **Wire theme into `lib/app.dart`**
+
+  ```dart
+  // MaterialApp.router:
+  theme:      buildLightTheme(),
+  darkTheme:  buildDarkTheme(),
+  themeMode:  ref.watch(themeModeProvider),  // system / light / dark
+  ```
+
+  When `ThemeMode.system` is selected, Flutter automatically follows
+  Android system dark mode — no extra code needed.
+
+- ⬜ `10.4` **Settings toggle UI** — add to `lib/screens/settings/settings_screen.dart`
+
+  Add a new group card at the top of the settings list:
+
+  ```
+  ┌─────────────────────────────────────┐
+  │  🌓  Appearance                      │
+  │  ─────────────────────────────────  │
+  │  [System] [Light] [Dark]  ← 3-way  │
+  │  segmented control                  │
+  └─────────────────────────────────────┘
+  ```
+
+  - Use a `SegmentedButton<ThemeMode>` (Material 3 built-in)
+  - Selected segment calls `ref.read(themeModeProvider.notifier).setThemeMode(mode)`
+  - No restart required — `MaterialApp` reacts immediately
+
+- ⬜ `10.5` **Audit all hardcoded colors** — replace with `Theme.of(context)` lookups
+
+  Create helper extension in `app_theme.dart`:
+  ```dart
+  extension AppColors on BuildContext {
+    Color get bgColor    => Theme.of(this).scaffoldBackgroundColor;
+    Color get cardColor  => Theme.of(this).cardColor;
+    Color get textPrimary   => Theme.of(this).colorScheme.onSurface;
+    Color get textSecondary => Theme.of(this).colorScheme.onSurfaceVariant;
+    Color get dividerColor  => Theme.of(this).dividerColor;
+  }
+  ```
+
+  Everywhere a widget currently uses `kBgColor`, `kCardColor`, etc. directly,
+  replace with `context.bgColor`, `context.cardColor`, etc.
+  Counter accent colors (`hexToColor(counter.color)`) stay as-is — they're
+  user-chosen and look fine on both themes.
+
+---
+
+### 10B — UI Animations
+
+> Philosophy: animations should feel fluid and intentional, not flashy.
+> Target: the layered glass + blur aesthetic of modern mobile UIs.
+> All via Flutter built-ins — no animation packages needed.
+
+- ⬜ `10.6` **Tab switching animation** — replace default left/right slide
+
+  In `lib/router/app_router.dart`, override the `ShellRoute` page transition:
+
+  ```dart
+  // Custom page builder for shell child routes
+  pageBuilder: (context, state, child) {
+    return CustomTransitionPage(
+      key: state.pageKey,
+      child: child,
+      transitionDuration: const Duration(milliseconds: 280),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        // Fade + subtle scale-up (feels like depth, not a slide)
+        return FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          ),
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.97, end: 1.0).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            ),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+  ```
+
+  This replaces the odd left-right slide with a subtle fade+scale that reads
+  as depth rather than a page flip — works on all 3 tabs.
+
+- ⬜ `10.7` **Route push animation** — counter list → counter detail
+
+  In the `/counters/:id` `GoRoute`, add a custom `pageBuilder`:
+  ```dart
+  // Slide up + fade in (feels like the detail is rising from the card)
+  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+    final slide = Tween<Offset>(
+      begin: const Offset(0, 0.06),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
+
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+      child: SlideTransition(position: slide, child: child),
+    );
+  }
+  ```
+
+  Apply the same to all sub-routes (resets, goals, stats, reminders).
+
+- ⬜ `10.8` **Bottom sheet entrance** — blur backdrop + slide up
+
+  Create a helper `showAppBottomSheet(...)` in `lib/utils/sheet_utils.dart`
+  that wraps `showModalBottomSheet` with consistent config:
+
+  ```dart
+  Future<T?> showAppBottomSheet<T>({
+    required BuildContext context,
+    required Widget child,
+    bool fullHeight = false,
+  }) {
+    return showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: fullHeight,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.35),
+      builder: (_) => _BlurSheetWrapper(fullHeight: fullHeight, child: child),
+    );
+  }
+  ```
+
+  `_BlurSheetWrapper` widget:
+  ```dart
+  // Applies backdrop blur behind the sheet
+  class _BlurSheetWrapper extends StatelessWidget {
+    Widget build(BuildContext context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.cardColor.withOpacity(0.92),
+            borderRadius: kSheetRadius,
+          ),
+          child: child,
+        ),
+      );
+    }
+  }
+  ```
+
+  Import: `import 'dart:ui' show ImageFilter;`
+
+  Replace ALL existing `showModalBottomSheet` calls across the app with
+  `showAppBottomSheet(...)`. This makes every sheet entrance consistent:
+  blurred backdrop, card slides up with the sheet, no hardcoded white background.
+
+- ⬜ `10.9` **Counter card tap feedback** — press scale animation
+
+  Wrap `CounterCard` tap area with `AnimatedScale` or `GestureDetector` +
+  `AnimationController`:
+
+  ```dart
+  // Simple approach using TweenAnimationBuilder
+  TweenAnimationBuilder<double>(
+    tween: Tween(begin: 1.0, end: _isPressed ? 0.96 : 1.0),
+    duration: const Duration(milliseconds: 100),
+    curve: Curves.easeOut,
+    builder: (_, scale, child) => Transform.scale(scale: scale, child: child),
+    child: counterCardContent,
+  )
+  ```
+
+  Set `_isPressed` true in `onTapDown`, false in `onTapUp`/`onTapCancel`.
+  This gives every card a satisfying physical press feel.
+
+- ⬜ `10.10` **Counter list entrance** — staggered card animation on first load
+
+  When `CountersScreen` transitions from loading → data, animate cards in
+  with a staggered fade+slide:
+
+  ```dart
+  // Each card delays by: index * 60ms
+  // Each card: fade 0→1 + slide from y+20 to y=0
+  // Total duration: 300ms per card
+  // Use AnimationController in CountersScreen StatefulWidget
+  // Drive with: CurvedAnimation(curve: Interval(start, end, curve: Curves.easeOutCubic))
+  ```
+
+  Use a single `AnimationController` with multiple `Interval`-based animations,
+  one per card. Cap at 6 cards animating (after that, just show immediately —
+  long lists don't need stagger on every item).
+
+- ⬜ `10.11` **Live time display pulse** — subtle tick animation
+
+  In `LiveTimeDisplay`, every time the number changes (every second on the
+  card's primary value), briefly scale the number up then back:
+
+  ```dart
+  // On each _tick():
+  // 1. Run a 150ms animation: scale 1.0 → 1.08 → 1.0
+  // 2. Curve: Curves.easeInOut
+  // Only animate the primary large number, not the unit label
+  ```
+
+  This makes the counter feel alive without being distracting. Note: only add it to `CounterCard` — not to the detail screen's large breakdown numbers, where it would look chaotic.
+
+- ⬜ `10.12` **App bar blur on scroll** — frosted glass app bar
+
+  For `CountersScreen` and `CalendarScreen`, replace the default `AppBar`
+  with a custom sliver that becomes frosted when content scrolls beneath it:
+
+  ```dart
+  SliverAppBar(
+    pinned: true,
+    backgroundColor: Colors.transparent,
+    flexibleSpace: ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          color: context.bgColor.withOpacity(0.75),
+        ),
+      ),
+    ),
+    title: const Text('Counters'),
+  )
+  ```
+
+  On dark theme: `bgColor.withOpacity(0.80)`.
+  On light theme: `bgColor.withOpacity(0.75)`.
+  This is the exact pattern iOS uses for its navigation bar blur.
+
+- ⬜ `10.13` **Verify animations on real Android device**
+
+  Test each animation on actual hardware — emulator rendering of blur
+  (`BackdropFilter`) can be slow. If `BackdropFilter` causes frame drops
+  on lower-end devices:
+  - Reduce `sigmaX`/`sigmaY` from 20 → 12
+  - Or gate blur with a `_enableBlur` flag, default true, disable if
+    `MediaQuery.of(context).disableAnimations` is true (accessibility setting)
+
+  Target: 60fps on mid-range Android (e.g. Snapdragon 6xx class).
+
+---
+
+## Phase 11 — Polish & Pre-Launch
+
+- ⬜ `11.1` **Loading states** — `CircularProgressIndicator` while DB loads on cold start
+
+- ⬜ `11.2` **Error states** — show a "Something went wrong" + retry button if DB throws
+
+- ⬜ `11.3` **Input validation**
   - Title max 50 chars — enforce in `CreateEditSheet`
   - Reset date cannot be before `counter.startedAt` — validate in `ResetSheet`
   - Goal target value must be > 0
 
-- ⬜ `10.4` **Delete counter confirmation** — `AlertDialog` with "Delete" (red) / "Cancel" before deleting
+- ⬜ `11.4` **Delete counter confirmation** — `AlertDialog` with "Delete" (red) / "Cancel" before deleting
 
-- ⬜ `10.5` **Sort counters** — implement the sort options from the sort icon in `CountersScreen`
+- ⬜ `11.5` **Sort counters** — implement the sort options from the sort icon in `CountersScreen`
   - Options: Date added (default), Name A→Z, Streak length (longest first)
   - Persist sort preference via `shared_preferences`
 
-- ⬜ `10.6` **Dark mode** — implement `ThemeData.dark()` variant, respect system `Brightness`
+- ⬜ `11.6` **Dark mode** — implement `ThemeData.dark()` variant, respect system `Brightness`
 
-- ⬜ `10.7` **App icon**
+- ⬜ `11.7` **App icon**
   - Add `flutter_launcher_icons: ^0.14.0` to dev_dependencies
   - Create 1024×1024 icon image
   - Configure and run: `dart run flutter_launcher_icons`
 
-- ⬜ `10.8` **Splash screen**
+- ⬜ `11.8` **Splash screen**
   - Add `flutter_native_splash: ^2.4.0` to dev_dependencies
   - Configure and run: `dart run flutter_native_splash:create`
 
-- ⬜ `10.9` **`android/app/build.gradle` final config**
+- ⬜ `11.9` **`android/app/build.gradle` final config**
   ```gradle
   applicationId "com.sanju2op.streaktracker"
   minSdkVersion 21
@@ -662,19 +965,19 @@
   versionName "1.0.0"
   ```
 
-- ⬜ `10.10` **Full test run**
+- ⬜ `11.10` **Full test run**
   - Android: all screens, create/edit/delete counter, reset, goals, stats chart, reminders, calendar filter, widgets
   - Chrome: all screens except widgets and reminders (notification/widget are Android-only)
 
-- ⬜ `10.11` **`flutter analyze`** — zero warnings, zero errors
+- ⬜ `11.11` **`flutter analyze`** — zero warnings, zero errors
 
-- ⬜ `10.12` **Release build**
+- ⬜ `11.12` **Release build**
   ```powershell
   flutter build appbundle --release
   ```
   Verify build succeeds before Play Store submission.
 
-- ⬜ `10.13` **Google Play Console** ($25 one-time)
+- ⬜ `11.13` **Google Play Console** ($25 one-time)
   - Create app listing
   - Upload AAB
   - Add Privacy Policy URL
