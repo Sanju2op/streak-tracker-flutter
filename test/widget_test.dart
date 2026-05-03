@@ -1,30 +1,38 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:streak_tracker/main.dart';
+import 'package:streak_tracker/app.dart';
+import 'package:streak_tracker/router/app_router.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('tab shell switches between primary screens', (tester) async {
+    await tester.pumpWidget(const StreakTrackerApp());
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Counters'), findsWidgets);
+    expect(find.text('Calendar'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.tap(find.byIcon(Icons.calendar_month));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Calendar'), findsWidgets);
+
+    await tester.tap(find.byIcon(Icons.settings));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Settings'), findsWidgets);
+
+    appRouter.go('/counters');
+    await tester.pumpAndSettle();
+    appRouter.push('/counters/demo-counter');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Counter Detail'), findsOneWidget);
+    expect(find.text('Counter Detail: demo-counter'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.chevron_left));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Counters'), findsWidgets);
   });
 }

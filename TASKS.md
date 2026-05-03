@@ -258,17 +258,17 @@
 
 > Goal: Tab navigation working, correct screens render, theme applied everywhere.
 
-- ⬜ `2.1` **`lib/constants/app_theme.dart`** — fill out `buildAppTheme()` fully
+- ✅ `2.1` **`lib/constants/app_theme.dart`** — fill out `buildAppTheme()` fully
   - `useMaterial3: true`
   - Bottom nav bar background white
   - App bar background `kBgColor`, elevation 0
   - Card theme: white, `kCardRadius`
 
-- ⬜ `2.2` **`lib/router/app_router.dart`** — GoRouter with ShellRoute
+- ✅ `2.2` **`lib/router/app_router.dart`** — GoRouter with ShellRoute
   - Copy route structure from ARCHITECTURE.md exactly
   - `ShellRoute` builder: `ScaffoldWithNavBar(child: child)`
 
-- ⬜ `2.3` **`ScaffoldWithNavBar` widget** (can live in `lib/router/app_router.dart` or `lib/widgets/`)
+- ✅ `2.3` **`ScaffoldWithNavBar` widget** (can live in `lib/router/app_router.dart` or `lib/widgets/`)
   - `BottomNavigationBar` — 3 items: Counters (list icon), Calendar (calendar_month icon), Settings (settings icon)
   - Active item color: `kAccentBlue`
   - Inactive item color: `kTextSecondary`
@@ -277,16 +277,18 @@
   - `onTap`: use `context.go('/counters')` etc.
   - Highlight the correct tab based on `GoRouterState.of(context).uri.path`
 
-- ⬜ `2.4` **`lib/app.dart`** — `MaterialApp.router` with `GoRouter` + `buildAppTheme()`
+- ✅ `2.4` **`lib/app.dart`** — `MaterialApp.router` with `GoRouter` + `buildAppTheme()`
 
-- ⬜ `2.5` **`lib/main.dart`**
+- ✅ `2.5` **`lib/main.dart`**
   ```dart
   void main() => runApp(const ProviderScope(child: StreakTrackerApp()));
   ```
 
-- ⬜ `2.6` **Stub all 3 tab screens** — just a `Scaffold` + centered title text for now
+- ✅ `2.6` **Stub all 3 tab screens** — just a `Scaffold` + centered title text for now
 
-- ⬜ `2.7` **Verify** — tabs switch correctly, back from detail returns to counters, theme applied
+- ✅ `2.7` **Verify** — tabs switch correctly, back from detail returns to counters, theme applied
+  - Covered by `test/widget_test.dart`.
+  - Verified with `flutter analyze`, `flutter test`, `flutter build web`, and `flutter build apk --debug -t lib/main.dart`.
 
 ---
 
@@ -702,9 +704,9 @@ Template for new issues:
 
 ```
 Last updated: 2026-05-03
-Current focus: Phase 1 — data layer complete
-Last completed task: 1.22 (smoke test)
-Next task: 2.1 (lib/constants/app_theme.dart — fill out buildAppTheme fully)
+Current focus: Phase 2 — app shell complete
+Last completed task: 2.7 (verify tabs, detail back navigation, theme)
+Next task: 3.1 (lib/widgets/empty_state.dart)
 
 Git remote: https://github.com/Sanju2op/streak-tracker-flutter.git
 Branch: main
@@ -725,4 +727,5 @@ Key decisions made this session:
   - `flutter_local_notifications` requires Android core library desugaring; this is enabled in `android/app/build.gradle.kts`.
   - Phase 1 completed with `flutter analyze`, `flutter test`, Chrome data-layer smoke test, web build, and Android debug APK build passing.
   - `scratch/**` is excluded from analyzer input so local scratch files do not affect project analysis.
+  - Phase 2 completed with GoRouter shell navigation, tab scaffold, stub screens, ProviderScope app entrypoint, and passing web/Android builds.
 ```
