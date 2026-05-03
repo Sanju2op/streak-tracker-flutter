@@ -459,7 +459,7 @@
   - "Note" `TextField` (optional, "Add a note…")
   - "Done" → `ref.read(goalsNotifierProvider(counterId).notifier).addGoal(goal)` → pop
 
-- ⬜ `4.2` **`lib/screens/counters/goals_screen.dart`**
+- ✅ `4.2` **`lib/screens/counters/goals_screen.dart`**
   - AppBar: back arrow, "Goals" title
   - `ListView` of goals:
     - Each row: target value + unit (e.g. "30 Days"), note if set, checkbox for completion
@@ -474,7 +474,7 @@
 
 > Open `UI Images/concept status after goals button from cllicked on counter view.PNG` before starting.
 
-- ⬜ `5.1` **`lib/screens/counters/stats_screen.dart`**
+- ✅ `5.1` **`lib/screens/counters/stats_screen.dart`**
   - AppBar: back arrow, "Stats" title
   - Header row: "TOTAL · X resets · [startDate] – Now"
   - **Tab selector**: Daily / Weekly / Yearly (3 tabs, not 5)
@@ -486,7 +486,7 @@
   - Padding 16 all sides
   - If no resets: show "No resets yet" placeholder instead of chart
 
-- ⬜ `5.2` **`buildBarChartData`** in `lib/utils/stats_utils.dart`
+- ✅ `5.2` **`buildBarChartData`** in `lib/utils/stats_utils.dart`
   - `'daily'`: group resets by day of week (Mon–Sun), count per day
   - `'weekly'`: group by ISO week number, last 12 weeks
   - `'yearly'`: group by year, all years from first reset to now
@@ -529,6 +529,11 @@
   - FAB / "Add Reminder" button → opens `AddReminderSheet`
   - Empty state: "No reminders set" + add button
   - Note: reminders are stored in `shared_preferences` (a simple JSON list per counter) — no DB table needed
+
+- ⬜ `6.5` **Goal Achievement Notification**
+  - Add logic to automatically send a local notification when a goal is achieved (the elapsed time matches the goal target).
+  - Automatically mark the goal as checked/completed in the database.
+  - Likely needs a background worker or periodic check in the app lifecycle.
 
 ---
 

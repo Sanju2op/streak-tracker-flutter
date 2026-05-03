@@ -111,6 +111,10 @@ class _SetGoalSheetState extends ConsumerState<SetGoalSheet> {
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: const BoxDecoration(
+          color: kBgColor,
+          borderRadius: kSheetRadius,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
