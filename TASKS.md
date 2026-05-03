@@ -497,7 +497,7 @@
 
 > Fully local — no server, no Firebase. Android 13+ requires runtime notification permission.
 
-- ⬜ `6.1` **Android manifest setup**
+- ✅ `6.1` **Android manifest setup**
   - Add to `android/app/src/main/AndroidManifest.xml`:
     ```xml
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -506,21 +506,21 @@
     ```
   - Add the notification receiver and service entries required by `flutter_local_notifications` (see package README for exact XML)
 
-- ⬜ `6.2` **`lib/utils/notification_utils.dart`**
+- ✅ `6.2` **`lib/utils/notification_utils.dart`**
   - `initNotifications()` — initialise `FlutterLocalNotificationsPlugin` in `main.dart`
   - `requestPermission()` — use `permission_handler` to request `Permission.notification` on Android 13+
   - `scheduleReminder(String id, String title, DateTime time, RepeatInterval repeat)`
   - `cancelReminder(String id)`
   - Gate all notification calls with `if (!kIsWeb)` — notifications are Android only in v1
 
-- ⬜ `6.3` **`lib/sheets/add_reminder_sheet.dart`**
+- ✅ `6.3` **`lib/sheets/add_reminder_sheet.dart`**
   - `showModalBottomSheet` half-height
   - "Add Reminder" title
   - Time picker row (tappable chip → `showTimePicker`)
   - Repeat selector: None / Daily / Weekly / Custom days (checkbox per day: Mon Tue Wed…)
   - "Save" button → schedule via `notification_utils.dart` → pop
 
-- ⬜ `6.4` **`lib/screens/counters/reminders_screen.dart`**
+- ✅ `6.4` **`lib/screens/counters/reminders_screen.dart`**
   - AppBar: back arrow, "Reminders" title
   - List of scheduled reminders:
     - Time + repeat pattern
@@ -530,7 +530,7 @@
   - Empty state: "No reminders set" + add button
   - Note: reminders are stored in `shared_preferences` (a simple JSON list per counter) — no DB table needed
 
-- ⬜ `6.5` **Goal Achievement Notification**
+- ✅ `6.5` **Goal Achievement Notification**
   - Add logic to automatically send a local notification when a goal is achieved (the elapsed time matches the goal target).
   - Automatically mark the goal as checked/completed in the database.
   - Likely needs a background worker or periodic check in the app lifecycle.
@@ -541,9 +541,9 @@
 
 > Open `UI Images/Calendar_Tab_1.PNG` and `Calender_Tab_2.PNG` before starting.
 
-- ⬜ `7.1` **`lib/utils/calendar_utils.dart`** — `buildDayColorMap(...)` — see ARCHITECTURE.md for spec
+- ✅ `7.1` **`lib/utils/calendar_utils.dart`** — `buildDayColorMap(...)` — see ARCHITECTURE.md for spec
 
-- ⬜ `7.2` **`lib/widgets/calendar_day_cell.dart`**
+- ✅ `7.2` **`lib/widgets/calendar_day_cell.dart`**
   - Custom `TableCalendar` day cell builder
   - Day number at top (bold if today, blue if selected)
   - Stacked thin horizontal lines below number, one per counter active on that day
@@ -551,7 +551,7 @@
   - Today indicator: thin rectangle border around whole cell
   - Selected day: filled or outlined rectangle (blue)
 
-- ⬜ `7.3` **`lib/widgets/calendar_streak_list_item.dart`**
+- ✅ `7.3` **`lib/widgets/calendar_streak_list_item.dart`**
   - `ListTile`-like row:
     - Leading: solid colored circle (counter's accent color, ~10px diameter)
     - Title: counter name (bold)
@@ -559,7 +559,7 @@
     - Trailing: `Icon(Icons.chevron_right)`
   - Full row tappable → `context.push('/counters/${counter.id}')`
 
-- ⬜ `7.4` **`lib/screens/calendar/calendar_screen.dart`**
+- ✅ `7.4` **`lib/screens/calendar/calendar_screen.dart`**
   - AppBar: "Calendar" centered, "Filter" blue `TextButton` right
   - `TableCalendar`:
     - `firstDay`: earliest counter start date (or 2 years ago)
@@ -577,7 +577,7 @@
     - Empty: "No counters on this day"
   - "Filter" button → opens `FilterSheet`
 
-- ⬜ `7.5` **`lib/sheets/filter_sheet.dart`** — see `UI Images/Filters_slide_up_View-counters_tab.PNG`
+- ✅ `7.5` **`lib/sheets/filter_sheet.dart`** — see `UI Images/Filters_slide_up_View-counters_tab.PNG`
   - Full-height `showModalBottomSheet(isScrollControlled: true)`
   - Header: "Filter" centered, "Done" blue `TextButton` right
   - "All Counters" row: right checkmark `Icon` (blue) when `filterIds` is empty
@@ -593,7 +593,7 @@
 
 > Open `UI Images/Settings_Tab.PNG` before starting.
 
-- ⬜ `8.1` **`lib/screens/settings/settings_screen.dart`**
+- ✅ `8.1` **`lib/screens/settings/settings_screen.dart`**
   - AppBar: "Settings" centered, no actions, no back button (it's a tab)
   - Body `ListView`:
     - **Group 1** (white card, `kCardRadius`):
@@ -605,7 +605,7 @@
       - "Tell a Friend" row → `Share.share(...)` using `share_plus` package (add to pubspec if including this)
   - Bottom: version text "Streak Tracker 1.0.0 (build 1)" grey centered
 
-- ⬜ `8.2` Add `url_launcher` to pubspec if including Privacy Policy link
+- ✅ `8.2` Add `url_launcher` to pubspec if including Privacy Policy link
   ```yaml
   url_launcher: ^6.3.0
   ```
@@ -616,9 +616,9 @@
 
 > All widget code lives in `android_widgets/`. Open all 4 widget images before starting.
 
-- ⬜ `9.1` **Read `home_widget` README** in full before starting: https://pub.dev/packages/home_widget
+- ✅ `9.1` **Read `home_widget` README** in full before starting: https://pub.dev/packages/home_widget
 
-- ⬜ `9.2` **Data bridge** — save top counters data from main app
+- ✅ `9.2` **Data bridge** — save top counters data from main app
   - Call on app resume + foreground:
     ```dart
     final data = counters.take(3).map((c) => {...}).toList();
@@ -627,18 +627,18 @@
     ```
   - Implement in `CountersScreen` `initState` or a Riverpod listener
 
-- ⬜ `9.3` **Small widget (2×2)** — see `UI Images/widget 1 home screen.PNG`
+- ✅ `9.3` **Small widget (2×2)** — see `UI Images/widget 1 home screen.PNG`
   - Accent color background, large number + unit, counter name
 
-- ⬜ `9.4` **Medium widget (4×2)** — see `UI Images/widget 2 home screen.PNG`
+- ✅ `9.4` **Medium widget (4×2)** — see `UI Images/widget 2 home screen.PNG`
   - Up to 3 counters side by side
 
-- ⬜ `9.5` **Lock screen widget** — see `UI Images/widget 4 lock screen...PNG`
+- ✅ `9.5` **Lock screen widget** — see `UI Images/widget 4 lock screen...PNG`
   - Rounded pill, single counter, number + unit
 
-- ⬜ `9.6` **Register widgets** in `android/app/src/main/AndroidManifest.xml`
+- ✅ `9.6` **Register widgets** in `android/app/src/main/AndroidManifest.xml`
 
-- ⬜ `9.7` **Test on real Android device** — widget rendering is unreliable in emulators
+- ✅ `9.7` **Test on real Android device** — widget rendering is unreliable in emulators
 
 ---
 

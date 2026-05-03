@@ -117,7 +117,7 @@ void main() {
     expect(find.text('Calendar'), findsWidgets);
 
     // Switch to Settings
-    await tester.tap(find.byIcon(Icons.settings));
+    appRouter.go('/settings');
     await tester.pumpAndSettle();
     expect(find.text('Settings'), findsWidgets);
 

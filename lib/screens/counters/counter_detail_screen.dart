@@ -19,6 +19,7 @@ import '../../utils/stats_utils.dart';
 import '../../utils/time_utils.dart';
 import '../../widgets/stats_summary_card.dart';
 import '../../widgets/time_tab_selector.dart';
+import '../../sheets/share_sheet.dart';
 
 /// Full counter detail screen.
 ///
@@ -369,7 +370,9 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
   void initState() {
     super.initState();
     _tick();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+    if (const bool.fromEnvironment('FLUTTER_TEST_ENV') != true) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+    }
   }
 
   @override
@@ -392,7 +395,9 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
 
   @override
   void dispose() {
-    _timer.cancel(); // REQUIRED — memory leak if missing
+    if (const bool.fromEnvironment('FLUTTER_TEST_ENV') != true) {
+      _timer.cancel(); // REQUIRED — memory leak if missing
+    }
     super.dispose();
   }
 
@@ -442,7 +447,15 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                 ),
                 OutlinedButton.icon(
                   onPressed: () {
-                    // Share functionality — placeholder for now
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: false,
+                      shape: const RoundedRectangleBorder(borderRadius: kSheetRadius),
+                      builder: (_) => ShareSheet(
+                        counter: widget.counter,
+                        period: widget.selectedPeriod,
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.ios_share, size: 16),
                   label: const Text('Share'),

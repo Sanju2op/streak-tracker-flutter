@@ -18,23 +18,43 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/counters',
-          builder: (context, state) => const CountersScreen(),
+          pageBuilder: (context, state) => CustomTransitionPage(
+            key: state.pageKey,
+            child: const CountersScreen(),
+            transitionDuration: const Duration(milliseconds: 280),
+            transitionsBuilder: _tabTransitionBuilder,
+          ),
         ),
         GoRoute(
           path: '/calendar',
-          builder: (context, state) => const CalendarScreen(),
+          pageBuilder: (context, state) => CustomTransitionPage(
+            key: state.pageKey,
+            child: const CalendarScreen(),
+            transitionDuration: const Duration(milliseconds: 280),
+            transitionsBuilder: _tabTransitionBuilder,
+          ),
         ),
         GoRoute(
           path: '/settings',
-          builder: (context, state) => const SettingsScreen(),
+          pageBuilder: (context, state) => CustomTransitionPage(
+            key: state.pageKey,
+            child: const SettingsScreen(),
+            transitionDuration: const Duration(milliseconds: 280),
+            transitionsBuilder: _tabTransitionBuilder,
+          ),
         ),
       ],
     ),
     GoRoute(
       path: '/counters/:id',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final id = state.pathParameters['id'] ?? '';
-        return CounterDetailScreen(id: id);
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: CounterDetailScreen(id: id),
+          transitionDuration: const Duration(milliseconds: 300),
+          transitionsBuilder: _slideUpTransitionBuilder,
+        );
       },
       routes: [
         GoRoute(
@@ -70,6 +90,40 @@ final appRouter = GoRouter(
   ],
   redirect: (context, state) => state.uri.path == '/' ? '/counters' : null,
 );
+
+Widget _tabTransitionBuilder(context, animation, secondaryAnimation, child) {
+  return FadeTransition(
+    opacity: CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOutCubic,
+    ),
+    child: ScaleTransition(
+      scale: Tween<double>(begin: 0.97, end: 1.0).animate(
+        CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+      ),
+      child: child,
+    ),
+  );
+}
+
+Widget _slideUpTransitionBuilder(context, animation, secondaryAnimation, child) {
+  final slide = Tween<Offset>(
+    begin: const Offset(0, 0.06),
+    end: Offset.zero,
+  ).animate(
+    CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+  );
+  
+  final fade = CurvedAnimation(parent: animation, curve: Curves.easeOut);
+
+  return FadeTransition(
+    opacity: fade,
+    child: SlideTransition(
+      position: slide,
+      child: child,
+    ),
+  );
+}
 
 class ScaffoldWithNavBar extends StatelessWidget {
   final Widget child;

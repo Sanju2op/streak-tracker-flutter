@@ -8,6 +8,7 @@ import '../../providers/db_provider.dart';
 import '../../widgets/counter_card.dart';
 import '../../sheets/create_edit_sheet.dart';
 import '../../widgets/empty_state.dart';
+import '../../utils/widget_utils.dart';
 
 // ---------------------------------------------------------------------------
 // Sort preference — simple StateProvider, no persistence yet (Phase 10.5)
@@ -56,6 +57,9 @@ class CountersScreen extends ConsumerWidget {
           }
 
           final sorted = _sortCounters(counters, sortOption);
+          
+          updateHomeWidgets(sorted);
+
           return _CounterGrid(counters: sorted, ref: ref);
         },
       ),

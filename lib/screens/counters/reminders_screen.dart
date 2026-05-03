@@ -1,22 +1,170 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class RemindersScreen extends StatelessWidget {
+import '../../constants/app_theme.dart';
+import '../../providers/counter_provider.dart';
+import '../../providers/reminder_provider.dart';
+import '../../sheets/add_reminder_sheet.dart';
+import '../../utils/notification_utils.dart';
+
+class RemindersScreen extends ConsumerWidget {
   final String counterId;
 
   const RemindersScreen({super.key, required this.counterId});
 
+  void _openAddReminderSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AddReminderSheet(counterId: counterId),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final remindersAsync = ref.watch(remindersNotifierProvider(counterId));
+
     return Scaffold(
+      backgroundColor: kBgColor,
       appBar: AppBar(
+        backgroundColor: kBgColor,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left),
+          icon: const Icon(Icons.chevron_left, color: kAccentBlue, size: 28),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Reminders'),
+        title: const Text(
+          'Reminders',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 17,
+            color: kTextPrimary,
+          ),
+        ),
+        centerTitle: true,
       ),
-      body: Center(child: Text('Reminders: $counterId')),
+      body: remindersAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
+        data: (reminders) {
+          if (reminders.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'No reminders set',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: kTextPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  OutlinedButton(
+                    onPressed: () => _openAddReminderSheet(context),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: kAccentBlue,
+                      side: const BorderSide(color: kAccentBlue),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Add Reminder'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: reminders.length,
+            itemBuilder: (context, index) {
+              final reminder = reminders[index];
+              return Dismissible(
+                key: Key(reminder.id),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  color: Colors.red,
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                onDismissed: (_) async {
+                  await cancelReminder(reminder.id);
+                  ref
+                      .read(remindersNotifierProvider(counterId).notifier)
+                      .deleteReminder(reminder.id);
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: const BoxDecoration(
+                    color: kCardColor,
+                    borderRadius: kCardRadius,
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      reminder.time.format(context),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Repeat: ${reminder.repeatMode[0].toUpperCase()}${reminder.repeatMode.substring(1)}',
+                    ),
+                    trailing: Switch(
+                      value: reminder.isEnabled,
+                      activeTrackColor: kAccentBlue.withValues(alpha: 0.5),
+                      activeThumbColor: kAccentBlue,
+                      onChanged: (val) async {
+                        ref
+                            .read(remindersNotifierProvider(counterId).notifier)
+                            .toggleReminder(reminder.id);
+
+                        if (val && reminder.repeatMode != 'none') {
+                          final countersAsync = ref.read(
+                            countersNotifierProvider,
+                          );
+                          final counter = countersAsync.value?.firstWhere(
+                            (c) => c.id == counterId,
+                          );
+                          if (counter != null) {
+                            final interval = reminder.repeatMode == 'weekly'
+                                ? RepeatInterval.weekly
+                                : RepeatInterval.daily;
+                            await scheduleReminder(
+                              id: reminder.id,
+                              counterTitle: counter.title,
+                              repeat: interval,
+                            );
+                          }
+                        } else {
+                          await cancelReminder(reminder.id);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: remindersAsync.maybeWhen(
+        data: (reminders) => reminders.isNotEmpty
+            ? FloatingActionButton(
+                onPressed: () => _openAddReminderSheet(context),
+                backgroundColor: kAccentBlue,
+                child: const Icon(Icons.add, color: Colors.white),
+              )
+            : null,
+        orElse: () => null,
+      ),
     );
   }
 }

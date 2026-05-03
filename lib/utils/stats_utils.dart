@@ -17,11 +17,19 @@ Stats computeStats(Counter counter, List<Reset> resets) {
 
   final totalDays = streakDays.fold<int>(0, (sum, days) => sum + days);
 
+  // daysSinceStart uses createdAt (the original counter creation date)
+  // not startedAt which gets updated on every reset
+  final originalStartMs = resets.isEmpty
+      ? counter.startedAt
+      : resets
+          .map((r) => r.previousStartedAt)
+          .reduce((a, b) => a < b ? a : b);
+
   return Stats(
     resetCount: resets.length,
     longestStreakDays: streakDays.isEmpty ? 0 : streakDays.reduce(max),
     averageStreakDays: streakDays.isEmpty ? 0 : totalDays ~/ streakDays.length,
-    daysSinceStart: currentStreakDays,
+    daysSinceStart: _daysBetween(originalStartMs, now),
   );
 }
 

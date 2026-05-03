@@ -1,5 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'db_provider.dart';
+import '../models/reset.dart';
+import 'counter_provider.dart';
+
+final allResetsProvider = FutureProvider<List<Reset>>((ref) async {
+  final counters = await ref.watch(countersNotifierProvider.future);
+  final db = ref.watch(dbAdapterProvider);
+  final allResets = <Reset>[];
+  for (final c in counters) {
+    allResets.addAll(await db.getResets(c.id));
+  }
+  return allResets;
+});
+
 final calendarNotifierProvider =
     NotifierProvider<CalendarNotifier, CalendarState>(CalendarNotifier.new);
 

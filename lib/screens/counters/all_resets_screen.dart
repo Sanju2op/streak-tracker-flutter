@@ -124,6 +124,16 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
   }
 
   /// When there are no resets, just show the "Started on" entry.
+  /// Computes the original start date, accounting for resets.
+  /// After resets, counter.startedAt is updated — the true original
+  /// is the earliest previousStartedAt from all resets.
+  int _originalStartDate(Counter counter) {
+    if (_resets.isEmpty) return counter.startedAt;
+    return _resets
+        .map((r) => r.previousStartedAt)
+        .reduce((a, b) => a < b ? a : b);
+  }
+
   Widget _buildStartedOnlyView(Counter counter) {
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -158,9 +168,9 @@ class _AllResetsScreenState extends ConsumerState<AllResetsScreen> {
             resetCount: resetsInGroup.length,
           );
         } else {
-          // "Started on" entry at the bottom
+          // "Started on" entry at the bottom — use original start date
           return _StartedOnCard(
-            startedAt: counter!.startedAt,
+            startedAt: _originalStartDate(counter!),
           ); // safe — guarded by counter != null check in itemCount
         }
       },

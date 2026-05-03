@@ -7,6 +7,7 @@ import '../constants/app_theme.dart';
 import '../models/counter.dart';
 import '../models/reset.dart';
 import '../utils/time_utils.dart';
+import '../sheets/share_sheet.dart';
 import 'edit_reset_sheet.dart';
 
 void showResetDrawerSheet(
@@ -144,7 +145,18 @@ class _ResetDrawerSheet extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(20),
-                              onTap: () {},
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: false,
+                                  shape: const RoundedRectangleBorder(borderRadius: kSheetRadius),
+                                  builder: (_) => ShareSheet(
+                                    counter: counter,
+                                    period: 'days', // Defaults to days for resets
+                                    resetMessage: 'Reset on ${DateFormat('d MMM yyyy').format(DateTime.fromMillisecondsSinceEpoch(reset.resetAt))}',
+                                  ),
+                                );
+                              },
                               child: const Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 12,
