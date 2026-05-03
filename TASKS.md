@@ -161,7 +161,7 @@
   String generateId() => const Uuid().v4();
   ```
 
-- ⬜ `1.13` **`lib/utils/time_utils.dart`** — `getElapsed(int startMs, int nowMs) → ElapsedTime`
+- ✅ `1.13` **`lib/utils/time_utils.dart`** — `getElapsed(int startMs, int nowMs) → ElapsedTime`
   - Account for variable month and year lengths (do not just divide by 30 or 365)
   - Use `DateTime` arithmetic for accuracy
   - Also provide unit-specific value helpers:
@@ -170,7 +170,7 @@
     - `getElapsedInWeeks(startMs, nowMs) → double`
     - (used by TimeTabSelector to show single-unit views)
 
-- ⬜ `1.14` **`lib/utils/stats_utils.dart`**
+- ✅ `1.14` **`lib/utils/stats_utils.dart`**
   ```dart
   Stats computeStats(Counter counter, List<Reset> resets);
   ```
@@ -182,14 +182,14 @@
     - `period`: `'daily'` | `'weekly'` | `'yearly'`
     - Returns fl_chart `BarChartGroupData` list grouped by the period
 
-- ⬜ `1.15` **`lib/utils/format_utils.dart`**
+- ✅ `1.15` **`lib/utils/format_utils.dart`**
   - `formatDate(int ms) → String` → "10 Jan 1999"
   - `formatShortDate(int ms) → String` → "10 Jan"
   - `formatTime(int ms) → String` → "7:26 PM"
   - `formatDuration(ElapsedTime e) → String` → "27 Years, 3 Months, 22 Days"
   - `formatPeriodLabel(String period) → String` → "Years" / "Months" etc.
 
-- ⬜ `1.16` **`lib/utils/calendar_utils.dart`**
+- ✅ `1.16` **`lib/utils/calendar_utils.dart`**
   ```dart
   Map<DateTime, List<Color>> buildDayColorMap(
     List<Counter> counters,
@@ -204,12 +204,12 @@
 
 ### Constants
 
-- ⬜ `1.17` **`lib/constants/colors.dart`** — 5 palettes × 15 colors = 75 total
+- ✅ `1.17` **`lib/constants/colors.dart`** — 5 palettes × 15 colors = 75 total
   - Palette names: `'Originals'`, `'Earth Tones'`, `'Pastels'`, `'Landscapes'`, `'Metals'`
   - Match the colors visible in `UI Images/Pick_a_color_drawer_view_create-edit_counter_view.PNG` for Originals
   - Include: `colorToHex(Color)`, `hexToColor(String)`, `randomColor()`
 
-- ⬜ `1.18` **`lib/constants/app_theme.dart`**
+- ✅ `1.18` **`lib/constants/app_theme.dart`**
   ```dart
   const kBgColor     = Color(0xFFF2F2F7);
   const kCardColor   = Colors.white;
@@ -224,7 +224,7 @@
 
 ### Providers (data)
 
-- ⬜ `1.19` **`lib/providers/counter_provider.dart`** — `CountersNotifier`
+- ✅ `1.19` **`lib/providers/counter_provider.dart`** — `CountersNotifier`
   ```dart
   class CountersNotifier extends AsyncNotifier<List<Counter>> {
     Future<List<Counter>> build() async { ... }
@@ -237,18 +237,20 @@
   - `resetCounter`: create `Reset` with `previousStartedAt = counter.startedAt`, then update `counter.startedAt` to `resetAt ?? DateTime.now().ms`
   - After every mutation: `ref.invalidateSelf()` to refresh the list
 
-- ⬜ `1.20` **`lib/providers/calendar_provider.dart`** — `CalendarNotifier`
+- ✅ `1.20` **`lib/providers/calendar_provider.dart`** — `CalendarNotifier`
   - State: `(selectedDate: DateTime, filterIds: List<String>)`
   - `selectedDate` defaults to today
   - `setSelectedDate(DateTime d)`
   - `setFilter(List<String> ids)` — empty list = all counters
   - `clearFilter()`
 
-- ⬜ `1.21` **`lib/providers/goal_provider.dart`** — `GoalsNotifier`
+- ✅ `1.21` **`lib/providers/goal_provider.dart`** — `GoalsNotifier`
   - Scoped per `counterId` using `.family`
   - `addGoal(Goal g)`, `toggleComplete(String id)`, `deleteGoal(String id)`
 
-- ⬜ `1.22` **Smoke test** — add 2 counters, reset one with a note, add a goal, print all via `debugPrint`. Verify sqflite on Android and web_adapter in Chrome both work.
+- ✅ `1.22` **Smoke test** — add 2 counters, reset one with a note, add a goal, print all via `debugPrint`. Verify sqflite on Android and web_adapter in Chrome both work.
+  - `flutter test -d chrome test/data_layer_smoke_test.dart` verifies the web adapter path.
+  - `flutter build apk --debug -t lib/main.dart` verifies the Android/native dependency path builds.
 
 ---
 
@@ -700,9 +702,9 @@ Template for new issues:
 
 ```
 Last updated: 2026-05-03
-Current focus: Phase 0 — environment setup + Flutter scaffold
-Last completed task: 1.12 (lib/utils/uuid_utils.dart)
-Next task: 1.13 (lib/utils/time_utils.dart)
+Current focus: Phase 1 — data layer complete
+Last completed task: 1.22 (smoke test)
+Next task: 2.1 (lib/constants/app_theme.dart — fill out buildAppTheme fully)
 
 Git remote: https://github.com/Sanju2op/streak-tracker-flutter.git
 Branch: main
@@ -721,4 +723,6 @@ Key decisions made this session:
   - Web build command changed in Flutter 3.41.9: `flutter build web --web-renderer canvaskit` is rejected, while `flutter build web` succeeds.
   - Android debug APK build passes with `flutter build apk --debug -t lib/main.dart`.
   - `flutter_local_notifications` requires Android core library desugaring; this is enabled in `android/app/build.gradle.kts`.
+  - Phase 1 completed with `flutter analyze`, `flutter test`, Chrome data-layer smoke test, web build, and Android debug APK build passing.
+  - `scratch/**` is excluded from analyzer input so local scratch files do not affect project analysis.
 ```
