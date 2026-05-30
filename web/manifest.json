@@ -1,23 +1,27 @@
 {
-    "name": "streak_tracker",
-    "short_name": "streak_tracker",
-    "start_url": ".",
+    "name": "Streak Tracker",
+    "short_name": "Streak",
+    "description": "Track your habits and personal streaks. A free, no-ads Days Since tracker.",
+    "start_url": "./",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F2F2F7",
+    "theme_color": "#000000",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "categories": ["health", "lifestyle", "productivity"],
+    "lang": "en",
     "icons": [
         {
             "src": "icons/Icon-192.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
             "src": "icons/Icon-512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
             "src": "icons/Icon-maskable-192.png",
@@ -30,6 +34,15 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Add Counter",
+            "short_name": "Add",
+            "description": "Create a new streak counter",
+            "url": "./counters",
+            "icons": [{ "src": "icons/Icon-192.png", "sizes": "192x192" }]
         }
     ]
 }

@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
+
+import 'share_utils_native.dart'
+    if (dart.library.js_util) 'share_utils_web.dart';
 
 import '../constants/colors.dart';
 import '../models/counter.dart';
@@ -293,25 +294,23 @@ Future<void> shareCounterImage(
       context: context,
     );
 
-    final directory = await getTemporaryDirectory();
-    final imagePath =
-        '${directory.path}/share_${counter.id}_${DateTime.now().millisecondsSinceEpoch}.png';
-    final file = File(imagePath);
-    await file.writeAsBytes(imageBytes);
-
-    // Hide loading BEFORE showing share dialog to prevent it hanging if share is canceled
     if (context.mounted) {
       Navigator.of(context, rootNavigator: true).pop();
       loaderShown = false;
     }
 
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(imagePath)],
-        subject: 'My ${counter.title} Streak',
-        text: 'Check out my streak on ${counter.title}!',
-      ),
-    );
+    if (kIsWeb) {
+      await downloadImageOnWeb(
+        imageBytes,
+        '${counter.title.replaceAll(' ', '_')}_streak.png',
+      );
+    } else {
+      await shareImageOnNative(
+        imageBytes,
+        counter.title,
+        'My ${counter.title} Streak',
+      );
+    }
   } catch (e) {
     // Ensure loader is gone on error
     if (context.mounted) {

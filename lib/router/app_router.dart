@@ -14,6 +14,7 @@ import '../screens/counters/stats_screen.dart';
 import '../screens/settings/settings_screen.dart';
 
 final appRouter = GoRouter(
+  initialLocation: '/counters',
   routes: [
     ShellRoute(
       builder: (context, state, child) => ScaffoldWithNavBar(child: child),
