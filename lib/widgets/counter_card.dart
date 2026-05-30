@@ -62,108 +62,112 @@ class _CounterCardState extends State<CounterCard>
   Widget build(BuildContext context) {
     final color = hexToColor(widget.counter.color);
 
-    return GestureDetector(
-      onTapDown: (_) {
-        HapticFeedback.lightImpact();
-        _controller.forward();
-      },
-      onTapUp: (_) => _controller.reverse(),
-      onTapCancel: () => _controller.reverse(),
-      onTap: () => context.push('/counters/${widget.counter.id}'),
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AspectRatio(
-              aspectRatio: 1.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: kCardRadius,
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.25),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: kCardRadius,
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              color,
-                              HSLColor.fromColor(color)
-                                  .withLightness(
-                                    (HSLColor.fromColor(color).lightness - 0.10)
-                                        .clamp(0.0, 1.0),
-                                  )
-                                  .toColor(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: -30,
-                        bottom: -20,
-                        child: Container(
-                          width: 160,
-                          height: 160,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withValues(alpha: 0.12),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: -10,
-                        bottom: 10,
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withValues(alpha: 0.08),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: LiveTimeDisplay(
-                          startedAt: widget.counter.startedAt,
-                          period: widget.counter.period,
-                        ),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTapDown: (_) {
+          HapticFeedback.lightImpact();
+          _controller.forward();
+        },
+        onTapUp: (_) => _controller.reverse(),
+        onTapCancel: () => _controller.reverse(),
+        onTap: () => context.push('/counters/${widget.counter.id}'),
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 1.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: kCardRadius,
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
+                  child: ClipRRect(
+                    borderRadius: kCardRadius,
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                color,
+                                HSLColor.fromColor(color)
+                                    .withLightness(
+                                      (HSLColor.fromColor(color).lightness -
+                                              0.10)
+                                          .clamp(0.0, 1.0),
+                                    )
+                                    .toColor(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: -30,
+                          bottom: -20,
+                          child: Container(
+                            width: 160,
+                            height: 160,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.12),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: -10,
+                          bottom: 10,
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.08),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: LiveTimeDisplay(
+                            startedAt: widget.counter.startedAt,
+                            period: widget.counter.period,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              widget.counter.title,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
-                color: context.textPrimary,
-                letterSpacing: -0.3,
+              const SizedBox(height: 6),
+              Text(
+                widget.counter.title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: context.textPrimary,
+                  letterSpacing: -0.3,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              _subtitle(),
-              style: TextStyle(color: context.textSecondary, fontSize: 12),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+              Text(
+                _subtitle(),
+                style: TextStyle(color: context.textSecondary, fontSize: 12),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );

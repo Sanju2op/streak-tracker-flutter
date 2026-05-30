@@ -363,9 +363,16 @@ class _CounterGridState extends ConsumerState<_CounterGrid>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final crossAxisCount = screenWidth > 900
+        ? 4
+        : screenWidth > 600
+        ? 3
+        : 2;
+
     return SliverGrid(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
         childAspectRatio: 0.78,
