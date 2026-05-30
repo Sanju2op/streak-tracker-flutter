@@ -50,7 +50,10 @@ class CalendarStreakListItem extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Day $totalDays of $totalDays Days, $hours Hours, $minutes Minutes',
-                    style: TextStyle(color: context.textSecondary, fontSize: 13),
+                    style: TextStyle(
+                      color: context.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),

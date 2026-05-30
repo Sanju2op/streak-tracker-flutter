@@ -17,12 +17,27 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.timer_outlined, color: kAccentBlue, size: 64),
-            const SizedBox(height: 18),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: kAccentBlue.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: kAccentBlue.withValues(alpha: 0.15),
+                  width: 1.5,
+                ),
+              ),
+              child: const Icon(
+                Icons.timer_outlined,
+                color: kAccentBlue,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: 24),
             Text(
               'No counters yet',
               style: textTheme.titleLarge?.copyWith(
-                color: kTextPrimary,
+                color: context.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
               textAlign: TextAlign.center,
@@ -30,26 +45,30 @@ class EmptyState extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Tap + to add your first counter',
-              style: textTheme.bodyMedium?.copyWith(color: kTextSecondary),
+              style: textTheme.bodyMedium?.copyWith(
+                color: context.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 22),
-            OutlinedButton(
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
               onPressed: onAddCounter,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: kAccentBlue,
-                side: const BorderSide(color: kAccentBlue),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-              ),
-              child: const Text(
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text(
                 'Add Counter',
                 style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kAccentBlue,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: kButtonRadius,
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
               ),
             ),
           ],

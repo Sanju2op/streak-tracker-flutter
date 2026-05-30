@@ -26,7 +26,10 @@ class CalendarDayCell extends StatelessWidget {
         border: isSelected
             ? Border.all(color: kAccentBlue, width: 1.5)
             : isToday
-            ? Border.all(color: context.textSecondary.withValues(alpha: 0.3), width: 1)
+            ? Border.all(
+                color: context.textSecondary.withValues(alpha: 0.3),
+                width: 1,
+              )
             : null,
         borderRadius: BorderRadius.circular(6),
       ),

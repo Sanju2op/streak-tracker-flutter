@@ -1,23 +1,26 @@
 # CONVENTIONS.md
 
-> Rules for AI agents and developers. Read this alongside ARCHITECTURE.md at the start of every session.
+> Rules for AI agents and developers. Read this alongside ARCHITECTURE.md at
+> the start of every session.
 
 ---
 
 ## Session Startup (say this to your AI agent)
 
-> "Read ARCHITECTURE.md and TASKS.md. Check the current task status and continue from where we left off. Open the relevant image in UI Images/ before building any screen."
+> "Read ARCHITECTURE.md and TASKS.md. Check the current task status and
+> continue from where we left off. Open the relevant image in UI Images/
+> before building any screen."
 
 ---
 
 ## Git Setup
 
-The repo origin is `https://github.com/Sanju2op/streak-tracker-flutter.git`.
-The Flutter project lives **directly at the repo root** — not in a subfolder. 
+The repo origin is `<https://github.com/Sanju2op/streak-tracker-flutter.git>`.
+The Flutter project lives **directly at the repo root** — not in a subfolder.
 
-### First-time setup (Windows 11) 
+### First-time setup (Windows 11)
+
 ```powershell
-
 # initialize git locally
 git init
 
@@ -40,14 +43,16 @@ flutter doctor -v
 ```
 
 ### Push changes
+
 ```powershell
 git add .
 git status          # verify before committing — see .gitignore rules below
 git commit -m "feat: description of change"
 git push origin main
-``` 
+```
 
 ### .gitignore — must include
+
 ```gitignore
 # Flutter
 build/
@@ -106,7 +111,7 @@ flutter channel       # must show "stable"
 #      ✓ Android Emulator (optional — real device is faster)
 
 # 4. Set environment variable:
-#    ANDROID_HOME = C:\Users\<YourName>\AppData\Local\Android\Sdk
+#    ANDROID_HOME = C:\Users\ <YourName>\AppData\Local\Android\Sdk
 #    Add to PATH: %ANDROID_HOME%\platform-tools
 
 # 5. Accept all Android licenses
@@ -127,14 +132,16 @@ flutter doctor -v
 ```
 
 Required green checks:
-```
+
+```text
 [✓] Flutter (Channel stable, 3.24.x+)
 [✓] Android toolchain
 [✓] Chrome - develop for the web
 ```
 
 Not required (Windows only):
-```
+
+```text
 [!] Visual Studio  ← only needed for Windows desktop builds
 ```
 
@@ -193,8 +200,10 @@ adb install build\app\outputs\flutter-apk\app-debug.apk
 ```
 
 For release signing, generate a keystore (once):
+
 ```powershell
-keytool -genkey -v -keystore streak-tracker-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias streak-tracker
+keytool -genkey -v -keystore streak-tracker-key.jks `
+  -keyalg RSA -keysize 2048 -validity 10000 -alias streak-tracker
 # Store the .jks file OUTSIDE the repo — never commit it
 ```
 
@@ -215,71 +224,103 @@ python -m http.server 8080
 # Open: http://localhost:8080
 ```
 
-Note: Web uses `shared_preferences` for storage (not sqflite). Data persists across page reloads in the same browser.
+Note: Web uses `shared_preferences` for storage (not sqflite). Data persists
+across page reloads in the same browser.
 
 ---
 
-## Local Skills for AI Agents
+## Local & Global Skills for AI Agents
 
-Skills are stored locally at `.agents/skills/` in the project root.
+Skills are stored locally at `.agents/skills/` in the project root, as well as
+globally at `/home/sanjay/.agents/skills/`.
 
-```
+```text
 streak-tracker/
   .agents/
     skills/
       flutter-skill.md    ← patterns, package versions, common mistakes
 ```
 
+- **Skill Search & Installation:** The `find-skills` tool is installed in
+  `/home/sanjay/.agents/skills/find-skills`. We use the Skills CLI (`npx skills`)
+  from the open agent skills ecosystem (<https://skills.sh/>).
+- **Ecosystem Capability:** If a specialized task or domain capability is
+  needed but not currently installed, agents can search for it using
+  `npx skills find [query]` and install it using
+  `npx skills add <owner/repo@skill> -g -y`.
+
 Tell your AI agent at session start:
-> "Read .agents/skills/flutter-skill.md, ARCHITECTURE.md, and TASKS.md before starting."
+> "Read .agents/skills/flutter-skill.md, ARCHITECTURE.md, and TASKS.md before
+> starting."
 
 ---
 
 ## Coding Conventions
 
 ### State Management
-- Screens: `ConsumerWidget` or `ConsumerStatefulWidget` — never plain `StatelessWidget` when reading providers
-- Business logic: `AsyncNotifierProvider` (for async DB data) or `NotifierProvider` (for sync state) in `lib/providers/`
-- Local ephemeral UI state (form fields, sheet state): `StatefulWidget` + `setState` is fine
+
+- Screens: `ConsumerWidget` or `ConsumerStatefulWidget` — never plain
+  `StatelessWidget` when reading providers.
+- Business logic: `AsyncNotifierProvider` (for async DB data) or
+  `NotifierProvider` (for sync state) in `lib/providers/`.
+- Local ephemeral UI state (form fields, sheet state): `StatefulWidget` +
+  `setState` is fine.
 
 ### Navigation
-- Use `context.go('/route')` or `context.push('/route')` from go_router
-- Never use raw `Navigator.push()` for routed screens
-- Bottom sheets are NOT routes — use `showModalBottomSheet()`
+
+- Use `context.go('/route')` or `context.push('/route')` from go_router.
+- Never use raw `Navigator.push()` for routed screens.
+- Bottom sheets are NOT routes — use `showModalBottomSheet()`.
 
 ### Null Safety
-- No `!` force-unwrap without a comment explaining why it's safe
-- Use `?.` and `??` appropriately
-- Never use `dynamic` — always type explicitly
+
+- No `!` force-unwrap without a comment explaining why it's safe.
+- Use `?.` and `??` appropriately.
+- Never use `dynamic` — always type explicitly.
 
 ### No Hardcoded Values
-- Colors → `lib/constants/colors.dart`
-- Layout constants → `lib/constants/app_theme.dart`
-- Accent colors on counter → always `hexToColor(counter.color)`, never hardcode
+
+- Colors → `lib/constants/colors.dart`.
+- Layout constants → `lib/constants/app_theme.dart`.
+- Accent colors on counter → always `hexToColor(counter.color)`, never
+  hardcode.
 
 ### Database
-- Only `lib/db/sqflite_adapter.dart` may import `sqflite`
-- Only `lib/db/web_adapter.dart` may import `shared_preferences`
-- All other code calls `ref.read(dbAdapterProvider)`
+
+- Only `lib/db/sqflite_adapter.dart` may import `sqflite`.
+- Only `lib/db/web_adapter.dart` may import `shared_preferences`.
+- All other code calls `ref.read(dbAdapterProvider)`.
 
 ### Time + Dates
-- Store all timestamps as `int` (Unix milliseconds)
-- Compute elapsed time only in `lib/utils/time_utils.dart`
-- Format dates/durations only in `lib/utils/format_utils.dart`
-- Never compute time inline in widgets
+
+- Store all timestamps as `int` (Unix milliseconds).
+- Compute elapsed time only in `lib/utils/time_utils.dart`.
+- Format dates/durations only in `lib/utils/format_utils.dart`.
+- Never compute time inline in widgets.
 
 ### Platform
-- `kIsWeb` from `flutter/foundation.dart` for any platform branch
-- `HapticFeedback.mediumImpact()` is safe to call on web (no-op), no guard needed
-- `flutter_local_notifications` must be gated — check `!kIsWeb` before scheduling
+
+- `kIsWeb` from `flutter/foundation.dart` for any platform branch.
+- `HapticFeedback.mediumImpact()` is safe to call on web (no-op), no guard
+  needed.
+- `flutter_local_notifications` must be gated — check `!kIsWeb` before
+  scheduling.
 
 ### Build Validation
-- After completing a phase or fixing one or multiple bugs, always run a build (e.g., `flutter build apk --debug -t lib/main.dart`) to check for build warnings and errors.
-- Ensure all build-time issues are fixed before proceeding to the next task or committing.
+
+- After completing a phase or fixing one or multiple bugs, always run a build
+  (e.g., `flutter build apk --debug -t lib/main.dart`) to check for build
+  warnings and errors.
+- Ensure all build-time issues are fixed before proceeding to the next task
+  or committing.
 
 ### Code Style
-- `dart format .` before committing
-- `flutter analyze` after every change — fix all warnings, not just errors
+
+- `dart format .` before committing.
+- `flutter analyze` after every change — fix all warnings, not just errors.
+- Compliance with `markdownlint` rules is required for all project `.md` files
+  (e.g., line wrapping to 80 columns, proper blank lines around code blocks,
+  and clean list/block element indentation).
 - File names: `snake_case.dart`
 - Class names: `PascalCase`
 - Constants: `kCamelCase` (e.g., `kCardRadius`)
@@ -295,7 +336,7 @@ version: 1.0.0+1   # semver+buildNumber
 ```
 
 | Change type | Example |
-|---|---|
+| --- | --- |
 | Bug fix | `1.0.0+1` → `1.0.1+2` |
 | New feature | `1.0.1+2` → `1.1.0+3` |
 | Breaking change | `1.1.0+3` → `2.0.0+4` |
@@ -304,11 +345,12 @@ version: 1.0.0+1   # semver+buildNumber
 
 ## Switching AI Agents
 
-These files are all the context needed to switch between Claude Code, Codex, Antigravity, or any other agent:
+These files are all the context needed to switch between Claude Code, Codex,
+Antigravity, or any other agent:
 
 | File | Purpose |
-|---|---|
-| `ARCHITECTURE.md` | Tech stack, folder structure, data models, UI design spec |
+| --- | --- |
+| `ARCHITECTURE.md` | Stack, folder structure, data models, UI design spec |
 | `CONVENTIONS.md` | This file — setup, git, workflow, coding rules |
 | `TASKS.md` | What's done, what's next, bugs |
 | `UI Images/` | Design reference — open before building any screen |
@@ -319,12 +361,12 @@ These files are all the context needed to switch between Claude Code, Codex, Ant
 ## Troubleshooting
 
 | Problem | Fix |
-|---|---|
-| `flutter doctor` shows Android SDK not found | Set `ANDROID_HOME` env var, restart terminal |
-| Device not showing in `flutter devices` | Enable USB Debugging on phone, install Google USB drivers |
-| Web build fails with sqflite error | sqflite must only be in `sqflite_adapter.dart`. Check for stray imports. |
-| Notification not showing on Android 13+ | Must call `permission_handler` to request notification permission at runtime |
-| Timer still ticking after navigating away | Cancel `_timer` in `dispose()` of `LiveTimeDisplay` |
-| Bottom sheet content hidden by keyboard | Wrap sheet body: `Padding(padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom))` |
-| `shared_preferences` seems to lose data on web | It DOES persist. `flutter run -d chrome` with hot restart (`R`) resets app state but not storage. Full page reload preserves it. |
-| `flutter pub get` fails | Check `pubspec.yaml` version constraints match the table in ARCHITECTURE.md |
+| --- | --- |
+| `flutter doctor` SDK issue | Set `ANDROID_HOME` env var, restart shell |
+| Device not in `flutter devices` | Enable USB Debugging, install USB drivers |
+| Web sqflite build error | Only import sqflite in `sqflite_adapter.dart` |
+| Android 13+ notifications fail | Use `permission_handler` to ask permission |
+| Timer ticks after page exit | Cancel `_timer` in `dispose()` of display |
+| Keyboard hides sheet | Wrap sheet in Padding using viewInsets.bottom |
+| Web `shared_prefs` resets | Hot restart (`R`) resets memory, not storage |
+| `flutter pub get` fails | Verify versions match ARCHITECTURE.md table |

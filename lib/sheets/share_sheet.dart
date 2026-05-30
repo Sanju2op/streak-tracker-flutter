@@ -50,7 +50,9 @@ class _ShareSheetState extends State<ShareSheet> {
                       style: TextStyle(color: kAccentBlue, fontSize: 17),
                     ),
                   ),
-                  const SizedBox(width: 48), // Placeholder to keep Share button on the right
+                  const SizedBox(
+                    width: 48,
+                  ), // Placeholder to keep Share button on the right
                   TextButton(
                     onPressed: () {
                       HapticFeedback.mediumImpact();
@@ -88,7 +90,10 @@ class _ShareSheetState extends State<ShareSheet> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -119,7 +124,8 @@ class _ShareSheetState extends State<ShareSheet> {
                         children: [
                           _FormatIcon(
                             format: ShareImageFormat.square,
-                            isSelected: _selectedFormat == ShareImageFormat.square,
+                            isSelected:
+                                _selectedFormat == ShareImageFormat.square,
                             onTap: () => setState(
                               () => _selectedFormat = ShareImageFormat.square,
                             ),
@@ -127,7 +133,8 @@ class _ShareSheetState extends State<ShareSheet> {
                           ),
                           _FormatIcon(
                             format: ShareImageFormat.portrait,
-                            isSelected: _selectedFormat == ShareImageFormat.portrait,
+                            isSelected:
+                                _selectedFormat == ShareImageFormat.portrait,
                             onTap: () => setState(
                               () => _selectedFormat = ShareImageFormat.portrait,
                             ),
@@ -135,7 +142,8 @@ class _ShareSheetState extends State<ShareSheet> {
                           ),
                           _FormatIcon(
                             format: ShareImageFormat.story,
-                            isSelected: _selectedFormat == ShareImageFormat.story,
+                            isSelected:
+                                _selectedFormat == ShareImageFormat.story,
                             onTap: () => setState(
                               () => _selectedFormat = ShareImageFormat.story,
                             ),

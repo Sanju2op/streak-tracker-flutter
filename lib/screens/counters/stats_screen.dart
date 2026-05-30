@@ -228,7 +228,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                             fontWeight: isSelected
                                 ? FontWeight.bold
                                 : FontWeight.normal,
-                            color: isSelected ? context.textPrimary : context.textSecondary,
+                            color: isSelected
+                                ? context.textPrimary
+                                : context.textSecondary,
                           ),
                         ),
                       ),
@@ -252,7 +254,10 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                   ? Center(
                       child: Text(
                         'No resets yet',
-                        style: TextStyle(color: context.textSecondary, fontSize: 16),
+                        style: TextStyle(
+                          color: context.textSecondary,
+                          fontSize: 16,
+                        ),
                       ),
                     )
                   : BarChart(

@@ -44,36 +44,59 @@ class StatsSummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           // Top row
-          Row(
-            children: [
-              Expanded(
-                child: _StatCell(value: '${stats.resetCount}', label: 'Resets'),
-              ),
-              Expanded(
-                child: _StatCell(
-                  value: _formatDays(stats.daysSinceStart, period),
-                  label: 'Since started',
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _StatCell(
+                    value: '${stats.resetCount}',
+                    label: 'Resets',
+                  ),
                 ),
-              ),
-            ],
+                VerticalDivider(
+                  color: context.dividerColor.withValues(alpha: 0.5),
+                  thickness: 1,
+                  width: 32,
+                ),
+                Expanded(
+                  child: _StatCell(
+                    value: _formatDays(stats.daysSinceStart, period),
+                    label: 'Since started',
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Divider(
+              color: context.dividerColor.withValues(alpha: 0.5),
+              thickness: 1,
+            ),
+          ),
           // Bottom row
-          Row(
-            children: [
-              Expanded(
-                child: _StatCell(
-                  value: _formatDays(stats.longestStreakDays, period),
-                  label: 'Longest Streak',
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _StatCell(
+                    value: _formatDays(stats.longestStreakDays, period),
+                    label: 'Longest Streak',
+                  ),
                 ),
-              ),
-              Expanded(
-                child: _StatCell(
-                  value: _formatDays(stats.averageStreakDays, period),
-                  label: 'Average Streak',
+                VerticalDivider(
+                  color: context.dividerColor.withValues(alpha: 0.5),
+                  thickness: 1,
+                  width: 32,
                 ),
-              ),
-            ],
+                Expanded(
+                  child: _StatCell(
+                    value: _formatDays(stats.averageStreakDays, period),
+                    label: 'Average Streak',
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

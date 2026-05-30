@@ -34,7 +34,8 @@ class TimeTabSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.bgColor, // Use context extension for theme-aware background
+        color:
+            context.bgColor, // Use context extension for theme-aware background
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.all(3),

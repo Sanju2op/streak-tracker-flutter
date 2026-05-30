@@ -75,47 +75,73 @@ class _CounterCardState extends State<CounterCard>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: kCardRadius,
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [color, color.withValues(alpha: 0.8)],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: color.withValues(alpha: 0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      right: -30,
-                      bottom: -20,
-                      child: Container(
-                        width: 160,
-                        height: 160,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.12),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: LiveTimeDisplay(
-                        startedAt: widget.counter.startedAt,
-                        period: widget.counter.period,
-                      ),
+            AspectRatio(
+              aspectRatio: 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: kCardRadius,
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
                     ),
                   ],
+                ),
+                child: ClipRRect(
+                  borderRadius: kCardRadius,
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              color,
+                              HSLColor.fromColor(color)
+                                  .withLightness(
+                                    (HSLColor.fromColor(color).lightness - 0.10)
+                                        .clamp(0.0, 1.0),
+                                  )
+                                  .toColor(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: -30,
+                        bottom: -20,
+                        child: Container(
+                          width: 160,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.12),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: -10,
+                        bottom: 10,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.08),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: LiveTimeDisplay(
+                          startedAt: widget.counter.startedAt,
+                          period: widget.counter.period,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

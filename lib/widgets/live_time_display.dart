@@ -88,13 +88,17 @@ class _LiveTimeDisplayState extends State<LiveTimeDisplay> {
           alignment: Alignment.centerLeft,
           child: Text(
             '$value',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 52,
-              fontWeight: FontWeight.w900,
-              height: 1.0,
-              letterSpacing: -2.0,
-            ),
+            style:
+                Theme.of(
+                  context,
+                ).textTheme.displayLarge?.copyWith(color: Colors.white) ??
+                const TextStyle(
+                  color: Colors.white,
+                  fontSize: 52,
+                  fontWeight: FontWeight.w900,
+                  height: 1.0,
+                  letterSpacing: -2.0,
+                ),
           ),
         ),
         const SizedBox(height: 0),

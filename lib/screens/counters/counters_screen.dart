@@ -77,7 +77,7 @@ class CountersScreen extends ConsumerWidget {
               SliverAppBar(
                 pinned: true,
                 floating: true,
-                backgroundColor: context.bgColor.withValues(alpha: 0.1),
+                backgroundColor: Colors.transparent,
                 elevation: 0,
                 scrolledUnderElevation: 0,
                 leading: IconButton(
@@ -100,10 +100,10 @@ class CountersScreen extends ConsumerWidget {
                     filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.transparent,
+                        color: context.bgColor.withValues(alpha: 0.80),
                         border: Border(
                           bottom: BorderSide(
-                            color: context.dividerColor.withValues(alpha: 0.5),
+                            color: context.dividerColor.withValues(alpha: 0.4),
                             width: 0.5,
                           ),
                         ),
@@ -241,22 +241,19 @@ class CountersScreen extends ConsumerWidget {
               height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color:
-                    isSelected
-                        ? kAccentBlue.withValues(alpha: 0.15)
-                        : Colors.transparent,
+                color: isSelected
+                    ? kAccentBlue.withValues(alpha: 0.15)
+                    : Colors.transparent,
                 border: Border.all(
-                  color:
-                      isSelected
-                          ? kAccentBlue
-                          : ctx.textSecondary.withValues(alpha: 0.2),
+                  color: isSelected
+                      ? kAccentBlue
+                      : ctx.textSecondary.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),
-              child:
-                  isSelected
-                      ? const Icon(Icons.check, color: kAccentBlue, size: 14)
-                      : null,
+              child: isSelected
+                  ? const Icon(Icons.check, color: kAccentBlue, size: 14)
+                  : null,
             ),
             const SizedBox(width: 16),
             Text(
@@ -371,11 +368,11 @@ class _CounterGridState extends ConsumerState<_CounterGrid>
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.9,
+        childAspectRatio: 0.78,
       ),
       delegate: SliverChildBuilderDelegate((context, index) {
         final counter = widget.counters[index];
-        final start = index * 0.05;
+        final start = (index * 0.05).clamp(0.0, 0.30);
         final end = (start + 0.4).clamp(0.0, 1.0);
 
         return AnimatedBuilder(

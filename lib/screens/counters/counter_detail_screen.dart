@@ -213,7 +213,7 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
     Color accentColor,
   ) {
     return AppBar(
-      backgroundColor: context.bgColor.withValues(alpha: 0.1),
+      backgroundColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
       leadingWidth: 120,
@@ -270,7 +270,17 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
       flexibleSpace: ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(color: Colors.transparent),
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.bgColor.withValues(alpha: 0.80),
+              border: Border(
+                bottom: BorderSide(
+                  color: context.dividerColor.withValues(alpha: 0.4),
+                  width: 0.5,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
       actions: [
@@ -465,7 +475,7 @@ class _CurrentStreakCardState extends State<_CurrentStreakCard> {
                 OutlinedButton.icon(
                   onPressed: () {
                     HapticFeedback.lightImpact();
-                      showAppBottomSheet(
+                    showAppBottomSheet(
                       context: context,
                       fullHeight: true,
                       child: ShareSheet(
@@ -623,36 +633,39 @@ class _MenuListCard extends StatelessWidget {
           color: context.cardColor,
           borderRadius: kCardRadius,
         ),
-        child: Column(
-          children: [
-            _MenuRow(
-              icon: Icons.layers,
-              label: 'All Resets',
-              accentColor: accentColor,
-              onTap: () => context.push('/counters/$counterId/resets'),
-            ),
-            Divider(height: 1, color: context.dividerColor, indent: 56),
-            _MenuRow(
-              icon: Icons.adjust,
-              label: 'Goals',
-              accentColor: accentColor,
-              onTap: () => context.push('/counters/$counterId/goals'),
-            ),
-            Divider(height: 1, color: context.dividerColor, indent: 56),
-            _MenuRow(
-              icon: Icons.bar_chart,
-              label: 'Stats',
-              accentColor: accentColor,
-              onTap: () => context.push('/counters/$counterId/stats'),
-            ),
-            Divider(height: 1, color: context.dividerColor, indent: 56),
-            _MenuRow(
-              icon: Icons.notifications,
-              label: 'Reminders',
-              accentColor: accentColor,
-              onTap: () => context.push('/counters/$counterId/reminders'),
-            ),
-          ],
+        child: ClipRRect(
+          borderRadius: kCardRadius,
+          child: Column(
+            children: [
+              _MenuRow(
+                icon: Icons.layers,
+                label: 'All Resets',
+                accentColor: accentColor,
+                onTap: () => context.push('/counters/$counterId/resets'),
+              ),
+              Divider(height: 1, color: context.dividerColor, indent: 56),
+              _MenuRow(
+                icon: Icons.adjust,
+                label: 'Goals',
+                accentColor: accentColor,
+                onTap: () => context.push('/counters/$counterId/goals'),
+              ),
+              Divider(height: 1, color: context.dividerColor, indent: 56),
+              _MenuRow(
+                icon: Icons.bar_chart,
+                label: 'Stats',
+                accentColor: accentColor,
+                onTap: () => context.push('/counters/$counterId/stats'),
+              ),
+              Divider(height: 1, color: context.dividerColor, indent: 56),
+              _MenuRow(
+                icon: Icons.notifications,
+                label: 'Reminders',
+                accentColor: accentColor,
+                onTap: () => context.push('/counters/$counterId/reminders'),
+              ),
+            ],
+          ),
         ),
       ),
     );

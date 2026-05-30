@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
@@ -41,15 +42,28 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: context.bgColor,
       appBar: AppBar(
-        backgroundColor: context.bgColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
           'Settings',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: context.textPrimary,
-            fontSize: 17,
+          style: Theme.of(context).appBarTheme.titleTextStyle,
+        ),
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: context.bgColor.withValues(alpha: 0.80),
+                border: Border(
+                  bottom: BorderSide(
+                    color: context.dividerColor.withValues(alpha: 0.4),
+                    width: 0.5,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),

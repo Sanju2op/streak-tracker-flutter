@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -134,34 +136,45 @@ class ScaffoldWithNavBar extends StatelessWidget {
     final currentIndex = _indexForPath(path);
 
     return Scaffold(
+      extendBody: true,
       body: child,
-      bottomNavigationBar: DecoratedBox(
-        decoration: BoxDecoration(
-          color: context.cardColor,
-          border: Border(
-            top: BorderSide(color: context.dividerColor, width: 0.5),
+      bottomNavigationBar: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.bgColor.withValues(alpha: 0.82),
+              border: Border(
+                top: BorderSide(
+                  color: context.dividerColor.withValues(alpha: 0.4),
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: currentIndex,
+              onTap: (index) => context.go(_pathForIndex(index)),
+              type: BottomNavigationBarType.fixed,
+              selectedFontSize: 12,
+              unselectedFontSize: 12,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list_alt),
+                  label: 'Counters',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_month),
+                  label: 'Calendar',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
+                ),
+              ],
+            ),
           ),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: (index) => context.go(_pathForIndex(index)),
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt),
-              label: 'Counters',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month),
-              label: 'Calendar',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
         ),
       ),
     );
