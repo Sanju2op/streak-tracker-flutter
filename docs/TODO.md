@@ -1139,4 +1139,5 @@
 ```
   - Phase 10 completed: Integrated full Light/Dark mode with system sync, migrated all hardcoded colors to context theme extensions, implemented `showAppBottomSheet` with blur backdrop everywhere, added tap scale feedback to cards, staggered entrance animations for the counter list, pulse effects for live time, and frosted glass SliverAppBars for main screens.
   - Phase 11 completed locally: loading/error states, dark mode, Gradle final config, UI regressions, SharePlus cleanup, debug/release builds, and automated tests are verified. Google Play Console submission remains external/deferred.
+  - Web Compatibility Blockers resolved: Conditional native/web image compilation for `share_utils.dart`, custom PWA manifest properties, optimized index.html with blur-ready dynamic themes, path URL strategies via `usePathUrlStrategy()`, GoRouter `initialLocation: '/counters'` configured, and `flutter_native_splash` web support generated. Web WASM build compiled successfully without error.
 ```
