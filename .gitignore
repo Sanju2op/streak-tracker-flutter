@@ -52,3 +52,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Exclude platform stubs (Streak Tracker is Android & Web only)
+/ios/
+/linux/
+/macos/
+/windows/
