@@ -39,6 +39,7 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
   late DateTime _startDate;
   late TimeOfDay _startTime;
   late Color _color;
+  bool _isDateTimeModified = false;
   bool get _isEditing => widget.counter != null;
 
   @override
@@ -95,11 +96,12 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
       );
       await ref.read(countersNotifierProvider.notifier).updateCounter(updated);
     } else {
+      final startMs = _isDateTimeModified ? _startedAtMs : now;
       final counter = Counter(
         id: generateId(),
         title: title,
         color: hexColor,
-        startedAt: _startedAtMs,
+        startedAt: startMs,
         period: 'years', // default display period
         createdAt: now,
         updatedAt: now,
@@ -143,10 +145,15 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _startDate,
-      firstDate: DateTime(2000),
+      firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    if (picked != null) setState(() => _startDate = picked);
+    if (picked != null) {
+      setState(() {
+        _startDate = picked;
+        _isDateTimeModified = true;
+      });
+    }
   }
 
   Future<void> _pickTime() async {
@@ -154,7 +161,12 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
       context: context,
       initialTime: _startTime,
     );
-    if (picked != null) setState(() => _startTime = picked);
+    if (picked != null) {
+      setState(() {
+        _startTime = picked;
+        _isDateTimeModified = true;
+      });
+    }
   }
 
   Future<void> _pickColor() async {
@@ -233,6 +245,7 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                       color: _color,
                       title: _isEditing ? _titleController.text : null,
                       startedAt: _startedAtMs,
+                      isNewAndUntouched: !_isEditing && !_isDateTimeModified,
                     ),
 
                     const SizedBox(height: 16),
@@ -396,11 +409,13 @@ class _PreviewCard extends StatelessWidget {
   final Color color;
   final String? title;
   final int startedAt;
+  final bool isNewAndUntouched;
 
   const _PreviewCard({
     required this.color,
     this.title,
     required this.startedAt,
+    required this.isNewAndUntouched,
   });
 
   @override
@@ -453,26 +468,42 @@ class _PreviewCard extends StatelessWidget {
                   const Spacer(),
 
                   // 4-column live display
-                  LiveTimeDisplay(
-                    startedAt: startedAt,
-                    period: 'years', // doesn't matter — we use custom builder
-                    builder: (context, elapsed) {
-                      return Row(
-                        children: [
-                          _TimeColumn(
-                            value:
-                                elapsed.days +
-                                elapsed.months * 30 +
-                                elapsed.years * 365,
-                            label: 'Days',
-                          ),
-                          _TimeColumn(value: elapsed.hours, label: 'Hours'),
-                          _TimeColumn(value: elapsed.minutes, label: 'Minutes'),
-                          _TimeColumn(value: elapsed.seconds, label: 'Seconds'),
-                        ],
-                      );
-                    },
-                  ),
+                  if (isNewAndUntouched)
+                    const Row(
+                      children: [
+                        _TimeColumn(value: 0, label: 'Days'),
+                        _TimeColumn(value: 0, label: 'Hours'),
+                        _TimeColumn(value: 0, label: 'Minutes'),
+                        _TimeColumn(value: 0, label: 'Seconds'),
+                      ],
+                    )
+                  else
+                    LiveTimeDisplay(
+                      startedAt: startedAt,
+                      period: 'years', // doesn't matter — we use custom builder
+                      builder: (context, elapsed) {
+                        return Row(
+                          children: [
+                            _TimeColumn(
+                              value:
+                                  elapsed.days +
+                                  elapsed.months * 30 +
+                                  elapsed.years * 365,
+                              label: 'Days',
+                            ),
+                            _TimeColumn(value: elapsed.hours, label: 'Hours'),
+                            _TimeColumn(
+                              value: elapsed.minutes,
+                              label: 'Minutes',
+                            ),
+                            _TimeColumn(
+                              value: elapsed.seconds,
+                              label: 'Seconds',
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                 ],
               ),
             ),

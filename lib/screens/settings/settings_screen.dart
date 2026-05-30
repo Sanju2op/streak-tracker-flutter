@@ -147,11 +147,10 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Container(
-            decoration: BoxDecoration(
-              color: context.cardColor,
-              borderRadius: kCardRadius,
-            ),
+          Material(
+            color: context.cardColor,
+            borderRadius: kCardRadius,
+            clipBehavior: Clip.antiAlias,
             child: Column(
               children: [
                 ListTile(
@@ -186,11 +185,10 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Container(
-            decoration: BoxDecoration(
-              color: context.cardColor,
-              borderRadius: kCardRadius,
-            ),
+          Material(
+            color: context.cardColor,
+            borderRadius: kCardRadius,
+            clipBehavior: Clip.antiAlias,
             child: ListTile(
               title: Text(
                 'Tell a Friend',

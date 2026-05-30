@@ -55,7 +55,7 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _resetDate,
-      firstDate: DateTime(2000),
+      firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
     if (picked != null) {
