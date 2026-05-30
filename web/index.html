@@ -45,29 +45,15 @@
     }
     @media (prefers-color-scheme: light) {
       body { background-color: #F2F2F7; }
-      .loading-dot { background-color: #1C1C1E !important; }
-    }
-    .loading-dots {
-      display: flex;
-      gap: 8px;
-    }
-    .loading-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: #FFFFFF;
-      animation: pulse 1.2s ease-in-out infinite;
-    }
-    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes pulse {
-      0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-      40% { opacity: 1; transform: scale(1); }
     }
   </style>
   
   
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  
+  
+  
+  
   
   
   <style id="splash-screen-style">
@@ -89,6 +75,18 @@
       left: 50%;
       -ms-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
+      animation: pulse-scale 2.0s ease-in-out infinite;
+    }
+
+    @keyframes pulse-scale {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(0.92);
+        opacity: 0.85;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 1.0;
+      }
     }
 
     .contain {
@@ -150,18 +148,14 @@
   </picture>
   
   
-  <!-- Loading indicator shown while Flutter engine initialises -->
-  <div class="loading-dots" id="loading">
-    <div class="loading-dot"></div>
-    <div class="loading-dot"></div>
-    <div class="loading-dot"></div>
-  </div>
-
+  
+  
   <script src="flutter_bootstrap.js" async=""></script>
   <script>
-    // Hide loading dots once Flutter has rendered its first frame
+    // Hide loading indicators once Flutter has rendered its first frame
     window.addEventListener('flutter-first-frame', function () {
-      document.getElementById('loading').style.display = 'none';
+      const loading = document.getElementById('loading');
+      if (loading) loading.style.display = 'none';
     });
   </script>
 
