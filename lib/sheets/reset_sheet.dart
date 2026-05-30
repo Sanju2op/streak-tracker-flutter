@@ -112,7 +112,7 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: kTextSecondary.withValues(alpha: 0.3),
+                color: context.textSecondary.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -129,12 +129,12 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
                     style: TextStyle(color: kAccentBlue, fontSize: 16),
                   ),
                 ),
-                const Text(
+                Text(
                   'Reset Counter',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: kTextPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 TextButton(
@@ -156,8 +156,8 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
             // Form card
             Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: kCardColor,
+              decoration: BoxDecoration(
+                color: context.cardColor,
                 borderRadius: kCardRadius,
               ),
               child: Column(
@@ -170,7 +170,13 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
                     ),
                     child: Row(
                       children: [
-                        const Text('Reset on', style: TextStyle(fontSize: 16)),
+                        Text(
+                          'Reset on',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: context.textPrimary,
+                          ),
+                        ),
                         const Spacer(),
                         _ChipButton(
                           label: DateFormat('d MMM yyyy').format(_resetDate),
@@ -185,9 +191,9 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
                     ),
                   ),
 
-                  const Divider(
+                  Divider(
                     height: 1,
-                    color: kDividerColor,
+                    color: context.dividerColor,
                     indent: 16,
                     endIndent: 16,
                   ),
@@ -200,12 +206,15 @@ class _ResetSheetState extends ConsumerState<ResetSheet> {
                     ),
                     child: TextField(
                       controller: _noteController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Note',
-                        hintStyle: TextStyle(color: kTextSecondary),
+                        hintStyle: TextStyle(color: context.textSecondary),
                         border: InputBorder.none,
                       ),
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: context.textPrimary,
+                      ),
                       maxLines: 3,
                       minLines: 1,
                     ),
@@ -239,12 +248,16 @@ class _ChipButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: kBgColor,
+          color: context.bgColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: context.textPrimary,
+          ),
         ),
       ),
     );

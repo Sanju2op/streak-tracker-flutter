@@ -54,9 +54,17 @@ open class CounterWidgetProvider : HomeWidgetProvider() {
                     val lockViews = RemoteViews(context.packageName, R.layout.widget_lock)
                     if (counterToDisplay != null) {
                         val startedAt = counterToDisplay.getLong("started_at")
-                        val diff = System.currentTimeMillis() - startedAt
-                        val days = diff / 86400000L
-                        lockViews.setTextViewText(R.id.tv_count, days.toString())
+                        val period = counterToDisplay.optString("period", "days")
+                        val (value, _) = getElapsedValueAndUnit(startedAt, period)
+                        val unitAbbr = when (period) {
+                            "hours" -> "h"
+                            "weeks" -> "w"
+                            "months" -> "m"
+                            "years" -> "y"
+                            else -> "d"
+                        }
+                        lockViews.setTextViewText(R.id.tv_count, value.toString())
+                        lockViews.setTextViewText(R.id.tv_unit, unitAbbr)
                     }
                     appWidgetManager.updateAppWidget(widgetId, lockViews)
                 } else {
@@ -75,28 +83,71 @@ open class CounterWidgetProvider : HomeWidgetProvider() {
         }
     }
     
+    private fun getElapsedValueAndUnit(startedAt: Long, period: String): Pair<Long, String> {
+        val diff = System.currentTimeMillis() - startedAt
+        if (diff <= 0) {
+            val unit = when (period) {
+                "hours" -> "Hour"
+                "weeks" -> "Week"
+                "months" -> "Month"
+                "years" -> "Year"
+                else -> "Day"
+            }
+            return Pair(0L, unit)
+        }
+        val value: Long
+        val unit: String
+        when (period) {
+            "hours" -> {
+                value = diff / 3600000L
+                unit = if (value == 1L) "Hour" else "Hours"
+            }
+            "weeks" -> {
+                value = diff / (86400000L * 7L)
+                unit = if (value == 1L) "Week" else "Weeks"
+            }
+            "months" -> {
+                value = (diff / (86400000L * 30.44)).toLong()
+                unit = if (value == 1L) "Month" else "Months"
+            }
+            "years" -> {
+                value = (diff / (86400000L * 365.25)).toLong()
+                unit = if (value == 1L) "Year" else "Years"
+            }
+            "days" -> {
+                value = diff / 86400000L
+                unit = if (value == 1L) "Day" else "Days"
+            }
+            else -> {
+                value = diff / 86400000L
+                unit = if (value == 1L) "Day" else "Days"
+            }
+        }
+        return Pair(value, unit)
+    }
+    
     private fun bindSingleItem(views: RemoteViews, obj: JSONObject) {
         val title = obj.getString("title")
         val startedAt = obj.getLong("started_at")
-        val diff = System.currentTimeMillis() - startedAt
-        val days = diff / 86400000L
+        val period = obj.optString("period", "days")
+        val (value, unit) = getElapsedValueAndUnit(startedAt, period)
         
         views.setTextViewText(R.id.tv_title, title)
-        views.setTextViewText(R.id.tv_count, days.toString())
-        views.setTextViewText(R.id.tv_unit, "Days")
+        views.setTextViewText(R.id.tv_count, value.toString())
+        views.setTextViewText(R.id.tv_unit, unit)
     }
 
     private fun bindItem(views: RemoteViews, array: JSONArray, index: Int, containerId: Int, titleId: Int, countId: Int, unitId: Int) {
         val obj = array.getJSONObject(index)
         val title = obj.getString("title")
         val startedAt = obj.getLong("started_at")
-        val diff = System.currentTimeMillis() - startedAt
-        val days = diff / 86400000L
+        val period = obj.optString("period", "days")
+        val (value, unit) = getElapsedValueAndUnit(startedAt, period)
         
         views.setViewVisibility(containerId, android.view.View.VISIBLE)
         views.setTextViewText(titleId, title)
-        views.setTextViewText(countId, days.toString())
-        views.setTextViewText(unitId, "Days")
+        views.setTextViewText(countId, value.toString())
+        views.setTextViewText(unitId, unit)
     }
 }
 

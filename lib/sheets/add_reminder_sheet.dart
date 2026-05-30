@@ -76,10 +76,6 @@ class _AddReminderSheetState extends ConsumerState<AddReminderSheet> {
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: context.bgColor,
-          borderRadius: kSheetRadius,
-        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

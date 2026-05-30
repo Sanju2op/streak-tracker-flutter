@@ -27,173 +27,167 @@ class _ShareSheetState extends State<ShareSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.bgColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: kAccentBlue, fontSize: 17),
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: kAccentBlue, fontSize: 17),
+                  ),
+                ),
+                const SizedBox(
+                  width: 48,
+                ), // Placeholder to keep Share button on the right
+                TextButton(
+                  onPressed: () {
+                    HapticFeedback.mediumImpact();
+                    final rootContext = Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    ).context;
+                    Navigator.pop(context);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      shareCounterImage(
+                        rootContext,
+                        widget.counter,
+                        _selectedFormat,
+                        widget.period,
+                        resetMessage: widget.resetMessage,
+                      );
+                    });
+                  },
+                  child: const Text(
+                    'Share',
+                    style: TextStyle(
+                      color: kAccentBlue,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(
-                    width: 48,
-                  ), // Placeholder to keep Share button on the right
-                  TextButton(
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      final rootContext = Navigator.of(
-                        context,
-                        rootNavigator: true,
-                      ).context;
-                      Navigator.pop(context);
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        shareCounterImage(
-                          rootContext,
-                          widget.counter,
-                          _selectedFormat,
-                          widget.period,
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Select size',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1.0,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Preview different sizes for different kinds of social media',
+                          style: TextStyle(fontSize: 15, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Format Selector Icons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _FormatIcon(
+                          format: ShareImageFormat.square,
+                          isSelected:
+                              _selectedFormat == ShareImageFormat.square,
+                          onTap: () => setState(
+                            () => _selectedFormat = ShareImageFormat.square,
+                          ),
+                          label: 'Square',
+                        ),
+                        _FormatIcon(
+                          format: ShareImageFormat.portrait,
+                          isSelected:
+                              _selectedFormat == ShareImageFormat.portrait,
+                          onTap: () => setState(
+                            () => _selectedFormat = ShareImageFormat.portrait,
+                          ),
+                          label: 'Portrait',
+                        ),
+                        _FormatIcon(
+                          format: ShareImageFormat.story,
+                          isSelected:
+                              _selectedFormat == ShareImageFormat.story,
+                          onTap: () => setState(
+                            () => _selectedFormat = ShareImageFormat.story,
+                          ),
+                          label: 'Story',
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Preview Area
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Container(
+                      height: 360,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: ShareImageGenerator(
+                          counter: widget.counter,
+                          format: _selectedFormat,
+                          elapsed: getElapsed(
+                            widget.counter.startedAt,
+                            DateTime.now().millisecondsSinceEpoch,
+                          ),
+                          period: widget.period,
                           resetMessage: widget.resetMessage,
-                        );
-                      });
-                    },
-                    child: const Text(
-                      'Share',
-                      style: TextStyle(
-                        color: kAccentBlue,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
+
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Select size',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -1.0,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Preview different sizes for different kinds of social media',
-                            style: TextStyle(fontSize: 15, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Format Selector Icons
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _FormatIcon(
-                            format: ShareImageFormat.square,
-                            isSelected:
-                                _selectedFormat == ShareImageFormat.square,
-                            onTap: () => setState(
-                              () => _selectedFormat = ShareImageFormat.square,
-                            ),
-                            label: 'Square',
-                          ),
-                          _FormatIcon(
-                            format: ShareImageFormat.portrait,
-                            isSelected:
-                                _selectedFormat == ShareImageFormat.portrait,
-                            onTap: () => setState(
-                              () => _selectedFormat = ShareImageFormat.portrait,
-                            ),
-                            label: 'Portrait',
-                          ),
-                          _FormatIcon(
-                            format: ShareImageFormat.story,
-                            isSelected:
-                                _selectedFormat == ShareImageFormat.story,
-                            onTap: () => setState(
-                              () => _selectedFormat = ShareImageFormat.story,
-                            ),
-                            label: 'Story',
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Preview Area
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Container(
-                        height: 360,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: ShareImageGenerator(
-                            counter: widget.counter,
-                            format: _selectedFormat,
-                            elapsed: getElapsed(
-                              widget.counter.startedAt,
-                              DateTime.now().millisecondsSinceEpoch,
-                            ),
-                            period: widget.period,
-                            resetMessage: widget.resetMessage,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

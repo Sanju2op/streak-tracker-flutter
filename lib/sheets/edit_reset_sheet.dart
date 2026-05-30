@@ -138,166 +138,160 @@ class _EditResetSheetState extends ConsumerState<_EditResetSheet> {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: context.bgColor,
-        borderRadius: kSheetRadius,
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.only(bottom: bottomInset),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 8),
-              // Drag handle
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: context.textSecondary.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 8),
+            // Drag handle
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.textSecondary.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 8),
+            ),
+            const SizedBox(height: 8),
 
-              // Header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => context.pop(),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: kAccentBlue, fontSize: 16),
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: kAccentBlue, fontSize: 16),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _save,
+                    child: const Text(
+                      'Done',
+                      style: TextStyle(
+                        color: kAccentBlue,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    TextButton(
-                      onPressed: _save,
-                      child: const Text(
-                        'Done',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Card 1
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  borderRadius: kCardRadius,
+                ),
+                child: Column(
+                  children: [
+                    // "Reset on" row with chips
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Reset on',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: context.textPrimary,
+                            ),
+                          ),
+                          const Spacer(),
+                          _ChipButton(
+                            label: DateFormat(
+                              'd MMM yyyy',
+                            ).format(_resetDate),
+                            onTap: _pickDate,
+                          ),
+                          const SizedBox(width: 8),
+                          _ChipButton(
+                            label: _resetTime.format(context),
+                            onTap: _pickTime,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Divider(
+                      height: 1,
+                      color: context.dividerColor,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+
+                    // Note field
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
+                      child: TextField(
+                        controller: _noteController,
+                        decoration: InputDecoration(
+                          hintText: 'Note',
+                          hintStyle: TextStyle(color: context.textSecondary),
+                          border: InputBorder.none,
+                        ),
                         style: TextStyle(
-                          color: kAccentBlue,
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          color: context.textPrimary,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+            ),
 
-              // Card 1
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: context.cardColor,
-                    borderRadius: kCardRadius,
-                  ),
-                  child: Column(
-                    children: [
-                      // "Reset on" row with chips
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              'Reset on',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: context.textPrimary,
-                              ),
-                            ),
-                            const Spacer(),
-                            _ChipButton(
-                              label: DateFormat(
-                                'd MMM yyyy',
-                              ).format(_resetDate),
-                              onTap: _pickDate,
-                            ),
-                            const SizedBox(width: 8),
-                            _ChipButton(
-                              label: _resetTime.format(context),
-                              onTap: _pickTime,
-                            ),
-                          ],
-                        ),
-                      ),
+            const SizedBox(height: 16),
 
-                      Divider(
-                        height: 1,
-                        color: context.dividerColor,
-                        indent: 16,
-                        endIndent: 16,
-                      ),
-
-                      // Note field
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
-                        ),
-                        child: TextField(
-                          controller: _noteController,
-                          decoration: InputDecoration(
-                            hintText: 'Note',
-                            hintStyle: TextStyle(color: context.textSecondary),
-                            border: InputBorder.none,
-                          ),
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: context.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+            // Card 2
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  borderRadius: kCardRadius,
                 ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Card 2
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: context.cardColor,
-                    borderRadius: kCardRadius,
+                child: TextButton(
+                  onPressed: _delete,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: TextButton(
-                    onPressed: _delete,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text(
-                      'Delete Reset',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  child: const Text(
+                    'Delete Reset',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
+            ),
 
-              const SizedBox(height: 32),
-            ],
-          ),
+            const SizedBox(height: 32),
+          ],
         ),
       ),
     );

@@ -245,7 +245,7 @@ class _CreateEditSheetState extends ConsumerState<_CreateEditSheet> {
                       color: _color,
                       title: _isEditing ? _titleController.text : null,
                       startedAt: _startedAtMs,
-                      isNewAndUntouched: !_isEditing && !_isDateTimeModified,
+                      isNewAndUntouched: !_isEditing,
                     ),
 
                     const SizedBox(height: 16),
