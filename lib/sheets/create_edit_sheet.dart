@@ -425,19 +425,46 @@ class _PreviewCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: 200,
-        color: color,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              color,
+              HSLColor.fromColor(color)
+                  .withLightness(
+                    (HSLColor.fromColor(color).lightness - 0.10)
+                        .clamp(0.0, 1.0),
+                  )
+                  .toColor(),
+            ],
+          ),
+        ),
         child: Stack(
           children: [
-            // Translucent circle
+            // Translucent circle 1
             Positioned(
-              left: -40,
-              top: -20,
+              right: -30,
+              bottom: -20,
               child: Container(
-                width: 200,
-                height: 200,
+                width: 160,
+                height: 160,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white.withValues(alpha: 0.12),
+                ),
+              ),
+            ),
+            // Translucent circle 2
+            Positioned(
+              right: -10,
+              bottom: 10,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.08),
                 ),
               ),
             ),

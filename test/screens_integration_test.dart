@@ -365,6 +365,11 @@ void main() {
       expect(find.text('Privacy Policy'), findsOneWidget);
       expect(find.text('About'), findsOneWidget);
       expect(find.text('Tell a Friend'), findsOneWidget);
+
+      // Scroll down to make footer visible
+      await tester.drag(find.byType(ListView), const Offset(0, -300));
+      await tester.pumpAndSettle();
+
       expect(find.text('Streak Tracker 1.0.0 (build 1)'), findsOneWidget);
     });
   });

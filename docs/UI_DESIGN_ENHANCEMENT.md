@@ -753,3 +753,9 @@ Toggle `_contentVisible` to `true` in a `WidgetsBinding.instance.addPostFrameCal
 | 14 | Calendar panel at consistent 40% height | `calendar_screen.dart` | MEDIUM |
 | 15 | Add border radius token constants | `app_theme.dart` + all screens | MEDIUM |
 | 16 | Staggered fade-in on CounterDetail body sections | `counter_detail_screen.dart` | LOW |
+| 17 | Premium dynamic widgets & programmatic selection UI | `CounterWidgetProvider.kt`, `WidgetConfigActivity.kt` | HIGH |
+| 18 | Minimalist, dynamic-glow 1080px high-resolution share template | `share_utils.dart` | HIGH |
+| 19 | Premium Settings Screen redesign (Theme Row Cards, custom grouped tiles) | `settings_screen.dart` | HIGH |
+| 20 | Prevent selected color card outline clipping/underflow | `color_picker_sheet.dart` | MEDIUM |
+| 21 | Align preview card decoration with view counter gradient card | `create_edit_sheet.dart` | MEDIUM |
+

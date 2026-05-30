@@ -13,44 +13,6 @@ import '../utils/format_utils.dart';
 
 enum ShareImageFormat { portrait, square, story }
 
-class ChevronPainter extends CustomPainter {
-  final Color color;
-  ChevronPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..strokeCap = StrokeCap.butt;
-
-    const int count = 6;
-    const double spacing = 22.0;
-    const double baseOffset = 40.0;
-    const double angleWidth = 180.0;
-    const double angleHeight = 100.0;
-
-    for (int i = 0; i < count; i++) {
-      final path = Path();
-      final double offset = i * spacing;
-
-      // Draw a sharp "^" shape pointing top-right
-      path.moveTo(baseOffset + offset, baseOffset + offset + angleHeight);
-      path.lineTo(baseOffset + offset + angleWidth / 2, baseOffset + offset);
-      path.lineTo(
-        baseOffset + offset + angleWidth,
-        baseOffset + offset + angleHeight,
-      );
-
-      canvas.drawPath(path, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
 class ShareImageGenerator extends StatelessWidget {
   final Counter counter;
   final ShareImageFormat format;
@@ -70,165 +32,153 @@ class ShareImageGenerator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accentColor = hexToColor(counter.color);
-    const backgroundColor = Color(0xFF1C1C1E);
-
-    Widget buildChevronPattern() {
-      return Positioned(
-        left: -50,
-        top: 40,
-        child: Transform.rotate(
-          angle: -0.1,
-          child: CustomPaint(
-            size: const Size(300, 300),
-            painter: ChevronPainter(color: accentColor.withValues(alpha: 0.8)),
-          ),
-        ),
-      );
-    }
-
-    Widget buildMainContent() {
-      final valueAndLabel = _primaryValueAndLabel(elapsed, period);
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 80),
-          Text(
-            counter.title,
-            style: const TextStyle(
-              fontSize: 64,
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-              letterSpacing: -1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Started on ${formatDate(counter.startedAt)}',
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.white.withValues(alpha: 0.4),
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 100),
-          if (resetMessage != null) ...[
-            Text(
-              resetMessage!,
-              style: const TextStyle(
-                fontSize: 36,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                letterSpacing: -0.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 60),
-          ],
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              '${valueAndLabel.$1}',
-              style: const TextStyle(
-                fontSize: 320,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
-                height: 0.9,
-                letterSpacing: -15,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            valueAndLabel.$2.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-              letterSpacing: 14,
-            ),
-          ),
-        ],
-      );
-    }
-
-    Widget buildBranding() {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(
-              Icons.timer_outlined,
-              color: backgroundColor,
-              size: 28,
-            ),
-          ),
-          const SizedBox(width: 14),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Tracked with',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0x80FFFFFF),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                'Days Since',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    }
+    final valueAndLabel = _primaryValueAndLabel(elapsed, period);
 
     double width;
     double height;
 
     switch (format) {
       case ShareImageFormat.square:
-        width = 1080;
-        height = 1080;
+        width = 360;
+        height = 360;
       case ShareImageFormat.portrait:
-        width = 1080;
-        height = 1350;
+        width = 360;
+        height = 450;
       case ShareImageFormat.story:
-        width = 1080;
-        height = 1920;
+        width = 360;
+        height = 640;
     }
 
     return Container(
       width: width,
       height: height,
-      color: backgroundColor,
-      child: Stack(
+      decoration: BoxDecoration(
+        color: const Color(0xFF050505),
+        gradient: RadialGradient(
+          center: Alignment.center,
+          radius: 0.8,
+          colors: [
+            accentColor.withValues(alpha: 0.16),
+            const Color(0xFF050505),
+          ],
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+      child: Column(
         children: [
-          buildChevronPattern(),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 80),
-              child: buildMainContent(),
+          // Minimal top accent strip
+          Container(
+            width: 32,
+            height: 3,
+            decoration: BoxDecoration(
+              color: accentColor,
+              borderRadius: BorderRadius.circular(1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: accentColor.withValues(alpha: 0.4),
+                  blurRadius: 4,
+                ),
+              ],
             ),
           ),
-          Positioned(
-            bottom: format == ShareImageFormat.story ? 120 : 80,
-            left: 80,
-            child: buildBranding(),
+          
+          const Spacer(),
+
+          // Streak Title
+          Text(
+            counter.title,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
+          const SizedBox(height: 4),
+          // Subtitle / Date
+          Text(
+            'Started on ${formatDate(counter.startedAt)}',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.white.withValues(alpha: 0.4),
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.2,
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          if (resetMessage != null) ...[
+            Text(
+              resetMessage!,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // Elegant value display
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              '${valueAndLabel.$1}',
+              style: const TextStyle(
+                fontSize: 108,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                height: 1.0,
+                letterSpacing: -4.0,
+              ),
+            ),
+          ),
+          
+          Text(
+            valueAndLabel.$2.toUpperCase(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: accentColor,
+              letterSpacing: 4.0,
+            ),
+          ),
+
+          const Spacer(),
+
+          // Minimalist Branding
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: accentColor, width: 1.5),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'STREAK TRACKER',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ],
+          ),
+          if (format == ShareImageFormat.story)
+            const SizedBox(height: 24),
         ],
       ),
     );
@@ -292,6 +242,7 @@ Future<void> shareCounterImage(
       ),
       delay: const Duration(milliseconds: 100),
       context: context,
+      pixelRatio: 3.0,
     );
 
     if (context.mounted) {

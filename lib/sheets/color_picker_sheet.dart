@@ -107,7 +107,7 @@ class _ColorPickerBodyState extends State<_ColorPickerBody> {
 
           // --- PageView of color grids ---
           SizedBox(
-            height: 220,
+            height: 240,
             child: PageView.builder(
               controller: _pageController,
               itemCount: _paletteEntries.length,
@@ -169,7 +169,7 @@ class _ColorGrid extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 5,
         crossAxisSpacing: 16,
