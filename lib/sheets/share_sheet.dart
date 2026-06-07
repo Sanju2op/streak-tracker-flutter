@@ -67,9 +67,9 @@ class _ShareSheetState extends State<ShareSheet> {
                       );
                     });
                   },
-                  child: Text(
+                  child: const Text(
                     kIsWeb ? 'Download' : 'Share',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: kAccentBlue,
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
