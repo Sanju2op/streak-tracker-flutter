@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 
 import 'share_utils_native.dart'
-    if (dart.library.js_util) 'share_utils_web.dart';
+    if (dart.library.js_interop) 'share_utils_web.dart';
 
 import '../constants/colors.dart';
 import '../models/counter.dart';

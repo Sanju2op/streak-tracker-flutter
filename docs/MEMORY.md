@@ -2,11 +2,13 @@
 
 ## Environment Information
 
-- **Operating System:** Linux Ubuntu
-- **Terminal/Shell:** Bash (Linux)
-- **Guideline:** This machine runs Linux Ubuntu. Always write commands compatible
-  with a Linux/Ubuntu bash environment. Do not mistake the operating system for
-  Windows or macOS.
+- **Current local workspace:** Windows PowerShell at
+  `C:\Users\Sanjay\Desktop\projects\streak-tracker-flutter`.
+- **Flutter SDK location:** The user does not want Flutter installed on the
+  local PC. Flutter commands should be run in the GitHub Codespace, or the
+  agent should ask the user to run them there when verification is needed.
+- **Guideline:** Treat the live session environment as authoritative. Do not
+  assume Linux-only commands when the session provides a Windows workspace.
 
 ## Instructions for AI Agents
 

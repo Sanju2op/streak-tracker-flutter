@@ -8,6 +8,18 @@
 
 The app already has partial web support — the `DbAdapter` pattern routes to `WebAdapter` (shared_preferences), `kIsWeb` gates protect notifications and home_widget, and GoRouter handles URL-based navigation. However **four blockers** must be fixed before the app can build and run cleanly on web. After that, three free hosting options are documented with full CI/CD configs.
 
+## Current Repo Status
+
+- Web compatibility blockers are implemented in code.
+- `.github/workflows/build.yml` is deployment-neutral for now: it runs
+  `flutter analyze`, `flutter test`, `flutter build web --wasm --release`,
+  packages the web build, builds the release APK, and uploads both as
+  GitHub Actions artifacts.
+- No hosting-provider secrets are required until the deployment target is
+  chosen.
+- This project currently requires Flutter `>=3.38.4` from `pubspec.lock`.
+  Do not pin CI or hosting builds to Flutter 3.24 examples from older notes.
+
 ---
 
 ## Section 1 — Web Compatibility Audit
@@ -76,7 +88,7 @@ import 'package:share_plus/share_plus.dart';
 
 // Native-only imports — conditionally compiled
 import 'share_utils_native.dart'
-    if (dart.library.html) 'share_utils_web.dart';
+    if (dart.library.js_interop) 'share_utils_web.dart';
 
 import '../constants/colors.dart';
 import '../models/counter.dart';
@@ -230,7 +242,7 @@ Future<void> shareImageOnNative(
 ```
 
 > **Why conditional imports instead of `kIsWeb` if-else?**
-> `dart:io` and `path_provider` fail to compile at all on web — not just at runtime. Conditional imports (`if (dart.library.html)`) tell the Dart compiler to swap files at compile time, keeping each build target clean.
+> `dart:io` and `path_provider` fail to compile at all on web — not just at runtime. Conditional imports (`if (dart.library.js_interop)`) tell the Dart compiler to swap files at compile time, keeping each build target clean.
 
 ---
 
@@ -492,7 +504,7 @@ Three fully free options are documented below. **Netlify is the recommended choi
   publish = "build/web"
 
 [build.environment]
-  FLUTTER_VERSION = "3.24.0"
+  FLUTTER_VERSION = "3.38.4"
 
 # SPA redirect — sends all routes to index.html so GoRouter handles them
 [[redirects]]
@@ -559,7 +571,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.38.4'
           channel: 'stable'
           cache: true
 
@@ -622,7 +634,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.38.4'
           channel: 'stable'
           cache: true
 
@@ -742,7 +754,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.38.4'
           channel: 'stable'
           cache: true
 

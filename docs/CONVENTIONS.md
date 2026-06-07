@@ -94,7 +94,7 @@ AI agents: Run these in order. Verify each step before continuing.
 winget install FlutterSoftwareFoundation.Flutter
 
 # Verify
-flutter --version     # must show 3.24.x or later
+flutter --version     # must satisfy pubspec.lock, currently 3.38.4 or later
 flutter channel       # must show "stable"
 ```
 
@@ -134,7 +134,7 @@ flutter doctor -v
 Required green checks:
 
 ```text
-[✓] Flutter (Channel stable, 3.24.x+)
+[✓] Flutter (Channel stable, 3.38.4+)
 [✓] Android toolchain
 [✓] Chrome - develop for the web
 ```
@@ -216,7 +216,7 @@ keytool -genkey -v -keystore streak-tracker-key.jks `
 flutter run -d chrome
 
 # Production build
-flutter build web --web-renderer canvaskit
+flutter build web --wasm --release
 
 # Serve locally
 cd build\web

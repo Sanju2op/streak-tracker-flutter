@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 import 'db_adapter.dart';
-import 'sqflite_adapter.dart';
-import 'web_adapter.dart';
+import 'db_native.dart'
+    if (dart.library.js_interop) 'db_web.dart' as platform;
 
-DbAdapter createAdapter() => kIsWeb ? WebAdapter() : SqfliteAdapter();
+DbAdapter createAdapter() => platform.createPlatformAdapter();

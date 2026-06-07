@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 
 import '../constants/app_theme.dart';
@@ -66,9 +67,9 @@ class _ShareSheetState extends State<ShareSheet> {
                       );
                     });
                   },
-                  child: const Text(
-                    'Share',
-                    style: TextStyle(
+                  child: Text(
+                    kIsWeb ? 'Download' : 'Share',
+                    style: const TextStyle(
                       color: kAccentBlue,
                       fontSize: 17,
                       fontWeight: FontWeight.w600,

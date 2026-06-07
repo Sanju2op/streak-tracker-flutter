@@ -22,7 +22,7 @@ A free, personal habit/streak tracker — a free Android-first alternative to "D
 | ------------------- | ------------------------------------------ | ---------------------------------------------------------------- |
 | Framework           | **Flutter stable channel**                 | Cross-platform, best Android + Web from one codebase             |
 | Language            | **Dart (null-safe)**                       | Flutter's native language, strong typing enforced everywhere     |
-| Flutter Version     | **Latest stable (3.24.x+)**               | Stable channel only — never beta/dev/master                      |
+| Flutter Version     | **Latest stable (3.38.4+)**               | Stable channel only; `pubspec.lock` enforces the minimum SDK     |
 | State               | **flutter_riverpod ^2.5.x**               | Best-known Flutter state library for AI agents                   |
 | Navigation          | **go_router ^14.x**                       | Shell routes for tabs, deep linking, widely understood           |
 | Database (native)   | **sqflite ^2.3.x**                        | Most stable Flutter SQLite, Android + iOS                        |
@@ -37,7 +37,7 @@ A free, personal habit/streak tracker — a free Android-first alternative to "D
 | UUID                | **uuid ^4.x**                             | Stable UUID generation                                           |
 | Icons               | **Material Icons** (Flutter built-in)      | Covers all icons in the UI screens                               |
 | Build (Android)     | **flutter build apk / appbundle**          | Direct CLI, no third-party CI needed                             |
-| Build (Web)         | **flutter build web --web-renderer canvaskit** | Consistent visual rendering                                  |
+| Build (Web)         | **flutter build web --wasm --release**    | Fast PWA build with CanvasKit-class rendering                    |
 
 > **Rule:** Do not add packages not in this table without updating this file first.
 
@@ -590,7 +590,7 @@ flutter install
 flutter run -d chrome
 
 # Web — static build
-flutter build web --web-renderer canvaskit
+flutter build web --wasm --release
 # Serve: cd build/web && python -m http.server 8080
 
 # Run on connected Android device

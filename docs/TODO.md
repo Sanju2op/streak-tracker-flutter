@@ -28,7 +28,7 @@
   flutter doctor --android-licenses   # accept all
   ```
 
-  Must show: Flutter (stable 3.24.x+), Android toolchain, Chrome all ✓
+  Must show: Flutter (stable 3.38.4+), Android toolchain, Chrome all ✓
 
 - ✅ `0.2` **Initialise Flutter project at repo root**
 
