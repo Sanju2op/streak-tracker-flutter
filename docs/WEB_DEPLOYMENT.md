@@ -12,7 +12,7 @@ The app already has partial web support — the `DbAdapter` pattern routes to `W
 
 - Web compatibility blockers are implemented in code.
 - `.github/workflows/build.yml` is deployment-neutral for now: it runs
-  `flutter analyze`, `flutter test`, `flutter build web --wasm --release`,
+  `flutter analyze`, `flutter test`, `flutter build web --release`,
   packages the web build, builds the release APK, and uploads both as
   GitHub Actions artifacts.
 - No hosting-provider secrets are required until the deployment target is

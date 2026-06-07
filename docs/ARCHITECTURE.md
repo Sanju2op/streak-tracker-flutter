@@ -37,7 +37,7 @@ A free, personal habit/streak tracker — a free Android-first alternative to "D
 | UUID                | **uuid ^4.x**                             | Stable UUID generation                                           |
 | Icons               | **Material Icons** (Flutter built-in)      | Covers all icons in the UI screens                               |
 | Build (Android)     | **flutter build apk / appbundle**          | Direct CLI, no third-party CI needed                             |
-| Build (Web)         | **flutter build web --wasm --release**    | Fast PWA build with CanvasKit-class rendering                    |
+| Build (Web)         | **flutter build web --release**           | Conservative static PWA build for broad hosting compatibility   |
 
 > **Rule:** Do not add packages not in this table without updating this file first.
 
@@ -590,7 +590,7 @@ flutter install
 flutter run -d chrome
 
 # Web — static build
-flutter build web --wasm --release
+flutter build web --release
 # Serve: cd build/web && python -m http.server 8080
 
 # Run on connected Android device

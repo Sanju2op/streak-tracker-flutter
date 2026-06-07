@@ -216,7 +216,7 @@ keytool -genkey -v -keystore streak-tracker-key.jks `
 flutter run -d chrome
 
 # Production build
-flutter build web --wasm --release
+flutter build web --release
 
 # Serve locally
 cd build\web
